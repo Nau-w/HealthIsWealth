@@ -1,6 +1,100 @@
 ﻿@page "/Account/profile"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using HealthIsWealth.Data
+@using HealthIsWealth.Domain
+@using Microsoft.EntityFrameworkCore
+@using System.IO
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserManager<HealthIsWealthUser> UserManager
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject IWebHostEnvironment Environment
 @attribute [Authorize]
+
+@code {
+    private HealthIsWealthContext dbContext = default!;
+    private HealthIsWealthUser? currentUser;
+
+    private List<Booking> upcomingBookings = new();
+    private List<Booking> pastBookings = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        dbContext = DbFactory.CreateDbContext();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+            currentUser = await UserManager.GetUserAsync(user);
+
+            if (currentUser != null)
+            {
+
+                var allBookings = await dbContext.Booking
+                .Include(booking => booking.Timeslot)
+                .ThenInclude(timeslot => timeslot.Facility)
+                .ThenInclude(facility => facility.Venue)
+                .Where(booking => booking.UserId == userId)
+                .OrderBy(booking => booking.Timeslot.StartDT)
+                .ToListAsync();
+
+                var now = DateTime.Now;
+
+                upcomingBookings = allBookings
+                    .Where(b => b.Timeslot.StartDT > now)
+                    .ToList();
+
+                pastBookings = allBookings
+                    .Where(b => b.Timeslot.StartDT <= now)
+                    .OrderByDescending(b => b.Timeslot.StartDT)
+                    .ToList();
+            }
+        }
+    }
+}
+
 <PageTitle>HealthIsWealth | Profile</PageTitle>
 
-<h1>Profile Page</h1>
+<div class="name">
+    <h3>Hello, @(currentUser?.FirstName + " " + currentUser?.LastName) !</h3>
+</div>
+
+<h4 style="margin-top: 30px;">Upcoming Bookings</h4>
+<hr />
+@if (!upcomingBookings.Any())
+{
+    <p>You have no upcoming bookings.</p>
+}
+else
+{
+    @foreach (var booking in upcomingBookings)
+    {
+        <div class="bookings-float">
+            <strong>@booking.Timeslot.Facility.Venue.Name</strong> (@booking.Timeslot.Facility.Name) <br>
+
+            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
+            @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm") <br>
+        </div>
+    }
+}
+
+<h4 style="margin-top: 30px;">Past History</h4>
+<hr />
+@if (!pastBookings.Any())
+{
+    <p>No booking history found.</p>
+}
+else
+{
+    @foreach (var booking in pastBookings)
+    {
+        <div class="bookings-float">
+            <strong>@booking.Timeslot.Facility.Venue.Name</strong> <br>
+            @booking.Timeslot.Facility.Location <br>
+            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
+        </div>
+    }
+}

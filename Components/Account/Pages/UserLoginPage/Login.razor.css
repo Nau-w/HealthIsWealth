@@ -1,6 +1,8 @@
 ﻿.login-backdrop {
-    background-image: linear-gradient(rgb(255, 255, 255, 0.4), rgb(255, 255, 255, 1)), url('/images/backgrounds/backgroundImage.jpg');
-    ;
+    background-image: linear-gradient(rgba(255, 255, 255, 0)), url('/images/backgrounds/backgroundImage.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     position: fixed;
     top: 0;
     left: 0;

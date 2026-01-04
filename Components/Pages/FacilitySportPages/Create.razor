@@ -1,0 +1,54 @@
+﻿@page "/facilitysports/create"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.DatabaseTables
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>FacilitySport</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="FacilitySport" OnValidSubmit="AddFacilitySport" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="sportid" class="form-label">SportID:</label> 
+                <InputNumber id="sportid" @bind-Value="FacilitySport.SportID" class="form-control" /> 
+                <ValidationMessage For="() => FacilitySport.SportID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="facilityid" class="form-label">FacilityID:</label> 
+                <InputNumber id="facilityid" @bind-Value="FacilitySport.FacilityID" class="form-control" /> 
+                <ValidationMessage For="() => FacilitySport.FacilityID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="venueid" class="form-label">VenueID:</label> 
+                <InputNumber id="venueid" @bind-Value="FacilitySport.VenueID" class="form-control" /> 
+                <ValidationMessage For="() => FacilitySport.VenueID" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/facilitysports">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private FacilitySport FacilitySport { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddFacilitySport()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.FacilitySport.Add(FacilitySport);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/facilitysports");
+    }
+}

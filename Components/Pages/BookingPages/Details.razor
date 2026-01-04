@@ -1,0 +1,50 @@
+﻿@page "/bookings/details"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.DatabaseTables
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Booking</h2>
+    <hr />
+    @if (booking is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">UserID</dt>
+            <dd class="col-sm-10">@booking.UserID</dd>
+            <dt class="col-sm-2">TimeslotID</dt>
+            <dd class="col-sm-10">@booking.TimeslotID</dd>
+            <dt class="col-sm-2">BookingDate</dt>
+            <dd class="col-sm-10">@booking.BookingDate</dd>
+        </dl>
+        <div>
+            <a href="@($"/bookings/edit?bookingid={booking.BookingID}")">Edit</a> |
+            <a href="@($"/bookings")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Booking? booking;
+
+    [SupplyParameterFromQuery]
+    private int BookingID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        booking = await context.Booking.FirstOrDefaultAsync(m => m.BookingID == BookingID);
+
+        if (booking is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

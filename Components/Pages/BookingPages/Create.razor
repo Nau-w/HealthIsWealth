@@ -1,0 +1,54 @@
+﻿@page "/bookings/create"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.DatabaseTables
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Booking</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Booking" OnValidSubmit="AddBooking" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="userid" class="form-label">UserID:</label> 
+                <InputNumber id="userid" @bind-Value="Booking.UserID" class="form-control" /> 
+                <ValidationMessage For="() => Booking.UserID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="timeslotid" class="form-label">TimeslotID:</label> 
+                <InputNumber id="timeslotid" @bind-Value="Booking.TimeslotID" class="form-control" /> 
+                <ValidationMessage For="() => Booking.TimeslotID" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="bookingdate" class="form-label">BookingDate:</label> 
+                <InputDate id="bookingdate" @bind-Value="Booking.BookingDate" class="form-control" /> 
+                <ValidationMessage For="() => Booking.BookingDate" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/bookings">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Booking Booking { get; set; } = new();
+
+    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task AddBooking()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Booking.Add(Booking);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/bookings");
+    }
+}

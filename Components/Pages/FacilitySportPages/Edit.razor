@@ -1,0 +1,99 @@
+﻿@page "/facilitysports/edit"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.DatabaseTables
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>FacilitySport</h2>
+<hr />
+@if (FacilitySport is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="FacilitySport" OnValidSubmit="UpdateFacilitySport" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="FacilitySport.FacilitySportID" value="@FacilitySport.FacilitySportID" />
+                <div class="mb-3">
+                    <label for="sportid" class="form-label">SportID:</label>
+                    <InputNumber id="sportid" @bind-Value="FacilitySport.SportID" class="form-control" />
+                    <ValidationMessage For="() => FacilitySport.SportID" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="facilityid" class="form-label">FacilityID:</label>
+                    <InputNumber id="facilityid" @bind-Value="FacilitySport.FacilityID" class="form-control" />
+                    <ValidationMessage For="() => FacilitySport.FacilityID" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="venueid" class="form-label">VenueID:</label>
+                    <InputNumber id="venueid" @bind-Value="FacilitySport.VenueID" class="form-control" />
+                    <ValidationMessage For="() => FacilitySport.VenueID" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/facilitysports">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int FacilitySportID { get; set; }
+
+    [SupplyParameterFromForm]
+    private FacilitySport? FacilitySport { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        FacilitySport ??= await context.FacilitySport.FirstOrDefaultAsync(m => m.FacilitySportID == FacilitySportID);
+
+        if (FacilitySport is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateFacilitySport()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(FacilitySport!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!FacilitySportExists(FacilitySport!.FacilitySportID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/facilitysports");
+    }
+
+    private bool FacilitySportExists(int facilitysportid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.FacilitySport.Any(e => e.FacilitySportID == facilitysportid);
+    }
+}

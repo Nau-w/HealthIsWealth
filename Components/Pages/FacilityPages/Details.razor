@@ -1,0 +1,50 @@
+﻿@page "/facilities/details"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.DatabaseTables
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Facility</h2>
+    <hr />
+    @if (facility is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">Name</dt>
+            <dd class="col-sm-10">@facility.Name</dd>
+            <dt class="col-sm-2">Location</dt>
+            <dd class="col-sm-10">@facility.Location</dd>
+            <dt class="col-sm-2">VenueID</dt>
+            <dd class="col-sm-10">@facility.VenueID</dd>
+        </dl>
+        <div>
+            <a href="@($"/facilities/edit?facilityid={facility.FacilityID}")">Edit</a> |
+            <a href="@($"/facilities")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Facility? facility;
+
+    [SupplyParameterFromQuery]
+    private int FacilityID { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        facility = await context.Facility.FirstOrDefaultAsync(m => m.FacilityID == FacilityID);
+
+        if (facility is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

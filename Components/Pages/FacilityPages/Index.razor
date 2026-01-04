@@ -1,0 +1,38 @@
+﻿@page "/facilities"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using HealthIsWealth.DatabaseTables
+@using HealthIsWealth.Data
+@implements IAsyncDisposable
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="facilities/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="context.Facility">
+    <PropertyColumn Property="facility => facility.Name" />
+    <PropertyColumn Property="facility => facility.Location" />
+    <PropertyColumn Property="facility => facility.VenueID" />
+
+    <TemplateColumn Context="facility">
+        <a href="@($"facilities/edit?facilityid={facility.FacilityID}")">Edit</a> |
+        <a href="@($"facilities/details?facilityid={facility.FacilityID}")">Details</a> |
+        <a href="@($"facilities/delete?facilityid={facility.FacilityID}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private HealthIsWealthContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

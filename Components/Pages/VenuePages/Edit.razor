@@ -1,0 +1,104 @@
+﻿@page "/venues/edit"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.DatabaseTables
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Venue</h2>
+<hr />
+@if (Venue is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Venue" OnValidSubmit="UpdateVenue" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert"/>
+                <input type="hidden" name="Venue.VenueID" value="@Venue.VenueID" />
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address:</label>
+                    <InputText id="address" @bind-Value="Venue.Address" class="form-control" />
+                    <ValidationMessage For="() => Venue.Address" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="postalcode" class="form-label">PostalCode:</label>
+                    <InputNumber id="postalcode" @bind-Value="Venue.PostalCode" class="form-control" />
+                    <ValidationMessage For="() => Venue.PostalCode" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="unitnumber" class="form-label">UnitNumber:</label>
+                    <InputNumber id="unitnumber" @bind-Value="Venue.UnitNumber" class="form-control" />
+                    <ValidationMessage For="() => Venue.UnitNumber" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price:</label>
+                    <InputNumber id="price" @bind-Value="Venue.Price" class="form-control" />
+                    <ValidationMessage For="() => Venue.Price" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/venues">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    private int VenueID { get; set; }
+
+    [SupplyParameterFromForm]
+    private Venue? Venue { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        Venue ??= await context.Venue.FirstOrDefaultAsync(m => m.VenueID == VenueID);
+
+        if (Venue is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private async Task UpdateVenue()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Attach(Venue!).State = EntityState.Modified;
+
+        try
+        {
+            await context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!VenueExists(Venue!.VenueID))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/venues");
+    }
+
+    private bool VenueExists(int venueid)
+    {
+        using var context = DbFactory.CreateDbContext();
+        return context.Venue.Any(e => e.VenueID == venueid);
+    }
+}

@@ -1,0 +1,67 @@
+﻿@page "/timeslots/delete"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.Domain
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Delete</PageTitle>
+
+<h1>Delete</h1>
+
+<p>Are you sure you want to delete this?</p>
+<div>
+    <h2>Timeslot</h2>
+    <hr />
+    @if (timeslot is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">StartDT</dt>
+            <dd class="col-sm-10">@timeslot.StartDT</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">EndDT</dt>
+            <dd class="col-sm-10">@timeslot.EndDT</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">FacilityId</dt>
+            <dd class="col-sm-10">@timeslot.FacilityId</dd>
+        </dl>
+        <dl class="row">
+            <dt class="col-sm-2">VenueId</dt>
+            <dd class="col-sm-10">@timeslot.VenueId</dd>
+        </dl>
+        <EditForm method="post" Model="timeslot" OnValidSubmit="DeleteTimeslot" FormName="delete" Enhance>
+            <button type="submit" class="btn btn-danger" disabled="@(timeslot is null)">Delete</button> |
+            <a href="/timeslots">Back to List</a>
+        </EditForm>
+    }
+</div>
+
+@code {
+    private Timeslot? timeslot;
+
+    [SupplyParameterFromQuery]
+    private int TimeslotId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        timeslot = await context.Timeslot.FirstOrDefaultAsync(m => m.TimeslotId == TimeslotId);
+
+        if (timeslot is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    private async Task DeleteTimeslot()
+    {
+        using var context = DbFactory.CreateDbContext();
+        context.Timeslot.Remove(timeslot!);
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/timeslots");
+    }
+}

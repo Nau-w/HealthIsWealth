@@ -7,5 +7,8 @@
         public string? Location { get; set; }
         public int VenueId { get; set; }
         public float Price { get; set; }
+
+        //Foreign Key
+        public Venue? Venue { get; set; }
     }
 }

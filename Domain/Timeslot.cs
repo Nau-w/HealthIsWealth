@@ -7,5 +7,9 @@
         public DateTime EndDT { get; set; }
         public int FacilityId { get; set; }
         public int VenueId { get; set; }
+
+        //Foreign Keys
+        public Facility? Facility { get; set; }
+        public Venue? Venue { get; set; }
     }
 }

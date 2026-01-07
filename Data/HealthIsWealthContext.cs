@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using HealthIsWealth.DatabaseTables;
+﻿using Microsoft.EntityFrameworkCore;
+using HealthIsWealth.Data;
+using HealthIsWealth.Domain;
+using HealthIsWealth.Configurations.Entities;
 
 namespace HealthIsWealth.Data
 {
-    public class HealthIsWealthContext : DbContext
-    {
-        public HealthIsWealthContext (DbContextOptions<HealthIsWealthContext> options)
-            : base(options)
+    {        
         {
-        }
 
+<<<<<<< HEAD
         public DbSet<HealthIsWealth.DatabaseTables.User> User { get; set; } = default!;
         public DbSet<HealthIsWealth.DatabaseTables.Timeslot> Timeslot { get; set; } = default!;
         public DbSet<HealthIsWealth.DatabaseTables.Sport> Sport { get; set; } = default!;
@@ -22,5 +17,7 @@ namespace HealthIsWealth.Data
         public DbSet<HealthIsWealth.DatabaseTables.Booking> Booking { get; set; } = default!;
         public DbSet<HealthIsWealth.DatabaseTables.Venue> Venue { get; set; } = default!;
         public DbSet<HealthIsWealth.DatabaseTables.Facility> Facility { get; set; } = default!;
+=======
+>>>>>>> 7ff801764585662ff05d91b23576571a2a780d31
     }
 }

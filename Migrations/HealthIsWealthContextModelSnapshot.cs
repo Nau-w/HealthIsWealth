@@ -22,24 +22,18 @@ namespace HealthIsWealth.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.Booking", b =>
+            modelBuilder.Entity("HealthIsWealth.Data.HealthIsWealthUser", b =>
                 {
-                    b.Property<int>("BookingID")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("BookingID"));
 
-                    b.Property<DateTime>("BookingDate")
-                        .HasColumnType("datetime2");
 
-                    b.Property<int>("TimeslotID")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserID")
                         .HasColumnType("int");
 
-                    b.HasKey("BookingID");
+
+                    b.HasKey("BookingId");
 
                     b.HasIndex("TimeslotID")
                         .IsUnique();
@@ -47,15 +41,32 @@ namespace HealthIsWealth.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Booking");
+
+                    b.HasData(
+                        new
+                        {
+                            BookingId = 1,
+                            TimeslotId = 1,
+                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
+                        },
+                        new
+                        {
+                            BookingId = 2,
+                            TimeslotId = 2,
+                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
+                        },
+                        new
+                        {
+                            BookingId = 3,
+                            TimeslotId = 3,
+                            UserId = "3781efa7-66dc-47f0-860f-e506d04102e4"
+                        });
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.Facility", b =>
                 {
-                    b.Property<int>("FacilityID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilityID"));
 
                     b.Property<string>("ImageSource")
                         .HasColumnType("nvarchar(max)");
@@ -66,37 +77,32 @@ namespace HealthIsWealth.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+<<<<<<< HEAD
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
                     b.Property<int>("VenueID")
+=======
+>>>>>>> 7ff801764585662ff05d91b23576571a2a780d31
                         .HasColumnType("int");
 
-                    b.HasKey("FacilityID");
 
                     b.HasIndex("VenueID");
 
                     b.ToTable("Facility");
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.FacilitySport", b =>
                 {
-                    b.Property<int>("FacilitySportID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilitySportID"));
 
-                    b.Property<int>("FacilityID")
                         .HasColumnType("int");
 
-                    b.Property<int>("SportID")
                         .HasColumnType("int");
 
-                    b.Property<int>("VenueID")
                         .HasColumnType("int");
 
-                    b.HasKey("FacilitySportID");
 
                     b.HasIndex("FacilityID");
 
@@ -105,41 +111,55 @@ namespace HealthIsWealth.Migrations
                     b.ToTable("FacilitySport");
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.Review", b =>
                 {
-                    b.Property<int>("ReviewID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewID"));
 
-                    b.Property<int>("BookingID")
                         .HasColumnType("int");
 
                     b.Property<string>("Feedback")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
 
-                    b.Property<int>("UserID")
-                        .HasColumnType("int");
 
-                    b.HasKey("ReviewID");
 
                     b.HasIndex("BookingID")
                         .IsUnique();
 
                     b.ToTable("Review");
+
+                    b.HasData(
+                        new
+                        {
+                            ReviewId = 1,
+                            BookingId = 1,
+                            Feedback = "Good facility venue has a lot of ammenities",
+                            Rating = 4.5f,
+                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
+                        },
+                        new
+                        {
+                            ReviewId = 2,
+                            BookingId = 2,
+                            Feedback = "Dirty equipments but gym has alot of machines",
+                            Rating = 4f,
+                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
+                        },
+                        new
+                        {
+                            ReviewId = 3,
+                            BookingId = 3,
+                            Feedback = "Best volleyball court ever",
+                            Rating = 5f,
+                            UserId = "3781efa7-66dc-47f0-860f-e506d04102e4"
+                        });
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.Sport", b =>
                 {
-                    b.Property<int>("SportID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SportID"));
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -147,80 +167,57 @@ namespace HealthIsWealth.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("SportID");
 
                     b.ToTable("Sport");
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.Timeslot", b =>
                 {
-                    b.Property<int>("TimeslotID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TimeslotID"));
 
                     b.Property<DateTime>("EndDT")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("FacilityID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("StartDT")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("VenueID")
                         .HasColumnType("int");
 
-                    b.HasKey("TimeslotID");
 
                     b.HasIndex("FacilityID");
 
                     b.ToTable("Timeslot");
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.User", b =>
                 {
-                    b.Property<int>("UserID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserID"));
 
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Phone")
                         .HasColumnType("int");
 
-                    b.HasKey("UserID");
 
-                    b.ToTable("User");
                 });
 
-            modelBuilder.Entity("HealthIsWealth.DatabaseTables.Venue", b =>
                 {
-                    b.Property<int>("VenueID")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VenueID"));
 
-                    b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+<<<<<<< HEAD
                     b.Property<string>("ImageSource")
                         .HasColumnType("nvarchar(max)");
 
@@ -229,10 +226,12 @@ namespace HealthIsWealth.Migrations
 
                     b.Property<string>("UnitNumber")
                         .HasColumnType("nvarchar(max)");
+=======
 
-                    b.HasKey("VenueID");
 
-                    b.ToTable("Venue");
+>>>>>>> 7ff801764585662ff05d91b23576571a2a780d31
+
+
                 });
 
             modelBuilder.Entity("HealthIsWealth.DatabaseTables.Booking", b =>

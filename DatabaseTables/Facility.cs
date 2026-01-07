@@ -7,6 +7,7 @@ namespace HealthIsWealth.DatabaseTables
         public int FacilityID { get; set; }
         public string? Name { get; set; }
         public string? Location { get; set; }
+        public string? ImageSource { get; set; }
         public int VenueID { get; set; }
         public float Price { get; set; }
 

@@ -1,1 +1,155 @@
-﻿
+﻿/* =========================================
+   1. TOP NAVBAR STYLES
+   ========================================= */
+.site-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e6e6e6;
+    padding: 10px 30px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    width: 100%;
+    position: sticky; /* Keeps it at the top */
+    top: 0;
+    z-index: 100;
+}
+
+.brand-link {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #5b6bf9;
+    text-decoration: none;
+}
+
+.navbar-menu {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 600;
+}
+
+    .nav-link:hover, .nav-link.active {
+        color: #000;
+        border-bottom: 2px solid #000;
+    }
+
+.navbar-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-input {
+    background-color: #bfbfbf;
+    border: none;
+    padding: 8px 10px 8px 30px;
+    border-radius: 4px;
+    width: 200px;
+}
+
+/* =========================================
+   2. SIDE SETTINGS PANEL
+   ========================================= */
+.settings-btn {
+    background: transparent;
+    border: 1px solid #999;
+    padding: 6px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+    .settings-btn:hover {
+        background-color: #333;
+        color: #fff;
+    }
+
+.side-panel {
+    position: fixed;
+    top: 0;
+    right: -320px; /* Hidden by default */
+    width: 300px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
+    z-index: 2000; /* High z-index to sit over everything */
+    transition: right 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+    /* Class added by Blazor when open */
+    .side-panel.panel-open {
+        right: 0;
+    }
+
+.panel-header {
+    padding: 20px;
+    background: #f4f4f4;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.panel-content {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.panel-link {
+    display: block;
+    padding: 12px;
+    background: #f9f9f9;
+    color: #333;
+    text-decoration: none;
+    text-align: center;
+    border-radius: 6px;
+}
+
+    .panel-link:hover {
+        background: #e0e0e0;
+    }
+
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.5);
+    z-index: 1500;
+}
+
+/* =========================================
+   3. CENTERED LOGIN / REGISTER PAGE
+   ========================================= */
+/* Add this class to a div wrapping your login form */
+.center-screen-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh; /* Takes up most of the screen height */
+}
+
+.auth-card {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 400px; /* Prevents it from getting too wide */
+    text-align: center;
+}

@@ -1,49 +1,62 @@
 ﻿@inject NavigationManager NavigationManager
-<div>
-    <a href="">
-        Home
-    </a>
+
+<div class="site-navbar">
+    <div class="navbar-brand">
+        <a href="" class="brand-link">HealthIsWealth</a>
+    </div>
+
+    <nav class="navbar-menu">
+        <a href="" class="nav-link active">Home</a>
+        <a href="Venues" class="nav-link">Venues</a>
+        <a href="Bookings" class="nav-link">Bookings</a>
+        <a href="Account/Profile" class="nav-link">Profile</a>
+    </nav>
+
+    <div class="navbar-controls">
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="search sports.." class="search-input" />
+        </div>
+
+        <button class="settings-btn" @onclick="ToggleSidePanel">
+            ⚙️ Settings
+        </button>
+    </div>
 </div>
 
-<AuthorizeView>
-    <Authorized>
-        <nav>
-            <div>
-                <a href="Venues">
-                    Venues
-                </a>
-            </div>
-            <div>
-                <a href="Bookings">
-                    Bookings
-                </a>
-            </div>
-            <div>
-                <a href="Account/Profile">
-                    Profile
-                </a>
-            </div>
-            <div>
-                <a href="Account/Logout">
-                    Logout
-                </a>
-            </div>
-        </nav>
-    </Authorized>
+<div class="side-panel @(isPanelOpen ? "panel-open" : "")">
 
-    <NotAuthorized>
-        <nav>
-            <div>
-                <a href="Account/Register">
-                    Register Account
-                </a>
-            </div>
-            <div>
-                <a href="Account/Login">
-                    Login
-                </a>
-            </div>
-        </nav>
-    </NotAuthorized>
-</AuthorizeView>
+    <div class="panel-header">
+        <h3>Menu</h3>
+        <button class="close-btn" @onclick="ToggleSidePanel">×</button>
+    </div>
 
+    <div class="panel-content">
+        <AuthorizeView>
+            <Authorized>
+                <p>Welcome, @context.User.Identity?.Name!</p>
+                <a href="Account/Profile" class="panel-link">My Profile</a>
+                <a href="Account/Logout" class="panel-link logout">Logout</a>
+            </Authorized>
+            <NotAuthorized>
+                <p>Please log in to continue.</p>
+                <a href="Account/Login" class="panel-link">Login</a>
+                <a href="Account/Register" class="panel-link">Register</a>
+            </NotAuthorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+@if (isPanelOpen)
+{
+    <div class="backdrop" @onclick="ToggleSidePanel"></div>
+}
+
+@code {
+    private bool isPanelOpen = false;
+
+    private void ToggleSidePanel()
+    {
+        isPanelOpen = !isPanelOpen;
+    }
+}

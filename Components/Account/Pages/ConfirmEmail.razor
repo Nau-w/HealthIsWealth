@@ -6,14 +6,17 @@
 @using HealthIsWealth.Data
 
 @inject UserManager<HealthIsWealthUser> UserManager
+@inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
 <PageTitle>Confirm email</PageTitle>
 
 <h1>Confirm email</h1>
 <StatusMessage Message="@statusMessage" />
+<a href="@RedirectLoginPage">Login Account</a>
 
 @code {
+    private string? RedirectLoginPage;
     private string? statusMessage;
 
     [CascadingParameter]
@@ -27,6 +30,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        RedirectLoginPage = "Account/Login";
         if (UserId is null || Code is null)
         {
             RedirectManager.RedirectTo("");

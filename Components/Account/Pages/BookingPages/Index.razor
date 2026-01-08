@@ -1,11 +1,12 @@
 ﻿@page "/bookings"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
-
+@attribute [Authorize]
 <PageTitle>Index</PageTitle>
 
 <h1>Index</h1>

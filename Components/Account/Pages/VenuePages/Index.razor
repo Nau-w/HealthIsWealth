@@ -1,12 +1,14 @@
 ﻿@page "/venues"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@attribute [Authorize]
 
-<PageTitle>Index</PageTitle>
+<PageTitle>HealthIsWealth | Venues</PageTitle>
 
 <h1>Index</h1>
 
@@ -18,12 +20,6 @@
     <PropertyColumn Property="venue => venue.Address" />
     <PropertyColumn Property="venue => venue.PostalCode" />
     <PropertyColumn Property="venue => venue.UnitNumber" />
-
-    <TemplateColumn Context="venue">
-        <a href="@($"venues/edit?venueid={venue.VenueId}")">Edit</a> |
-        <a href="@($"venues/details?venueid={venue.VenueId}")">Details</a> |
-        <a href="@($"venues/delete?venueid={venue.VenueId}")">Delete</a>
-    </TemplateColumn>
 </QuickGrid>
 
 @code {

@@ -1,0 +1,12 @@
+.page {
+    min-height: 100vh;
+    background-color: #f0ecfa;
+}
+
+main {
+    padding-top: 80px;
+}
+
+article {
+    padding: 20px;
+}

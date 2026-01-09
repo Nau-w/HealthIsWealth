@@ -1,204 +1,218 @@
-﻿/* =========================================
-   1. MAIN NAVIGATION BAR
-   ========================================= */
+﻿/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Navigation Bar */
 .nav-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.8rem 2rem;
-    background-color: #ffffff;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    border-bottom: 1px solid #e0e0e0;
-    /* Sticky: Stays at the top when scrolling */
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 100;
+    left: 0;
+    right: 0;
+    padding: 20px 40px;
+    background-color: white;
+    z-index: 1000;
 }
 
-.nav-brand h3 {
+    .nav-bar > ul {
+        display: flex;
+        list-style-type: none;
+        gap: 40px;
+        align-items: center;
+        margin: 0;
+    }
+
+/* Navigation Branding */
+.nav-branding {
     margin: 0;
     font-size: 1.5rem;
-    color: #333;
+    color: #9f81dc;
     font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
-/* =========================================
-   2. NAVIGATION LINKS (The fix for blue text)
-   ========================================= */
-.my-nav-links {
-    display: flex;
-    gap: 30px; /* Spacing between links */
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-/* Default Link State */
-.nav-item {
-    text-decoration: none !important;
-    color: #555 !important; /* Forces Dark Grey */
+/* Navigation Links */
+nav a {
+    color: black;
+    text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
-    padding: 10px 5px;
-    background: transparent !important;
-    border: none !important;
-    /* Invisible border to prevent jumping when active */
-    border-bottom: 3px solid transparent !important;
-    transition: all 0.2s ease-in-out;
+    transition: 0.2s;
+    padding: 8px 12px;
+    border-radius: 4px;
 }
 
-    /* Hover State */
-    .nav-item:hover {
-        color: #000 !important;
+    nav a:hover {
+        color: #9f81dc;
+        background-color: #e2e2e2;
     }
 
-    /* Active State (The one you clicked) */
-    .nav-item.active {
-        color: #000 !important; /* Black text */
-        font-weight: 700 !important; /* Bold text */
-        border-bottom: 3px solid #000 !important; /* Black Underline */
+/* Search Input */
+.search-input {
+    padding: 8px 16px;
+    border: 2px solid #b5b5b5;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    width: 200px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .search-input:focus {
+        border-color: #9f81dc;
     }
 
-/* =========================================
-   3. CONTROLS (Search & Settings)
-   ========================================= */
-.nav-controls {
+    .search-input::placeholder {
+        color: #666;
+    }
+
+/* Navigation Auth Section */
+.nav-auth {
     display: flex;
     align-items: center;
     gap: 15px;
 }
 
-.nav-search .search-input {
-    padding: 8px 15px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    outline: none;
-    font-size: 0.9rem;
-    width: 220px;
-    transition: border-color 0.2s;
+/* Auth Links (Login/Register) */
+.auth-link {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 5px;
+    transition: 0.2s;
+    border: 2px solid #b5b5b5;
+    color: black;
 }
 
-    .nav-search .search-input:focus {
-        border-color: #333;
-        background-color: #fff;
+    .auth-link:hover {
+        background-color: #e2e2e2;
+        border-color: #9f81dc;
+        color: #9f81dc;
     }
 
+.register-btn {
+    background-color: #9f81dc;
+    color: #ffffff;
+    border-color: #9f81dc;
+}
+
+    .register-btn:hover {
+        background-color: #c8b8ec;
+        border-color: #c8b8ec;
+        color: #ffffff;
+    }
+
+/* Settings Button */
 .nav-settings {
-    background: transparent;
-    border: 1px solid #ddd;
-    border-radius: 20px;
-    padding: 6px 15px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #444;
-    transition: all 0.2s;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 5px;
+    transition: 0.2s;
+    background-color: #9f81dc;
+    border: 2px solid #b5b5b5;
+    color: #ffffff;
+    border-color: #9f81dc;
 }
 
     .nav-settings:hover {
-        background-color: #f0f0f0;
-        color: #000;
-        border-color: #bbb;
+        background-color: #c8b8ec;
+        border-color: #c8b8ec;
+        color: #ffffff;
     }
 
-/* =========================================
-   4. SIDE PANEL (Drawer)
-   ========================================= */
+/* Side Panel */
 .side-panel {
     position: fixed;
     top: 0;
-    right: -320px; /* Start hidden off-screen */
-    width: 320px;
+    right: -350px;
+    width: 350px;
     height: 100vh;
-    background-color: #ffffff;
-    box-shadow: -5px 0 15px rgba(0,0,0,0.1);
-    /* Z-Index: Higher than content, lower than Logout Popup (9999) */
-    z-index: 2000;
-    transition: right 0.3s ease-in-out;
-    display: flex;
-    flex-direction: column;
+    background-color: #f0ecfa;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+    transition: right 0.2s;
+    z-index: 1001;
 }
 
-    /* C# adds this class to slide it in */
-    .side-panel.panel-open {
+    .side-panel.open {
         right: 0;
     }
 
-.panel-header {
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-    .panel-header h3 {
-        margin: 0;
-        font-size: 1.2rem;
-        color: #333;
-    }
-
+/* Close Button */
 .close-panel {
+    position: absolute;
+    top: 20px;
+    right: 20px;
     background: none;
     border: none;
     font-size: 2rem;
-    line-height: 1;
-    color: #888;
+    color: #666;
     cursor: pointer;
+    transition: 0.2s;
+    line-height: 1;
 }
 
     .close-panel:hover {
-        color: #000;
+        color: #9f81dc;
     }
 
+/* Panel Content */
 .panel-content {
-    padding: 20px;
+    padding: 80px 30px 30px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 20px;
 }
 
-/* Side Panel Links */
+.welcome-text {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #000000;
+    margin-bottom: 10px;
+}
+
 .panel-link {
     display: block;
-    padding: 12px 15px;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+    color: black;
     text-decoration: none;
-    color: #333;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    text-align: center;
-    font-weight: 600;
-    transition: background 0.2s;
+    border-radius: 5px;
+    font-weight: 500;
+    transition: 0.2s;
+    border: 2px solid transparent;
 }
 
     .panel-link:hover {
-        background-color: #e9ecef;
+        background-color: #9f81dc;
+        color: #ffffff;
+        transform: translateX(5px);
     }
 
-    /* Logout Button Special Style */
-    .panel-link.logout {
-        margin-top: 10px;
-        background-color: #fff5f5;
-        color: #dc3545;
-        border: 1px solid #ffebeb;
-    }
+.logout-link:hover {
+    background-color: #e74c3c;
+}
 
-        .panel-link.logout:hover {
-            background-color: #ffe0e0;
-        }
-
-/* =========================================
-   5. BACKDROP (Dark Overlay)
-   ========================================= */
-.backdrop {
+/* Overlay */
+.overlay {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0,0,0,0.3);
-    z-index: 1500; /* Below panel (2000) */
-    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 999;
 }
+
+    .overlay.active {
+        opacity: 1;
+        visibility: visible;
+    }

@@ -1,0 +1,78 @@
+﻿/* --- LOGOUT POPUP STYLES (Global) --- */
+
+.logout-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw; /* Full width of viewport */
+    height: 100vh; /* Full height of viewport */
+    background-color: rgba(0, 0, 0, 0.7); /* Darker overlay */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Z-INDEX 9999 ensures it sits ON TOP of the Settings Panel */
+    z-index: 9999 !important;
+}
+
+.logout-window {
+    background-color: white;
+    padding: 30px;
+    width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* Ensure the window itself is opaque */
+    opacity: 1;
+}
+
+    .logout-window h2 {
+        margin-top: 0;
+        color: #333;
+    }
+
+.logout-actions {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+    /* Make the form flex so it doesn't break layout */
+    .logout-actions form {
+        flex: 1;
+        display: flex;
+    }
+
+.btn-logout {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: background 0.2s;
+}
+
+    .btn-logout:hover {
+        background-color: #bb2d3b;
+    }
+
+.btn-cancel {
+    background-color: white;
+    color: #333;
+    border: 2px solid #ccc;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+    transition: background 0.2s;
+}
+
+    .btn-cancel:hover {
+        background-color: #f0f0f0;
+    }

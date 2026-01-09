@@ -1,24 +1,45 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using Microsoft.AspNetCore.Identity
+@using HealthIsWealth.Data
+@using Microsoft.AspNetCore.Components.Routing
 
-<div class="site-navbar">
-    <div class="navbar-brand">
-        <a href="" class="brand-link">HealthIsWealth</a>
+@inject NavigationManager NavigationManager
+@inject UserManager<HealthIsWealthUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+<div class="nav-bar">
+
+    <!-- HealthIsWealth brand -->
+    <div class="nav-brand">
+        <h3>HealthIsWealth</h3> 
     </div>
 
-    <nav class="navbar-menu">
-        <a href="" class="nav-link active">Home</a>
-        <a href="Venues" class="nav-link">Venues</a>
-        <a href="Bookings" class="nav-link">Bookings</a>
-        <a href="Account/Profile" class="nav-link">Profile</a>
+    <!--Website navigation links-->
+    <nav class="my-nav-links">
+
+        <NavLink class="nav-item" href="" Match="NavLinkMatch.All">
+            Home
+        </NavLink>
+
+        <NavLink class="nav-item" href="/Venues">
+            Venues
+        </NavLink>
+
+        <NavLink class="nav-item" href="/Bookings">
+            Bookings
+        </NavLink>
+
+        <NavLink class="nav-item" href="/Account/Profile">
+            Profile
+        </NavLink>
+
     </nav>
 
-    <div class="navbar-controls">
-        <div class="search-container">
-            <span class="search-icon">🔍</span>
-            <input type="text" placeholder="search sports.." class="search-input" />
+    <!--Website controls: search and settings-->
+    <div class="nav-controls">
+        <div class="nav-search">
+            <input type="text" placeholder="🔍 search sports..." class="search-input" />
         </div>
 
-        <button class="settings-btn" @onclick="ToggleSidePanel">
+        <button class="nav-settings" @onclick="ToggleSidePanel">
             ⚙️ Settings
         </button>
     </div>
@@ -27,14 +48,14 @@
 <div class="side-panel @(isPanelOpen ? "panel-open" : "")">
 
     <div class="panel-header">
-        <h3>Menu</h3>
-        <button class="close-btn" @onclick="ToggleSidePanel">×</button>
+        <h3>⚙️ Settings</h3>
+        <button class="close-panel" @onclick="ToggleSidePanel">×</button>
     </div>
 
     <div class="panel-content">
         <AuthorizeView>
             <Authorized>
-                <p>Welcome, @context.User.Identity?.Name!</p>
+                <p>Welcome, @fullName!</p>
                 <a href="Account/Profile" class="panel-link">My Profile</a>
                 <a href="Account/Logout" class="panel-link logout">Logout</a>
             </Authorized>
@@ -54,9 +75,31 @@
 
 @code {
     private bool isPanelOpen = false;
-
     private void ToggleSidePanel()
     {
         isPanelOpen = !isPanelOpen;
+    }
+
+    private string fullName = "Loading...";
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+
+        // Check if user is logged in
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            // Fetch the full user details from the Database using UserManager
+            var currentUser = await UserManager.GetUserAsync(user);
+
+            if (currentUser != null)
+            {
+                fullName = $"{currentUser.FirstName} {currentUser.LastName}";
+            }
+        }
     }
 }

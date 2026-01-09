@@ -1,80 +1,53 @@
 ﻿@using Microsoft.AspNetCore.Identity
 @using HealthIsWealth.Data
 @using Microsoft.AspNetCore.Components.Routing
-
 @inject NavigationManager NavigationManager
 @inject UserManager<HealthIsWealthUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-<div class="nav-bar">
 
-    <!-- HealthIsWealth brand -->
-    <div class="nav-brand">
-        <h3>HealthIsWealth</h3> 
-    </div>
+<div>
+    <nav class="nav-bar">
+        <h3 class="nav-branding">HealthIsWealth</h3>
+        <ul>
+            <li><a href="">Home</a></li>
+            <li><a href="/Venues">Venues</a></li>
+            <li><a href="/Bookings">Bookings</a></li>
+            <li><a href="/Account/Profile">Profile</a></li>
+            <li><input type="text" class="search-input" placeholder="Search sports..." /></li>
+        </ul>
 
-    <!--Website navigation links-->
-    <nav class="my-nav-links">
-
-        <NavLink class="nav-item" href="" Match="NavLinkMatch.All">
-            Home
-        </NavLink>
-
-        <NavLink class="nav-item" href="/Venues">
-            Venues
-        </NavLink>
-
-        <NavLink class="nav-item" href="/Bookings">
-            Bookings
-        </NavLink>
-
-        <NavLink class="nav-item" href="/Account/Profile">
-            Profile
-        </NavLink>
-
-    </nav>
-
-    <!--Website controls: search and settings-->
-    <div class="nav-controls">
-        <div class="nav-search">
-            <input type="text" placeholder="🔍 search sports..." class="search-input" />
+        <div class="nav-auth">
+            <AuthorizeView>
+                <Authorized>
+                    <button class="nav-settings" @onclick="ToggleSidePanel">⚙️ Settings</button>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="Account/Login" class="auth-link">Login</a>
+                    <a href="Account/Register" class="auth-link register-btn">Register</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
-
-        <button class="nav-settings" @onclick="ToggleSidePanel">
-            ⚙️ Settings
-        </button>
-    </div>
+    </nav>
 </div>
 
-<div class="side-panel @(isPanelOpen ? "panel-open" : "")">
-
-    <div class="panel-header">
-        <h3>⚙️ Settings</h3>
-        <button class="close-panel" @onclick="ToggleSidePanel">×</button>
-    </div>
-
+<div class="side-panel @(isPanelOpen ? "open" : "")">
+    <button class="close-panel" @onclick="ToggleSidePanel">×</button>
     <div class="panel-content">
         <AuthorizeView>
             <Authorized>
-                <p>Welcome, @fullName!</p>
-                <a href="Account/Profile" class="panel-link">My Profile</a>
-                <a href="Account/Logout" class="panel-link logout">Logout</a>
+                <p class="welcome-text">Welcome, @fullName!</p>
+                <a href="Account/Profile" class="panel-link">👤 My Profile</a>
+                <a href="Account/Logout" class="panel-link logout-link">🚪 Logout</a>
             </Authorized>
-            <NotAuthorized>
-                <p>Please log in to continue.</p>
-                <a href="Account/Login" class="panel-link">Login</a>
-                <a href="Account/Register" class="panel-link">Register</a>
-            </NotAuthorized>
         </AuthorizeView>
     </div>
 </div>
 
-@if (isPanelOpen)
-{
-    <div class="backdrop" @onclick="ToggleSidePanel"></div>
-}
+<div class="overlay @(isPanelOpen ? "active" : "")" @onclick="ToggleSidePanel"></div>
 
 @code {
     private bool isPanelOpen = false;
+
     private void ToggleSidePanel()
     {
         isPanelOpen = !isPanelOpen;
@@ -90,12 +63,9 @@
         var authState = await authenticationStateTask;
         var user = authState.User;
 
-        // Check if user is logged in
         if (user.Identity is not null && user.Identity.IsAuthenticated)
         {
-            // Fetch the full user details from the Database using UserManager
             var currentUser = await UserManager.GetUserAsync(user);
-
             if (currentUser != null)
             {
                 fullName = $"{currentUser.FirstName} {currentUser.LastName}";

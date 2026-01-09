@@ -2,20 +2,20 @@
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize]
 @inject NavigationManager NavigationManager
+@implements IDisposable
 
 <PageTitle>Logout</PageTitle>
 
 <div class="logout-backdrop">
     <div class="logout-window">
-        
         <h2>Logout</h2>
         <p>Are you sure you want to log out?</p>
 
         <div class="logout-actions">
-            <form action="/Account/Logout" method="post" class="form-inline">
+
+            <form action="/Account/Logout" method="post">
                 <AntiforgeryToken />
                 <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                
                 <button type="submit" class="btn-logout">
                     Logout
                 </button>
@@ -25,15 +25,15 @@
                 Cancel
             </button>
         </div>
-
     </div>
 </div>
 
 @code {
     private string? currentUrl;
+
     protected override void OnInitialized()
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.BaseUri);
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
     }
 
@@ -50,7 +50,6 @@
 
     private void CancelOperation()
     {
-        NavigationManager.NavigateTo("/bookings");
+        NavigationManager.NavigateTo("/account/profile");
     }
-
 }

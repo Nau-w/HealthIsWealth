@@ -1,38 +1,93 @@
-﻿@page "/bookings"
+﻿@page "/Bookings"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
-@implements IAsyncDisposable
+@using System.Security.Claims
+
+@* 1. INJECT FACTORY ONLY *@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject AuthenticationStateProvider AuthStateProvider
 @attribute [Authorize]
-<PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
+<PageTitle>My Bookings</PageTitle>
 
-<p>
-    <a href="bookings/create">Create New</a>
-</p>
+<div class="bookings-container">
+    <div class="page-header">
+        <h1>Upcoming Bookings</h1>
+    </div>
 
-<QuickGrid Class="table" Items="context.Booking">
-    <PropertyColumn Property="booking => booking.UserId" />
-    <PropertyColumn Property="booking => booking.TimeslotId" />
+    @if (isLoading)
+    {
+        <p>Loading your bookings...</p>
+    }
+    else if (myBookings == null || !myBookings.Any())
+    {
+        <div class="empty-state">
+            <p>You haven't made any bookings yet.</p>
+            <a href="Venues" class="btn-create">Browse Venues</a>
+        </div>
+    }
+    else
+    {
+        <div class="booking-list">
+            @foreach (var item in myBookings)
+            {
+                <div class="booking-card">
+                    <div class="card-image">
+                        <span>📅</span>
+                    </div>
 
-    <TemplateColumn Context="booking">
-        <a href="@($"bookings/edit?bookingid={booking.BookingId}")">Edit</a> |
-        <a href="@($"bookings/details?bookingid={booking.BookingId}")">Details</a> |
-        <a href="@($"bookings/delete?bookingid={booking.BookingId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+                    <div class="card-details">
+                        <p>
+                            <strong>Location:</strong> @(item.Timeslot?.Venue?.Address ?? "Location info unavailable")
+                        </p>
+                        <p>
+                            <strong>Date:</strong> @(item.Timeslot?.StartDT.ToLongDateString() ?? "Date unavailable")
+                        </p>
+                        <p>
+                            <strong>Timeslot:</strong> @(item.Timeslot?.StartDT.ToString("HH:mm") ?? "--") to @(item.Timeslot?.EndDT.ToString("HH:mm") ?? "--")
+                        </p>
+                    </div>
+
+                    <div class="card-actions">
+                        <a href="@($"bookings/details?bookingid={item.BookingId}")" class="btn-details">
+                            View Details
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-    private HealthIsWealthContext context = default!;
+    private List<Booking> myBookings = new();
+    private bool isLoading = true;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
-    }
+        // 1. Get the User's ID from the browser cookie (Claims)
+        // This is instant and does NOT touch the database.
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(c => c.Type.Contains("nameidentifier"))?.Value;
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+        if (userId != null)
+        {
+            // 2. Open a temporary, isolated connection just for this query
+            using var context = DbFactory.CreateDbContext();
+
+            // 3. Run the query safely
+            myBookings = await context.Booking
+                .Include(b => b.Timeslot)
+                    .ThenInclude(t => t.Venue)
+                .Where(b => b.UserId == userId) // Use the String ID directly
+                .OrderByDescending(b => b.Timeslot.StartDT)
+                .ToListAsync();
+        }
+
+        isLoading = false;
+    }
+    // No DisposeAsync needed because we used 'using var context' above!
 }

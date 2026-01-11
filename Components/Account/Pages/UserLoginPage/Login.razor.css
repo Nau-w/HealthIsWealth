@@ -147,11 +147,8 @@ h6 {
 /* --- INPUT BOX (GLASS STYLE) --- */
 .form-control {
     width: 100%;
-    padding: 12px 16px; /* Comfortable padding */
-    background: rgba(255, 255, 255, 0.15); /* More transparent for better glass effect */
-    backdrop-filter: blur(10px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 12px 16px;
+    border: 1px solid white;
     border-radius: 12px;
     font-size: 1rem;
     color: #ffffff;
@@ -159,18 +156,15 @@ h6 {
 }
 
     .form-control::placeholder {
-        color: rgba(255, 255, 255, 0.5); /* Semi-transparent placeholder */
+        color: rgba(255, 255, 255, 0.5);
     }
 
     .form-control:focus {
         outline: none;
-        background: rgba(255, 255, 255, 0.25); /* Slightly brighter on focus */
-        border-color: rgba(255, 255, 255, 0.6);
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        border-color: #ffffff;
         color: #ffffff;
     }
 
-/* --- CHECKBOX & EXTRAS --- */
 .checkbox-wrapper {
     margin-bottom: 20px;
     padding-left: 5px;
@@ -181,10 +175,4 @@ h6 {
     height: 18px;
     margin-right: 8px;
     cursor: pointer;
-}
-
-.form-label {
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: white;
 }

@@ -16,10 +16,10 @@
 
 <PageTitle>HealthIsWealth | Register</PageTitle>
 
-<div class="login-backdrop">
-    <div class="login-window">
+<div class="register-backdrop">
+    <div class="register-window">
 
-        <a href="/" class="btn-close-login">×</a>
+        <a href="/" class="btn-close-register">×</a>
 
         <h1>HealthIsWealth</h1>
         <h6>Create a new account</h6>
@@ -30,48 +30,56 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
 
-            <div class="row g-2 mb-3">
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <InputText @bind-Value="Input.FirstName" class="form-control" placeholder="First Name" />
-                        <label>First Name</label>
-                        <ValidationMessage For="() => Input.FirstName" class="text-danger" />
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="form-floating">
-                        <InputText @bind-Value="Input.LastName" class="form-control" placeholder="Last Name" />
-                        <label>Last Name</label>
-                        <ValidationMessage For="() => Input.LastName" class="text-danger" />
-                    </div>
-                </div>
+            <div class="input-wrapper">
+                    <InputText @bind-Value="Input.FirstName"
+                               class="form-control"
+                               placeholder="First Name" />
+                    <ValidationMessage For="() => Input.FirstName" class="text-danger" />
             </div>
 
-            <div class="form-floating">
-                <InputText @bind-Value="Input.ContactNumber" class="form-control" placeholder="Contact Number" />
-                <label>Contact Number</label>
+            <div class="input-wrapper">
+                    <InputText @bind-Value="Input.LastName"
+                               class="form-control"
+                               placeholder="Last Name" />
+                    <ValidationMessage For="() => Input.LastName" class="text-danger" />
+            </div>
+
+            <div class="input-wrapper">
+                <InputText @bind-Value="Input.ContactNumber"
+                           class="form-control" 
+                           placeholder="Contact Number" />
                 <ValidationMessage For="() => Input.ContactNumber" class="text-danger" />
             </div>
 
-            <div class="form-floating">
-                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
-                <label for="email">Email</label>
+            <div class="input-wrapper">
+                <InputText @bind-Value="Input.Email" 
+                           class="form-control"
+                           aria-required="true"
+                           placeholder="name@example.com" />
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
 
-            <div class="form-floating">
-                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="password">Password</label>
+            <div class="input-wrapper">
+                <InputText type="password" 
+                           @bind-Value="Input.Password"
+                           class="form-control" 
+                           autocomplete="new-password" 
+                           aria-required="true" 
+                           placeholder="password" />
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
 
-            <div class="form-floating">
-                <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="confirm-password">Confirm Password</label>
+            <div class="input-wrapper">
+                <InputText type="password" 
+                           @bind-Value="Input.ConfirmPassword" 
+                           class="form-control" 
+                           autocomplete="new-password" 
+                           aria-required="true" 
+                           placeholder="password" />
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
 
-            <button type="submit" class="btn btn-lg btn-primary">Register</button>
+            <button type="submit" class="btn-primary">Register</button>
 
             <div class="login-links">
                 <p>

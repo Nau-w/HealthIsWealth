@@ -1,6 +1,9 @@
 .page {
+    background-image: url('/Images/backgroundImage.jpg');
     min-height: 100vh;
-    background-color: #f0ecfa;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 
 main {

@@ -6,6 +6,7 @@
 @using HealthIsWealth.Data
 
 @inject SignInManager<HealthIsWealthUser> SignInManager
+@inject UserManager<HealthIsWealthUser> UserManager
 @inject ILogger<Login> Logger
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
@@ -26,19 +27,28 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
 
-            <div class="form-floating">
-                <InputText @bind-Value="Input.Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+            <div class="input-wrapper">
                 <label for="email">Email</label>
+                <InputText @bind-Value="Input.Email"
+                           class="form-control"
+                           autocomplete="username"
+                           aria-required="true"
+                           placeholder="name@example.com" />
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
 
-            <div class="form-floating">
-                <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true" placeholder="password" />
+            <div class="input-wrapper">
                 <label for="password">Password</label>
+                <InputText type="password"
+                           @bind-Value="Input.Password"
+                           class="form-control"
+                           autocomplete="current-password"
+                           aria-required="true"
+                           placeholder="password" />
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
 
-            <div class="checkbox mb-3">
+            <div class="checkbox-wrapper">
                 <label class="form-label">
                     <InputCheckbox @bind-Value="Input.RememberMe" class="form-check-input" />
                     Remember me
@@ -78,11 +88,20 @@
         }
     }
 
-
-
     public async Task LoginUser()
     {
-        var result = await SignInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        // 1. Look up the user by their EMAIL first
+        var user = await UserManager.FindByEmailAsync(Input.Email);
+
+        if (user == null)
+        {
+            errorMessage = "Error: User not found.";
+            return;
+        }
+
+        // 2. Now sign in using the correct UserName found in the database
+        var result = await SignInManager.PasswordSignInAsync(user.UserName!, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+
         if (result.Succeeded)
         {
             Logger.LogInformation("User logged in.");
@@ -94,9 +113,13 @@
                 "Account/LoginWith2fa",
                 new() { ["returnUrl"] = ReturnUrl, ["rememberMe"] = Input.RememberMe });
         }
+        else if (result.IsLockedOut)
+        {
+            errorMessage = "Error: This account has been locked out.";
+        }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            errorMessage = "Error: Invalid login attempt (Wrong password).";
         }
     }
 

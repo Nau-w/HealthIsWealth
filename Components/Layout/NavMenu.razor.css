@@ -14,8 +14,8 @@
     top: 0;
     left: 0;
     right: 0;
-    padding: 20px 40px;
-    background-color: white;
+    padding: 10px 40px;
+    background-color: #cccccc;
     z-index: 1000;
 }
 
@@ -31,9 +31,12 @@
 .nav-branding {
     margin: 0;
     font-size: 1.5rem;
-    color: #9f81dc;
+    color: #652bd4;
     font-weight: 700;
     letter-spacing: -0.5px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
 /* Navigation Links */
@@ -48,23 +51,27 @@ nav a {
 }
 
     nav a:hover {
-        color: #9f81dc;
-        background-color: #e2e2e2;
+        box-shadow: 10px 10px 5px rgba(0,0,0,0.3);
+        background-color: #f6f6f6;
+        color: #652bd4;
+        transition: 0.5s;
     }
 
 /* Search Input */
 .search-input {
-    padding: 8px 16px;
+    padding: 8px 12px;
     border: 2px solid #b5b5b5;
     border-radius: 5px;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    height: 35px;
     width: 200px;
     outline: none;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
     .search-input:focus {
-        border-color: #9f81dc;
+        box-shadow: 10px 10px 5px rgba(0,0,0,0.3);
+        border-color: #652bd4;
+        transition: 0.5s;
     }
 
     .search-input::placeholder {
@@ -80,31 +87,36 @@ nav a {
 
 /* Auth Links (Login/Register) */
 .auth-link {
-    padding: 10px 20px;
+    height: 35px;
+    line-height: 35px;
+    color: black;
+    text-decoration: none;
     font-size: 1rem;
     font-weight: 500;
-    border-radius: 5px;
-    transition: 0.2s;
-    border: 2px solid #b5b5b5;
-    color: black;
+    padding: 0 15px;
+    border-radius: 4px;
 }
 
     .auth-link:hover {
-        background-color: #e2e2e2;
-        border-color: #9f81dc;
-        color: #9f81dc;
+        box-shadow: 10px 10px 5px rgba(0,0,0,0.3);
+        background-color: #f6f6f6;
+        color: #652bd4;
+        transition: 0.5s;
     }
 
 .register-btn {
-    background-color: #9f81dc;
+    background-color: #652bd4;
     color: #ffffff;
-    border-color: #9f81dc;
+    text-align: center;
+    height: 35px;
+    line-height: 35px;
+    padding: 0 15px;
+    border-radius: 4px;
 }
 
     .register-btn:hover {
-        background-color: #c8b8ec;
-        border-color: #c8b8ec;
-        color: #ffffff;
+        background-color: #9f81dc;
+        color: #ffffff
     }
 
 /* Settings Button */

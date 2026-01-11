@@ -8,22 +8,19 @@
 
 <div class="logout-backdrop">
     <div class="logout-window">
-        <h2>Logout</h2>
-        <p>Are you sure you want to log out?</p>
+        <h1>Logout</h1>
+        <h6>Are you sure you want to log out?</h6>
 
         <div class="logout-actions">
+            <a href="/" class="btn-cancel">Cancel</a>
 
             <form action="/Account/Logout" method="post">
                 <AntiforgeryToken />
                 <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                <button type="submit" class="btn-logout">
+                <button type="submit" class="btn-primary">
                     Logout
                 </button>
             </form>
-
-            <button class="btn-cancel" @onclick="CancelOperation">
-                Cancel
-            </button>
         </div>
     </div>
 </div>
@@ -46,10 +43,5 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
-    }
-
-    private void CancelOperation()
-    {
-        NavigationManager.NavigateTo("/account/profile");
     }
 }

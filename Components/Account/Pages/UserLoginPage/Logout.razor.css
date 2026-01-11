@@ -4,85 +4,86 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background-color: rgba(0, 0, 0, 0.2);
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999 !important;
+    z-index: 9998;
 }
 
 .logout-window {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.1);
     padding: 40px;
-    width: 420px;
-    border-radius: 20px;
-    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    text-align: center;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 25px;
     display: flex;
     flex-direction: column;
-    gap: 25px;
-    opacity: 1;
+    gap: 15px;
+    position: relative;
 }
 
-    .logout-window h2 {
-        margin: 0;
-        color: white;
-        font-size: 1.5rem;
-        font-weight: 600;
-        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
+h1 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+h6 {
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 500;
+    color: #bdbdbd;
+    margin-bottom: 5px;
+}
 
 .logout-actions {
     display: flex;
-    gap: 15px;
-    justify-content: space-between;
+    flex-direction: row;
+    padding: 5px;
     width: 100%;
+    margin-top: 20px;
 }
 
-    .logout-actions form {
-        flex: 1;
-        display: flex;
-    }
-
-.btn-logout {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
+.btn-primary {
+    width: 180px;
+    padding: 10px;
+    background: rgba(255, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    font-size: 1.1rem;
     font-weight: 600;
-    font-size: 1rem;
-    width: 100%;
-    transition: 0.2s;
+    cursor: pointer;
+    transition: 0.3s;
 }
 
-    .btn-logout:hover {
-        background-color: #bb2d3b;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+    .btn-primary:hover {
+        background: rgba(255, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
     }
 
 .btn-cancel {
-    background-color: rgba(255, 255, 255, 0.9);
-    color: #333;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    padding: 12px 24px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
+    width: 180px;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
     font-size: 1rem;
-    flex: 1;
-    transition: 0.2s;
+    font-weight: 600;
+    color: white;
+    transition: 0.3s;
 }
 
     .btn-cancel:hover {
-        background-color: white;
-        border-color: #9f81dc;
-        color: #9f81dc;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(159, 129, 220, 0.3);
+        background: rgba(255, 255, 255, 0.6);
+        color: white;
     }

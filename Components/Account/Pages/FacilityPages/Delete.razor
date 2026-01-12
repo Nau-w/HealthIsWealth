@@ -26,12 +26,16 @@
             <dd class="col-sm-10">@facility.Location</dd>
         </dl>
         <dl class="row">
+            <dt class="col-sm-2">Price</dt>
+            <dd class="col-sm-10">@facility.Price</dd>
+        </dl>
+        <dl class="row">
             <dt class="col-sm-2">VenueId</dt>
             <dd class="col-sm-10">@facility.VenueId</dd>
         </dl>
         <dl class="row">
-            <dt class="col-sm-2">Price</dt>
-            <dd class="col-sm-10">@facility.Price</dd>
+            <dt class="col-sm-2">FacilitySportId</dt>
+            <dd class="col-sm-10">@facility.FacilitySportId</dd>
         </dl>
         <EditForm method="post" Model="facility" OnValidSubmit="DeleteFacility" FormName="delete" Enhance>
             <button type="submit" class="btn btn-danger" disabled="@(facility is null)">Delete</button> |

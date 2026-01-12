@@ -14,7 +14,12 @@ namespace HealthIsWealth.Configurations.Entities
                 {
                     FacilitySportId = 1,
                     SportId = 1,
-                    FacilityId = 1,
+                    VenueId = 1
+                },
+                new FacilitySport
+                {
+                    FacilitySportId = 2,
+                    SportId = 2,
                     VenueId = 1
                 }
             );

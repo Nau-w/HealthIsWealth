@@ -12,9 +12,18 @@ namespace HealthIsWealth.Configurations.Entities
                 new Facility
                 {
                     FacilityId = 1,
-                    Name = "Badminton Court",
+                    Name = "Multipurpose Hall",
                     Location = "Hall A",
-                    VenueId = 1
+                    VenueId = 1,
+                    FacilitySportId = 1
+                },
+                new Facility
+                {
+                    FacilityId = 2,
+                    Name = "Multipurpose Hall",
+                    Location = "Hall A",
+                    VenueId = 1,
+                    FacilitySportId = 2
                 }
             );
         }

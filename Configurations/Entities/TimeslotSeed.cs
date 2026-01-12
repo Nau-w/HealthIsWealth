@@ -22,7 +22,7 @@ namespace HealthIsWealth.Configurations.Entities
                     TimeslotId = 2,
                     StartDT = new DateTime(2024, 7, 1, 10, 0, 0),
                     EndDT = new DateTime(2024, 7, 1, 11, 0, 0),
-                    FacilityId = 1,
+                    FacilityId = 2,
                     VenueId = 1
                 },
                 new Timeslot
@@ -30,7 +30,7 @@ namespace HealthIsWealth.Configurations.Entities
                     TimeslotId = 3,
                     StartDT = new DateTime(2024, 7, 1, 11, 0, 0),
                     EndDT = new DateTime(2024, 7, 1, 12, 0, 0),
-                    FacilityId = 1,
+                    FacilityId = 2,
                     VenueId = 1
                 }
             );

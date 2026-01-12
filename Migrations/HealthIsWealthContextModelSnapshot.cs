@@ -97,7 +97,7 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "0080d5da-d0b2-494a-bc57-0de1cd36c67a",
+                            ConcurrencyStamp = "bf953795-bd5d-4b22-9134-0baee0686f76",
                             Email = "test1@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "test",
@@ -105,9 +105,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST1@GMAIL.COM",
                             NormalizedUserName = "TEST1@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAnCf6Hqm7gNqSKT8EWw/VsAj/sJp4Re4Kute4QBL++d1qyIsX58L92TFRlI3Rx2uA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMxbXB0jSVgc8zZACNUNDNSmKYUxtXyzZR8d4GwDKfySyO3HLsPI9EvfqznAkw/ATg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "418af3a3-783b-4764-8d05-76a61f4e1870",
+                            SecurityStamp = "0f991472-fbb0-4220-a597-9e884fd1def7",
                             TwoFactorEnabled = false,
                             UserName = "test1@gmail.com"
                         },
@@ -115,7 +115,7 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f515bfdf-b62a-49da-8253-11bb8e7fcf01",
+                            ConcurrencyStamp = "07dab716-d0c2-40e7-9b0b-f297d839d68e",
                             Email = "test2@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "test",
@@ -123,9 +123,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST2@GMAIL.COM",
                             NormalizedUserName = "TEST2@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIJFgoZ246VkwqKxSSfht02rFzGIik2tLvb4puwDIbkxJN9P+vgdaf7WFQinrlSkrw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIBb4FXdK/P8Y24p+VW4rtrgFy6NTKCP8dus1sDEstUgPEe8S/bY5OPtjgCspMKjlw==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "13021c33-1e93-4d51-a580-7b67da511081",
+                            SecurityStamp = "61913ab8-8bd7-4ded-8b18-822b90ac35e9",
                             TwoFactorEnabled = false,
                             UserName = "test2@gmail.com"
                         });
@@ -182,6 +182,9 @@ namespace HealthIsWealth.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilityId"));
 
+                    b.Property<int>("FacilitySportId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
@@ -196,6 +199,8 @@ namespace HealthIsWealth.Migrations
 
                     b.HasKey("FacilityId");
 
+                    b.HasIndex("FacilitySportId");
+
                     b.HasIndex("VenueId");
 
                     b.ToTable("Facility");
@@ -204,8 +209,18 @@ namespace HealthIsWealth.Migrations
                         new
                         {
                             FacilityId = 1,
+                            FacilitySportId = 1,
                             Location = "Hall A",
-                            Name = "Badminton Court",
+                            Name = "Multipurpose Hall",
+                            Price = 0f,
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilityId = 2,
+                            FacilitySportId = 2,
+                            Location = "Hall A",
+                            Name = "Multipurpose Hall",
                             Price = 0f,
                             VenueId = 1
                         });
@@ -219,9 +234,6 @@ namespace HealthIsWealth.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilitySportId"));
 
-                    b.Property<int>("FacilityId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SportId")
                         .HasColumnType("int");
 
@@ -229,8 +241,6 @@ namespace HealthIsWealth.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("FacilitySportId");
-
-                    b.HasIndex("FacilityId");
 
                     b.HasIndex("SportId");
 
@@ -242,8 +252,13 @@ namespace HealthIsWealth.Migrations
                         new
                         {
                             FacilitySportId = 1,
-                            FacilityId = 1,
                             SportId = 1,
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 2,
+                            SportId = 2,
                             VenueId = 1
                         });
                 });
@@ -325,8 +340,14 @@ namespace HealthIsWealth.Migrations
                         new
                         {
                             SportId = 1,
-                            Description = "Court game",
+                            Description = "Badminton is a fast-paced racket sport where players hit a shuttlecock (or birdie) over a net, aiming to land it in the opponent's court, playable in singles (one-on-one) or doubles (two-on-two).",
                             Name = "Badminton"
+                        },
+                        new
+                        {
+                            SportId = 2,
+                            Description = "Basketball is a fast-paced, popular team sport where two teams of five players score by shooting a ball through an elevated hoop, using dribbling, passing, and shooting on a rectangular court, aiming to outscore opponents within timed periods.",
+                            Name = "Basketball"
                         });
                 });
 
@@ -371,7 +392,7 @@ namespace HealthIsWealth.Migrations
                         {
                             TimeslotId = 2,
                             EndDT = new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified),
-                            FacilityId = 1,
+                            FacilityId = 2,
                             StartDT = new DateTime(2024, 7, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
                             VenueId = 1
                         },
@@ -379,7 +400,7 @@ namespace HealthIsWealth.Migrations
                         {
                             TimeslotId = 3,
                             EndDT = new DateTime(2024, 7, 1, 12, 0, 0, 0, DateTimeKind.Unspecified),
-                            FacilityId = 1,
+                            FacilityId = 2,
                             StartDT = new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified),
                             VenueId = 1
                         });
@@ -568,23 +589,25 @@ namespace HealthIsWealth.Migrations
 
             modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
                 {
+                    b.HasOne("HealthIsWealth.Domain.FacilitySport", "FacilitySport")
+                        .WithMany()
+                        .HasForeignKey("FacilitySportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
                         .WithMany()
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.Navigation("FacilitySport");
+
                     b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.FacilitySport", b =>
                 {
-                    b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
-                        .WithMany()
-                        .HasForeignKey("FacilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("HealthIsWealth.Domain.Sport", "Sport")
                         .WithMany()
                         .HasForeignKey("SportId")
@@ -596,8 +619,6 @@ namespace HealthIsWealth.Migrations
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("Facility");
 
                     b.Navigation("Sport");
 

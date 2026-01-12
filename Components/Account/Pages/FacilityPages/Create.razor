@@ -26,14 +26,19 @@
                 <ValidationMessage For="() => Facility.Location" class="text-danger" /> 
             </div>        
             <div class="mb-3">
+                <label for="price" class="form-label">Price:</label> 
+                <InputNumber id="price" @bind-Value="Facility.Price" class="form-control" /> 
+                <ValidationMessage For="() => Facility.Price" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
                 <label for="venueid" class="form-label">VenueId:</label> 
                 <InputNumber id="venueid" @bind-Value="Facility.VenueId" class="form-control" /> 
                 <ValidationMessage For="() => Facility.VenueId" class="text-danger" /> 
             </div>        
             <div class="mb-3">
-                <label for="price" class="form-label">Price:</label> 
-                <InputNumber id="price" @bind-Value="Facility.Price" class="form-control" /> 
-                <ValidationMessage For="() => Facility.Price" class="text-danger" /> 
+                <label for="facilitysportid" class="form-label">FacilitySportId:</label> 
+                <InputNumber id="facilitysportid" @bind-Value="Facility.FacilitySportId" class="form-control" /> 
+                <ValidationMessage For="() => Facility.FacilitySportId" class="text-danger" /> 
             </div>        
             <button type="submit" class="btn btn-primary">Create</button>
         </EditForm>

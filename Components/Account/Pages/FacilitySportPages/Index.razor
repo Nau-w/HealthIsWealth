@@ -1,38 +1,60 @@
-﻿@page "/facilitysports"
+﻿@page "/facilitysports/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
-
-<PageTitle>Index</PageTitle>
-
-<h1>Index</h1>
-
-<p>
-    <a href="facilitysports/create">Create New</a>
-</p>
-
-<QuickGrid Class="table" Items="context.FacilitySport">
-    <PropertyColumn Property="facilitysport => facilitysport.SportId" />
-    <PropertyColumn Property="facilitysport => facilitysport.FacilityId" />
-    <PropertyColumn Property="facilitysport => facilitysport.VenueId" />
-
-    <TemplateColumn Context="facilitysport">
-        <a href="@($"facilitysports/edit?facilitysportid={facilitysport.FacilitySportId}")">Edit</a> |
-        <a href="@($"facilitysports/details?facilitysportid={facilitysport.FacilitySportId}")">Details</a> |
-        <a href="@($"facilitysports/delete?facilitysportid={facilitysport.FacilitySportId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
 @code {
-    private HealthIsWealthContext context = default!;
+    [Parameter]
+    public int Id { get; set; }
 
-    protected override void OnInitialized()
+    private HealthIsWealthContext dbContext = default!;
+
+    private List<FacilitySport>? viewFacilitySport;
+
+    protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
-    }
+        dbContext = DbFactory.CreateDbContext();
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            if (userId != null)
+            {
+                viewFacilitySport = await dbContext.FacilitySport
+                    .Include(fs => fs.Sport)
+                    .Where(fs => fs.FacilitySportId == Id)
+                    .ToListAsync();
+            }
+        }
+    }
+    public async ValueTask DisposeAsync() => await dbContext.DisposeAsync();
 }
+
+<PageTitle>HealthIsWealth | Facility Sport</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    @if (viewFacilitySport != null && viewFacilitySport.Any())
+    {
+        var item = viewFacilitySport.First();
+
+        <p><strong>Description:</strong> @item.Sport?.Description</p>
+
+        <p><strong>Sport Name:</strong> @item.Sport?.Name</p>
+    }
+    else
+    {
+        <p><em>Loading details...</em></p>
+    }
+</div>

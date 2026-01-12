@@ -1,8 +1,12 @@
 ﻿@page "/bookings/create"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
+
+
+@attribute [Authorize("Administrator")]
 
 <PageTitle>Create</PageTitle>
 

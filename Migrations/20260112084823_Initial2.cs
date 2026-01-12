@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthIsWealth.Migrations
 {
     /// <inheritdoc />
-    public partial class CascadeInital : Migration
+    public partial class Initial2 : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -190,46 +190,17 @@ namespace HealthIsWealth.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Facility",
-                columns: table => new
-                {
-                    FacilityId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VenueId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<float>(type: "real", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Facility", x => x.FacilityId);
-                    table.ForeignKey(
-                        name: "FK_Facility_Venue_VenueId",
-                        column: x => x.VenueId,
-                        principalTable: "Venue",
-                        principalColumn: "VenueId",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "FacilitySport",
                 columns: table => new
                 {
                     FacilitySportId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     SportId = table.Column<int>(type: "int", nullable: false),
-                    FacilityId = table.Column<int>(type: "int", nullable: false),
                     VenueId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_FacilitySport", x => x.FacilitySportId);
-                    table.ForeignKey(
-                        name: "FK_FacilitySport_Facility_FacilityId",
-                        column: x => x.FacilityId,
-                        principalTable: "Facility",
-                        principalColumn: "FacilityId",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FacilitySport_Sport_SportId",
                         column: x => x.SportId,
@@ -240,9 +211,36 @@ namespace HealthIsWealth.Migrations
                         name: "FK_FacilitySport_Venue_VenueId",
                         column: x => x.VenueId,
                         principalTable: "Venue",
-                        principalColumn: "VenueId",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "VenueId");
+                });
 
+            migrationBuilder.CreateTable(
+                name: "Facility",
+                columns: table => new
+                {
+                    FacilityId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<float>(type: "real", nullable: false),
+                    VenueId = table.Column<int>(type: "int", nullable: false),
+                    FacilitySportId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Facility", x => x.FacilityId);
+                    table.ForeignKey(
+                        name: "FK_Facility_FacilitySport_FacilitySportId",
+                        column: x => x.FacilitySportId,
+                        principalTable: "FacilitySport",
+                        principalColumn: "FacilitySportId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Facility_Venue_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venue",
+                        principalColumn: "VenueId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -269,8 +267,7 @@ namespace HealthIsWealth.Migrations
                         name: "FK_Timeslot_Venue_VenueId",
                         column: x => x.VenueId,
                         principalTable: "Venue",
-                        principalColumn: "VenueId",
-                        onDelete: ReferentialAction.NoAction);
+                        principalColumn: "VenueId");
                 });
 
             migrationBuilder.CreateTable(
@@ -330,14 +327,18 @@ namespace HealthIsWealth.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "0080d5da-d0b2-494a-bc57-0de1cd36c67a", "test1@gmail.com", true, "test", "1", false, null, "TEST1@GMAIL.COM", "TEST1@GMAIL.COM", "AQAAAAIAAYagAAAAEAnCf6Hqm7gNqSKT8EWw/VsAj/sJp4Re4Kute4QBL++d1qyIsX58L92TFRlI3Rx2uA==", null, false, "418af3a3-783b-4764-8d05-76a61f4e1870", false, "test1@gmail.com" },
-                    { "6d3d2829-89fa-4095-b0f9-0ef8e802fd69", 0, "f515bfdf-b62a-49da-8253-11bb8e7fcf01", "test2@gmail.com", true, "test", "2", false, null, "TEST2@GMAIL.COM", "TEST2@GMAIL.COM", "AQAAAAIAAYagAAAAEIJFgoZ246VkwqKxSSfht02rFzGIik2tLvb4puwDIbkxJN9P+vgdaf7WFQinrlSkrw==", null, false, "13021c33-1e93-4d51-a580-7b67da511081", false, "test2@gmail.com" }
+                    { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "bf953795-bd5d-4b22-9134-0baee0686f76", "test1@gmail.com", true, "test", "1", false, null, "TEST1@GMAIL.COM", "TEST1@GMAIL.COM", "AQAAAAIAAYagAAAAEMxbXB0jSVgc8zZACNUNDNSmKYUxtXyzZR8d4GwDKfySyO3HLsPI9EvfqznAkw/ATg==", null, false, "0f991472-fbb0-4220-a597-9e884fd1def7", false, "test1@gmail.com" },
+                    { "6d3d2829-89fa-4095-b0f9-0ef8e802fd69", 0, "07dab716-d0c2-40e7-9b0b-f297d839d68e", "test2@gmail.com", true, "test", "2", false, null, "TEST2@GMAIL.COM", "TEST2@GMAIL.COM", "AQAAAAIAAYagAAAAEIBb4FXdK/P8Y24p+VW4rtrgFy6NTKCP8dus1sDEstUgPEe8S/bY5OPtjgCspMKjlw==", null, false, "61913ab8-8bd7-4ded-8b18-822b90ac35e9", false, "test2@gmail.com" }
                 });
 
             migrationBuilder.InsertData(
                 table: "Sport",
                 columns: new[] { "SportId", "Description", "Name" },
-                values: new object[] { 1, "Court game", "Badminton" });
+                values: new object[,]
+                {
+                    { 1, "Badminton is a fast-paced racket sport where players hit a shuttlecock (or birdie) over a net, aiming to land it in the opponent's court, playable in singles (one-on-one) or doubles (two-on-two).", "Badminton" },
+                    { 2, "Basketball is a fast-paced, popular team sport where two teams of five players score by shooting a ball through an elevated hoop, using dribbling, passing, and shooting on a rectangular court, aiming to outscore opponents within timed periods.", "Basketball" }
+                });
 
             migrationBuilder.InsertData(
                 table: "Venue",
@@ -345,14 +346,22 @@ namespace HealthIsWealth.Migrations
                 values: new object[] { 1, "Sambawang", "123456", "01-1234" });
 
             migrationBuilder.InsertData(
-                table: "Facility",
-                columns: new[] { "FacilityId", "Location", "Name", "Price", "VenueId" },
-                values: new object[] { 1, "Hall A", "Badminton Court", 0f, 1 });
+                table: "FacilitySport",
+                columns: new[] { "FacilitySportId", "SportId", "VenueId" },
+                values: new object[,]
+                {
+                    { 1, 1, 1 },
+                    { 2, 2, 1 }
+                });
 
             migrationBuilder.InsertData(
-                table: "FacilitySport",
-                columns: new[] { "FacilitySportId", "FacilityId", "SportId", "VenueId" },
-                values: new object[] { 1, 1, 1, 1 });
+                table: "Facility",
+                columns: new[] { "FacilityId", "FacilitySportId", "Location", "Name", "Price", "VenueId" },
+                values: new object[,]
+                {
+                    { 1, 1, "Hall A", "Multipurpose Hall", 0f, 1 },
+                    { 2, 2, "Hall A", "Multipurpose Hall", 0f, 1 }
+                });
 
             migrationBuilder.InsertData(
                 table: "Timeslot",
@@ -360,8 +369,8 @@ namespace HealthIsWealth.Migrations
                 values: new object[,]
                 {
                     { 1, new DateTime(2024, 7, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), 1, new DateTime(2024, 7, 1, 9, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 2, new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified), 1, new DateTime(2024, 7, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), 1 },
-                    { 3, new DateTime(2024, 7, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), 1, new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified), 1 }
+                    { 2, new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified), 2, new DateTime(2024, 7, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), 1 },
+                    { 3, new DateTime(2024, 7, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), 2, new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified), 1 }
                 });
 
             migrationBuilder.InsertData(
@@ -434,14 +443,14 @@ namespace HealthIsWealth.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Facility_FacilitySportId",
+                table: "Facility",
+                column: "FacilitySportId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Facility_VenueId",
                 table: "Facility",
                 column: "VenueId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FacilitySport_FacilityId",
-                table: "FacilitySport",
-                column: "FacilityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FacilitySport_SportId",
@@ -493,16 +502,10 @@ namespace HealthIsWealth.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "FacilitySport");
-
-            migrationBuilder.DropTable(
                 name: "Review");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Sport");
 
             migrationBuilder.DropTable(
                 name: "Booking");
@@ -515,6 +518,12 @@ namespace HealthIsWealth.Migrations
 
             migrationBuilder.DropTable(
                 name: "Facility");
+
+            migrationBuilder.DropTable(
+                name: "FacilitySport");
+
+            migrationBuilder.DropTable(
+                name: "Sport");
 
             migrationBuilder.DropTable(
                 name: "Venue");

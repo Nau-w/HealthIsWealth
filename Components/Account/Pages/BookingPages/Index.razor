@@ -11,64 +11,9 @@
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
 
-<PageTitle>My Bookings</PageTitle>
-
-<h1>My Bookings</h1>
-
-<p>
-    <a href="bookings/create" class="btn btn-primary">Create New Booking</a>
-</p>
-
-@if (myBookings == null)
-{
-    <p><em>Loading your bookings...</em></p>
-}
-else if (!myBookings.Any())
-{
-    <p>You have no bookings yet.</p>
-}
-else
-{
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Sport / Facility</th>
-                <th>Location</th>
-                <th>Date & Time</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var booking in myBookings)
-            {
-                <tr>
-                    <td>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span>@booking.Timeslot?.Facility?.Name</span>
-                        </div>
-                    </td>
-                    <td>@booking.Timeslot?.Facility?.Location</td>
-                    <td>
-                        <div>@booking.Timeslot?.StartDT.ToString("dd MMM yyyy")</div>
-                        <small class="text-muted">
-                            @booking.Timeslot?.StartDT.ToString("hh:mm tt") - @booking.Timeslot?.EndDT.ToString("hh:mm tt")
-                        </small>
-                    </td>
-                    <td>
-                        <a href="@($"bookings/edit?bookingid={booking.BookingId}")">Edit</a> |
-                        <a href="/facilities">View Details</a> |
-                        <a href="@($"bookings/delete?bookingid={booking.BookingId}")">Delete</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
 @code {
     private HealthIsWealthContext dbContext = default!;
 
-    // Instead of IQueryable, we use a standard List
     private List<Booking>? myBookings;
 
     protected override async Task OnInitializedAsync()
@@ -84,16 +29,56 @@ else
 
             if (userId != null)
             {
-                // EXECUTE THE QUERY IMMEDIATELY using .ToListAsync()
                 myBookings = await dbContext.Booking
-                    .Include(b => b.Timeslot)
-                    .ThenInclude(t => t.Facility)
-                    .Where(b => b.UserId == userId)
-                    .OrderBy(b => b.Timeslot.StartDT) // Optional: Sort by date
-                    .ToListAsync(); // <--- This fetches the data into memory
+                    .Include(booking => booking.Timeslot)
+                    .ThenInclude(timeslot => timeslot.Facility)
+                    .ThenInclude(timeslot => timeslot.Venue)
+                    .Where(booking => booking.UserId == userId)
+                    .OrderBy(booking => booking.Timeslot.StartDT)
+                    .ToListAsync();
             }
         }
     }
-
     public async ValueTask DisposeAsync() => await dbContext.DisposeAsync();
 }
+<PageTitle>My Bookings</PageTitle>
+
+<div>
+    <div class="booking-text">
+        <h1>My Bookings</h1>
+    </div>
+</div>
+
+
+@if (myBookings == null)
+{
+    <p>Loading your bookings...</p>
+}
+else if (!myBookings.Any())
+{
+    <p>You have no bookings yet.</p>
+}
+else
+{
+
+    @foreach (var booking in myBookings)
+    {
+        <div class="bookings-float">
+            <img src=""/>
+            @booking.Timeslot.Facility.Name
+            @booking.Timeslot.Facility.Location <br>
+            @booking.Timeslot.Venue.Address <br>
+            @booking.Timeslot.Venue.PostalCode <br>
+            @booking.Timeslot.Venue.UnitNumber <br>
+            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") to @booking.Timeslot.EndDT.ToString("dd/MM/yyyy") <br> 
+
+            @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm")
+            (@((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours) Hours)
+            <a href="/facilitysports/@booking.Timeslot.Facility.FacilitySportId"> 
+                View Details
+            </a>
+        </div>
+        
+    }
+}
+

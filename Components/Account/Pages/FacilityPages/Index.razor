@@ -17,8 +17,9 @@
 <QuickGrid Class="table" Items="context.Facility">
     <PropertyColumn Property="facility => facility.Name" />
     <PropertyColumn Property="facility => facility.Location" />
-    <PropertyColumn Property="facility => facility.VenueId" />
     <PropertyColumn Property="facility => facility.Price" />
+    <PropertyColumn Property="facility => facility.VenueId" />
+    <PropertyColumn Property="facility => facility.FacilitySportId" />
 
     <TemplateColumn Context="facility">
         <a href="@($"facilities/edit?facilityid={facility.FacilityId}")">Edit</a> |

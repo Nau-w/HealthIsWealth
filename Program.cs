@@ -33,7 +33,7 @@ builder.Services.AddAuthentication(options =>
 })
     .AddIdentityCookies();
 
-builder.Services.AddIdentityCore<HealthIsWealthUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddIdentityCore<HealthIsWealthUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<HealthIsWealthContext>()
     .AddSignInManager()

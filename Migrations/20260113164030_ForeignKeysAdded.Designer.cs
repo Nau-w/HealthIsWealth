@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthIsWealth.Migrations
 {
     [DbContext(typeof(HealthIsWealthContext))]
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
     [Migration("20260113164030_ForeignKeysAdded")]
     partial class ForeignKeysAdded
+========
+    [Migration("20260112084823_Initial2")]
+    partial class Initial2
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -100,19 +105,50 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                             ConcurrencyStamp = "d7431560-2ab5-418a-a401-3c7ab63a2b67",
                             Email = "test1@localhost.com",
+========
+                            ConcurrencyStamp = "bf953795-bd5d-4b22-9134-0baee0686f76",
+                            Email = "test1@gmail.com",
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                             EmailConfirmed = true,
                             FirstName = "test",
                             LastName = "1",
                             LockoutEnabled = false,
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                             NormalizedEmail = "TEST1@LOCALHOST.COM",
                             NormalizedUserName = "TEST1@LOCALHOST.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEBvjQQLRoexESm131hreYf7/BJ7BKP3tBNPOAGA0XMJfL8Tua5c2KuGAzuE9YUeveA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "343ed21b-9d0b-49ee-97c7-b4028ad599e7",
+========
+                            NormalizedEmail = "TEST1@GMAIL.COM",
+                            NormalizedUserName = "TEST1@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMxbXB0jSVgc8zZACNUNDNSmKYUxtXyzZR8d4GwDKfySyO3HLsPI9EvfqznAkw/ATg==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "0f991472-fbb0-4220-a597-9e884fd1def7",
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                             TwoFactorEnabled = false,
-                            UserName = "test1@localhost.com"
+                            UserName = "test1@gmail.com"
+                        },
+                        new
+                        {
+                            Id = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "07dab716-d0c2-40e7-9b0b-f297d839d68e",
+                            Email = "test2@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "test",
+                            LastName = "2",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "TEST2@GMAIL.COM",
+                            NormalizedUserName = "TEST2@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEIBb4FXdK/P8Y24p+VW4rtrgFy6NTKCP8dus1sDEstUgPEe8S/bY5OPtjgCspMKjlw==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "61913ab8-8bd7-4ded-8b18-822b90ac35e9",
+                            TwoFactorEnabled = false,
+                            UserName = "test2@gmail.com"
                         });
                 });
 
@@ -128,9 +164,13 @@ namespace HealthIsWealth.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("BookingId");
+
+                    b.HasIndex("TimeslotId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Booking");
 
@@ -163,6 +203,9 @@ namespace HealthIsWealth.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilityId"));
 
+                    b.Property<int>("FacilitySportId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
@@ -177,9 +220,34 @@ namespace HealthIsWealth.Migrations
 
                     b.HasKey("FacilityId");
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
+========
+                    b.HasIndex("FacilitySportId");
+
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.HasIndex("VenueId");
 
                     b.ToTable("Facility");
+
+                    b.HasData(
+                        new
+                        {
+                            FacilityId = 1,
+                            FacilitySportId = 1,
+                            Location = "Hall A",
+                            Name = "Multipurpose Hall",
+                            Price = 0f,
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilityId = 2,
+                            FacilitySportId = 2,
+                            Location = "Hall A",
+                            Name = "Multipurpose Hall",
+                            Price = 0f,
+                            VenueId = 1
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.FacilitySport", b =>
@@ -190,19 +258,37 @@ namespace HealthIsWealth.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilitySportId"));
 
-                    b.Property<int>("FacilityId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SportId")
                         .HasColumnType("int");
 
                     b.HasKey("FacilitySportId");
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.HasIndex("FacilityId");
 
                     b.HasIndex("SportId");
 
+========
+                    b.HasIndex("SportId");
+
+                    b.HasIndex("VenueId");
+
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.ToTable("FacilitySport");
+
+                    b.HasData(
+                        new
+                        {
+                            FacilitySportId = 1,
+                            SportId = 1,
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 2,
+                            SportId = 2,
+                            VenueId = 1
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Review", b =>
@@ -223,9 +309,13 @@ namespace HealthIsWealth.Migrations
                         .HasColumnType("real");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ReviewId");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Review");
 
@@ -273,6 +363,20 @@ namespace HealthIsWealth.Migrations
                     b.HasKey("SportId");
 
                     b.ToTable("Sport");
+
+                    b.HasData(
+                        new
+                        {
+                            SportId = 1,
+                            Description = "Badminton is a fast-paced racket sport where players hit a shuttlecock (or birdie) over a net, aiming to land it in the opponent's court, playable in singles (one-on-one) or doubles (two-on-two).",
+                            Name = "Badminton"
+                        },
+                        new
+                        {
+                            SportId = 2,
+                            Description = "Basketball is a fast-paced, popular team sport where two teams of five players score by shooting a ball through an elevated hoop, using dribbling, passing, and shooting on a rectangular court, aiming to outscore opponents within timed periods.",
+                            Name = "Basketball"
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Timeslot", b =>
@@ -296,7 +400,38 @@ namespace HealthIsWealth.Migrations
 
                     b.HasIndex("FacilityId");
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
+========
+                    b.HasIndex("VenueId");
+
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.ToTable("Timeslot");
+
+                    b.HasData(
+                        new
+                        {
+                            TimeslotId = 1,
+                            EndDT = new DateTime(2024, 7, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacilityId = 1,
+                            StartDT = new DateTime(2024, 7, 1, 9, 0, 0, 0, DateTimeKind.Unspecified),
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            TimeslotId = 2,
+                            EndDT = new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacilityId = 2,
+                            StartDT = new DateTime(2024, 7, 1, 10, 0, 0, 0, DateTimeKind.Unspecified),
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            TimeslotId = 3,
+                            EndDT = new DateTime(2024, 7, 1, 12, 0, 0, 0, DateTimeKind.Unspecified),
+                            FacilityId = 2,
+                            StartDT = new DateTime(2024, 7, 1, 11, 0, 0, 0, DateTimeKind.Unspecified),
+                            VenueId = 1
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Venue", b =>
@@ -319,6 +454,15 @@ namespace HealthIsWealth.Migrations
                     b.HasKey("VenueId");
 
                     b.ToTable("Venue");
+
+                    b.HasData(
+                        new
+                        {
+                            VenueId = 1,
+                            Address = "Sambawang",
+                            PostalCode = "123456",
+                            UnitNumber = "01-1234"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -454,19 +598,55 @@ namespace HealthIsWealth.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
             modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
                 {
                     b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
                         .WithMany("Facilities")
+========
+            modelBuilder.Entity("HealthIsWealth.Domain.Booking", b =>
+                {
+                    b.HasOne("HealthIsWealth.Domain.Timeslot", "Timeslot")
+                        .WithMany()
+                        .HasForeignKey("TimeslotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthIsWealth.Data.HealthIsWealthUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Timeslot");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
+                {
+                    b.HasOne("HealthIsWealth.Domain.FacilitySport", "FacilitySport")
+                        .WithMany()
+                        .HasForeignKey("FacilitySportId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
+                        .WithMany()
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
+========
+                    b.Navigation("FacilitySport");
+
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.FacilitySport", b =>
                 {
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
                         .WithMany("FacilitySports")
                         .HasForeignKey("FacilityId")
@@ -475,24 +655,73 @@ namespace HealthIsWealth.Migrations
 
                     b.HasOne("HealthIsWealth.Domain.Sport", "Sport")
                         .WithMany("FacilitySports")
+========
+                    b.HasOne("HealthIsWealth.Domain.Sport", "Sport")
+                        .WithMany()
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                         .HasForeignKey("SportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.Navigation("Facility");
 
                     b.Navigation("Sport");
+========
+                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
+                        .WithMany()
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Sport");
+
+                    b.Navigation("Venue");
+                });
+
+            modelBuilder.Entity("HealthIsWealth.Domain.Review", b =>
+                {
+                    b.HasOne("HealthIsWealth.Domain.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthIsWealth.Data.HealthIsWealthUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Timeslot", b =>
                 {
                     b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                         .WithMany("Timeslots")
+========
+                        .WithMany()
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                         .HasForeignKey("FacilityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.Navigation("Facility");
+========
+                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
+                        .WithMany()
+                        .HasForeignKey("VenueId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Facility");
+
+                    b.Navigation("Venue");
+>>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

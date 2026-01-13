@@ -1,0 +1,89 @@
+﻿.logout-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9998;
+}
+
+.logout-window {
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    border-radius: 25px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    position: relative;
+}
+
+h1 {
+    font-size: 1.8rem;
+    text-align: center;
+    margin-bottom: 5px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+h6 {
+    font-size: 1rem;
+    text-align: center;
+    font-weight: 500;
+    color: #bdbdbd;
+    margin-bottom: 5px;
+}
+
+.logout-actions {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.btn-primary {
+    width: 180px;
+    padding: 10px;
+    background: rgba(255, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+    .btn-primary:hover {
+        background: rgba(255, 0, 0, 0.8);
+        backdrop-filter: blur(10px);
+        box-shadow: 1px 1px 10px rgba(0,0,0,0.1);
+    }
+
+.btn-cancel {
+    width: 180px;
+    text-align: center;
+    text-decoration: none;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    color: white;
+    transition: 0.3s;
+}
+
+    .btn-cancel:hover {
+        background: rgba(255, 255, 255, 0.6);
+        color: white;
+    }

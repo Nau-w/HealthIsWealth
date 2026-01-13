@@ -1,37 +1,84 @@
 ﻿@page "/bookings"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Identity
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
+
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
-
-<PageTitle>Index</PageTitle>
-
-<h1>Index</h1>
-
-<p>
-    <a href="bookings/create">Create New</a>
-</p>
-
-<QuickGrid Class="table" Items="context.Booking">
-    <PropertyColumn Property="booking => booking.UserId" />
-    <PropertyColumn Property="booking => booking.TimeslotId" />
-
-    <TemplateColumn Context="booking">
-        <a href="@($"bookings/edit?bookingid={booking.BookingId}")">Edit</a> |
-        <a href="@($"bookings/details?bookingid={booking.BookingId}")">Details</a> |
-        <a href="@($"bookings/delete?bookingid={booking.BookingId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
 
 @code {
-    private HealthIsWealthContext context = default!;
+    private HealthIsWealthContext dbContext = default!;
 
-    protected override void OnInitialized()
+    private List<Booking>? myBookings;
+
+    protected override async Task OnInitializedAsync()
     {
-        context = DbFactory.CreateDbContext();
-    }
+        dbContext = DbFactory.CreateDbContext();
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            if (userId != null)
+            {
+                myBookings = await dbContext.Booking
+                    .Include(booking => booking.Timeslot)
+                    .ThenInclude(timeslot => timeslot.Facility)
+                    .ThenInclude(timeslot => timeslot.Venue)
+                    .Where(booking => booking.UserId == userId)
+                    .OrderBy(booking => booking.Timeslot.StartDT)
+                    .ToListAsync();
+            }
+        }
+    }
+    public async ValueTask DisposeAsync() => await dbContext.DisposeAsync();
 }
+<PageTitle>My Bookings</PageTitle>
+
+<div>
+    <div class="booking-text">
+        <h1>My Bookings</h1>
+    </div>
+</div>
+
+
+@if (myBookings == null)
+{
+    <p>Loading your bookings...</p>
+}
+else if (!myBookings.Any())
+{
+    <p>You have no bookings yet.</p>
+}
+else
+{
+
+    @foreach (var booking in myBookings)
+    {
+        <div class="bookings-float">
+            <img src=""/>
+            @booking.Timeslot.Facility.Name
+            @booking.Timeslot.Facility.Location <br>
+            @booking.Timeslot.Venue.Address <br>
+            @booking.Timeslot.Venue.PostalCode <br>
+            @booking.Timeslot.Venue.UnitNumber <br>
+            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") to @booking.Timeslot.EndDT.ToString("dd/MM/yyyy") <br> 
+
+            @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm")
+            (@((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours) Hours)
+            <a href="/facilitysports/@booking.Timeslot.Facility.FacilitySportId"> 
+                View Details
+            </a>
+        </div>
+        
+    }
+}
+

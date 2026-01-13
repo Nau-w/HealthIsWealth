@@ -1,55 +1,64 @@
-﻿@implements IDisposable
+﻿@using Microsoft.AspNetCore.Identity
+@using HealthIsWealth.Data
+@using Microsoft.AspNetCore.Components.Routing
 @inject NavigationManager NavigationManager
-<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">HealthIsWealth</a>
-    </div>
-</div>
+@inject UserManager<HealthIsWealthUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<div>
+    <nav class="nav-bar">
+        <h3 class="nav-branding">HealthIsWealth</h3>
+        <ul>
+            <li><a href="">Home</a></li>
+            <li><a href="/Venues">Venues</a></li>
+            <li><a href="/Bookings">Bookings</a></li>
+            <li><a href="/Account/Profile">Profile</a></li>
+            <li><input type="text" class="search-input" placeholder="Search sports..." /></li>
+        </ul>
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="account/register">
-                Register Account
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="account/login">
-                Login Account
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="venues">
-                Venues
-            </NavLink>
+        <div class="nav-auth">
+            <AuthorizeView>
+                <Authorized>
+                    <button class="nav-settings" @onclick="ToggleSidePanel">Settings</button>
+                </Authorized>
+                <NotAuthorized>
+                    <a href="Account/Login" class="auth-link">Login</a>
+                    <a href="Account/Register" class="register-btn">Register</a>
+                </NotAuthorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>
 
+<div class="side-panel @(isPanelOpen ? "open" : "")">
+    <div class="panel-content">
+        <AuthorizeView>
+            <Authorized>
+                <a href="Account/Profile" class="panel-link">My Profile</a>
+                <a href="Account/Logout" class="panel-link logout-link">Logout</a>
+            </Authorized>
+        </AuthorizeView>
+    </div>
+</div>
+
+<div class="overlay @(isPanelOpen ? "active" : "")" @onclick="ToggleSidePanel"></div>
+
 @code {
-    private string? currentUrl;
-    protected override void OnInitialized()
+    private bool isPanelOpen = false;
+
+    private void ToggleSidePanel()
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
-        NavigationManager.LocationChanged += OnLocationChanged;
+        isPanelOpen = !isPanelOpen;
     }
 
-    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
-    {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
-        StateHasChanged();
-    }
+    private string fullName = "Loading...";
 
-    public void Dispose()
-    {
-        NavigationManager.LocationChanged -= OnLocationChanged;
-    }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
 
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateTask;
+        var user = authState.User;
+    }
 }

@@ -1,4 +1,6 @@
-﻿namespace HealthIsWealth.Domain
+﻿using HealthIsWealth.Data;
+
+namespace HealthIsWealth.Domain
 {
     public class Review
     {
@@ -7,5 +9,9 @@
         public string? Feedback { get; set; }
         public int BookingId { get; set; }
         public string? UserId { get; set; }
+
+        //Foreign Key
+        public Booking? Booking { get; set; }
+        public HealthIsWealthUser? User { get; set; }
     }
 }

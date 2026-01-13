@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthIsWealth.Migrations
 {
     /// <inheritdoc />
-    public partial class AddInitial : Migration
+    public partial class ForeignKeysAdded : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -69,37 +69,6 @@ namespace HealthIsWealth.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Facility",
-                columns: table => new
-                {
-                    FacilityId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VenueId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<float>(type: "real", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Facility", x => x.FacilityId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "FacilitySport",
-                columns: table => new
-                {
-                    FacilitySportId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    SportId = table.Column<int>(type: "int", nullable: false),
-                    FacilityId = table.Column<int>(type: "int", nullable: false),
-                    VenueId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_FacilitySport", x => x.FacilitySportId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Review",
                 columns: table => new
                 {
@@ -127,22 +96,6 @@ namespace HealthIsWealth.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Sport", x => x.SportId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Timeslot",
-                columns: table => new
-                {
-                    TimeslotId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    StartDT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    EndDT = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    FacilityId = table.Column<int>(type: "int", nullable: false),
-                    VenueId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Timeslot", x => x.TimeslotId);
                 });
 
             migrationBuilder.CreateTable(
@@ -266,10 +219,79 @@ namespace HealthIsWealth.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Facility",
+                columns: table => new
+                {
+                    FacilityId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VenueId = table.Column<int>(type: "int", nullable: false),
+                    Price = table.Column<float>(type: "real", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Facility", x => x.FacilityId);
+                    table.ForeignKey(
+                        name: "FK_Facility_Venue_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venue",
+                        principalColumn: "VenueId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FacilitySport",
+                columns: table => new
+                {
+                    FacilitySportId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    SportId = table.Column<int>(type: "int", nullable: false),
+                    FacilityId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FacilitySport", x => x.FacilitySportId);
+                    table.ForeignKey(
+                        name: "FK_FacilitySport_Facility_FacilityId",
+                        column: x => x.FacilityId,
+                        principalTable: "Facility",
+                        principalColumn: "FacilityId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_FacilitySport_Sport_SportId",
+                        column: x => x.SportId,
+                        principalTable: "Sport",
+                        principalColumn: "SportId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Timeslot",
+                columns: table => new
+                {
+                    TimeslotId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    StartDT = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    EndDT = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FacilityId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Timeslot", x => x.TimeslotId);
+                    table.ForeignKey(
+                        name: "FK_Timeslot_Facility_FacilityId",
+                        column: x => x.FacilityId,
+                        principalTable: "Facility",
+                        principalColumn: "FacilityId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "e13910ff-6e77-4c81-bfc3-3281b29904b9", "test1@localhost.com", true, "test", "1", false, null, "TEST1@LOCALHOST.COM", "TEST1@LOCALHOST.COM", "AQAAAAIAAYagAAAAEA61NjRWNoQh79wmQ92xLf7WS4AObuW0Wu6L//GX5VLBRDPXvWcvIGItF0K3N/Zaug==", null, false, "6bd92e08-c2c2-4878-949c-cd42726eda71", false, "test1@localhost.com" });
+                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "d7431560-2ab5-418a-a401-3c7ab63a2b67", "test1@localhost.com", true, "test", "1", false, null, "TEST1@LOCALHOST.COM", "TEST1@LOCALHOST.COM", "AQAAAAIAAYagAAAAEBvjQQLRoexESm131hreYf7/BJ7BKP3tBNPOAGA0XMJfL8Tua5c2KuGAzuE9YUeveA==", null, false, "343ed21b-9d0b-49ee-97c7-b4028ad599e7", false, "test1@localhost.com" });
 
             migrationBuilder.InsertData(
                 table: "Booking",
@@ -329,6 +351,26 @@ namespace HealthIsWealth.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Facility_VenueId",
+                table: "Facility",
+                column: "VenueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilitySport_FacilityId",
+                table: "FacilitySport",
+                column: "FacilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilitySport_SportId",
+                table: "FacilitySport",
+                column: "SportId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Timeslot_FacilityId",
+                table: "Timeslot",
+                column: "FacilityId");
         }
 
         /// <inheritdoc />
@@ -353,28 +395,28 @@ namespace HealthIsWealth.Migrations
                 name: "Booking");
 
             migrationBuilder.DropTable(
-                name: "Facility");
-
-            migrationBuilder.DropTable(
                 name: "FacilitySport");
 
             migrationBuilder.DropTable(
                 name: "Review");
 
             migrationBuilder.DropTable(
-                name: "Sport");
-
-            migrationBuilder.DropTable(
                 name: "Timeslot");
-
-            migrationBuilder.DropTable(
-                name: "Venue");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Sport");
+
+            migrationBuilder.DropTable(
+                name: "Facility");
+
+            migrationBuilder.DropTable(
+                name: "Venue");
         }
     }
 }

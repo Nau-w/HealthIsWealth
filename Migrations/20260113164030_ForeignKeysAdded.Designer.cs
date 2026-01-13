@@ -4,6 +4,7 @@ using HealthIsWealth.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthIsWealth.Migrations
 {
     [DbContext(typeof(HealthIsWealthContext))]
-    partial class HealthIsWealthContextModelSnapshot : ModelSnapshot
+    [Migration("20260113164030_ForeignKeysAdded")]
+    partial class ForeignKeysAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -97,7 +100,7 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a4ad4ba3-d407-49bf-9206-f9a44f97faf2",
+                            ConcurrencyStamp = "d7431560-2ab5-418a-a401-3c7ab63a2b67",
                             Email = "test1@localhost.com",
                             EmailConfirmed = true,
                             FirstName = "test",
@@ -105,9 +108,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST1@LOCALHOST.COM",
                             NormalizedUserName = "TEST1@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOMrv752Bov0wHeIiNj9J+EJ3zlLlhf1e/9fMuJMudaCdiD61jvMu320wZMeq+9uhQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBvjQQLRoexESm131hreYf7/BJ7BKP3tBNPOAGA0XMJfL8Tua5c2KuGAzuE9YUeveA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "052f437b-79ed-43c2-80e7-dce102dc29d5",
+                            SecurityStamp = "343ed21b-9d0b-49ee-97c7-b4028ad599e7",
                             TwoFactorEnabled = false,
                             UserName = "test1@localhost.com"
                         });
@@ -169,9 +172,6 @@ namespace HealthIsWealth.Migrations
                     b.Property<float>("Price")
                         .HasColumnType("real");
 
-                    b.Property<string>("ThumbnailImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("VenueId")
                         .HasColumnType("int");
 
@@ -180,27 +180,6 @@ namespace HealthIsWealth.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Facility");
-                });
-
-            modelBuilder.Entity("HealthIsWealth.Domain.FacilityImage", b =>
-                {
-                    b.Property<int>("FacilityImageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("FacilityImageId"));
-
-                    b.Property<int>("FacilityId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("FacilityImageId");
-
-                    b.HasIndex("FacilityId");
-
-                    b.ToTable("FacilityImage");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.FacilitySport", b =>
@@ -334,36 +313,12 @@ namespace HealthIsWealth.Migrations
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ThumbnailImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("UnitNumber")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("VenueId");
 
                     b.ToTable("Venue");
-                });
-
-            modelBuilder.Entity("HealthIsWealth.Domain.VenueImage", b =>
-                {
-                    b.Property<int>("VenueImageId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("VenueImageId"));
-
-                    b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VenueId")
-                        .HasColumnType("int");
-
-                    b.HasKey("VenueImageId");
-
-                    b.HasIndex("VenueId");
-
-                    b.ToTable("VenueImage");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -510,17 +465,6 @@ namespace HealthIsWealth.Migrations
                     b.Navigation("Venue");
                 });
 
-            modelBuilder.Entity("HealthIsWealth.Domain.FacilityImage", b =>
-                {
-                    b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
-                        .WithMany("FacilityImages")
-                        .HasForeignKey("FacilityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Facility");
-                });
-
             modelBuilder.Entity("HealthIsWealth.Domain.FacilitySport", b =>
                 {
                     b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
@@ -549,17 +493,6 @@ namespace HealthIsWealth.Migrations
                         .IsRequired();
 
                     b.Navigation("Facility");
-                });
-
-            modelBuilder.Entity("HealthIsWealth.Domain.VenueImage", b =>
-                {
-                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
-                        .WithMany("VenueImages")
-                        .HasForeignKey("VenueId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -615,8 +548,6 @@ namespace HealthIsWealth.Migrations
 
             modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
                 {
-                    b.Navigation("FacilityImages");
-
                     b.Navigation("FacilitySports");
 
                     b.Navigation("Timeslots");
@@ -630,8 +561,6 @@ namespace HealthIsWealth.Migrations
             modelBuilder.Entity("HealthIsWealth.Domain.Venue", b =>
                 {
                     b.Navigation("Facilities");
-
-                    b.Navigation("VenueImages");
                 });
 #pragma warning restore 612, 618
         }

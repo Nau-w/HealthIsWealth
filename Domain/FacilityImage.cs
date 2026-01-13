@@ -1,14 +1,12 @@
 ﻿namespace HealthIsWealth.Domain
 {
-    public class Timeslot
+    public class FacilityImage
     {
-        public int TimeslotId { get; set; }
-        public DateTime StartDT { get; set; }
-        public DateTime EndDT { get; set; }
+        public int FacilityImageId { get; set; }
+        public string? ImageUrl { get; set; }
         public int FacilityId { get; set; }
 
         // Navigation Properties
         public Facility Facility { get; set; }
-
     }
 }

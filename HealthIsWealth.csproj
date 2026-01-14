@@ -20,7 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="wwwroot\Images\backgroundImage.jpg" />
+    <None Include="wwwroot\images\backgrounds\backgroundImage.jpg" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\images\facilities\" />
+    <Folder Include="wwwroot\images\venues\" />
   </ItemGroup>
 
 </Project>

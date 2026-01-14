@@ -20,18 +20,6 @@ namespace HealthIsWealth.Data
         {
             base.OnModelCreating(builder);
 
-            builder.Entity<FacilitySport>() //added to fix cascade delete issue from Venue to FacilitySport
-                .HasOne(fs => fs.Venue)
-                .WithMany()
-                .HasForeignKey(fs => fs.VenueId)
-                .OnDelete(DeleteBehavior.NoAction);
-
-            builder.Entity<Timeslot>() //added to fix cascade delete issue from Venue to Timeslot
-                .HasOne(ts => ts.Venue)
-                .WithMany()
-                .HasForeignKey(ts => ts.VenueId)
-                .OnDelete(DeleteBehavior.NoAction);
-
             builder.ApplyConfiguration(new UserSeed());
             builder.ApplyConfiguration(new SportSeed());
             builder.ApplyConfiguration(new FacilitySportSeed());
@@ -40,9 +28,6 @@ namespace HealthIsWealth.Data
             builder.ApplyConfiguration(new TimeslotSeed());
             builder.ApplyConfiguration(new BookingSeed());
             builder.ApplyConfiguration(new ReviewSeed());
-            
-            
-            
 
         }
     }

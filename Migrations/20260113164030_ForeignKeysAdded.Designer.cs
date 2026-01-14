@@ -12,13 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthIsWealth.Migrations
 {
     [DbContext(typeof(HealthIsWealthContext))]
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
     [Migration("20260113164030_ForeignKeysAdded")]
     partial class ForeignKeysAdded
-========
-    [Migration("20260112084823_Initial2")]
-    partial class Initial2
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -105,30 +100,17 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                             ConcurrencyStamp = "d7431560-2ab5-418a-a401-3c7ab63a2b67",
                             Email = "test1@localhost.com",
-========
-                            ConcurrencyStamp = "bf953795-bd5d-4b22-9134-0baee0686f76",
-                            Email = "test1@gmail.com",
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                             EmailConfirmed = true,
                             FirstName = "test",
                             LastName = "1",
                             LockoutEnabled = false,
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                             NormalizedEmail = "TEST1@LOCALHOST.COM",
                             NormalizedUserName = "TEST1@LOCALHOST.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAEBvjQQLRoexESm131hreYf7/BJ7BKP3tBNPOAGA0XMJfL8Tua5c2KuGAzuE9YUeveA==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "343ed21b-9d0b-49ee-97c7-b4028ad599e7",
-========
-                            NormalizedEmail = "TEST1@GMAIL.COM",
-                            NormalizedUserName = "TEST1@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMxbXB0jSVgc8zZACNUNDNSmKYUxtXyzZR8d4GwDKfySyO3HLsPI9EvfqznAkw/ATg==",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "0f991472-fbb0-4220-a597-9e884fd1def7",
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                             TwoFactorEnabled = false,
                             UserName = "test1@gmail.com"
                         },
@@ -220,11 +202,6 @@ namespace HealthIsWealth.Migrations
 
                     b.HasKey("FacilityId");
 
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
-========
-                    b.HasIndex("FacilitySportId");
-
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.HasIndex("VenueId");
 
                     b.ToTable("Facility");
@@ -263,17 +240,10 @@ namespace HealthIsWealth.Migrations
 
                     b.HasKey("FacilitySportId");
 
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.HasIndex("FacilityId");
 
                     b.HasIndex("SportId");
 
-========
-                    b.HasIndex("SportId");
-
-                    b.HasIndex("VenueId");
-
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.ToTable("FacilitySport");
 
                     b.HasData(
@@ -400,11 +370,6 @@ namespace HealthIsWealth.Migrations
 
                     b.HasIndex("FacilityId");
 
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
-========
-                    b.HasIndex("VenueId");
-
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.ToTable("Timeslot");
 
                     b.HasData(
@@ -598,55 +563,18 @@ namespace HealthIsWealth.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
             modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
                 {
                     b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
                         .WithMany("Facilities")
-========
-            modelBuilder.Entity("HealthIsWealth.Domain.Booking", b =>
-                {
-                    b.HasOne("HealthIsWealth.Domain.Timeslot", "Timeslot")
-                        .WithMany()
-                        .HasForeignKey("TimeslotId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthIsWealth.Data.HealthIsWealthUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Timeslot");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
-                {
-                    b.HasOne("HealthIsWealth.Domain.FacilitySport", "FacilitySport")
-                        .WithMany()
-                        .HasForeignKey("FacilitySportId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
-                        .WithMany()
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                         .HasForeignKey("VenueId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
-========
-                    b.Navigation("FacilitySport");
-
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                     b.Navigation("Venue");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.FacilitySport", b =>
                 {
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
                         .WithMany("FacilitySports")
                         .HasForeignKey("FacilityId")
@@ -655,73 +583,24 @@ namespace HealthIsWealth.Migrations
 
                     b.HasOne("HealthIsWealth.Domain.Sport", "Sport")
                         .WithMany("FacilitySports")
-========
-                    b.HasOne("HealthIsWealth.Domain.Sport", "Sport")
-                        .WithMany()
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                         .HasForeignKey("SportId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.Navigation("Facility");
 
                     b.Navigation("Sport");
-========
-                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
-                        .WithMany()
-                        .HasForeignKey("VenueId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Sport");
-
-                    b.Navigation("Venue");
-                });
-
-            modelBuilder.Entity("HealthIsWealth.Domain.Review", b =>
-                {
-                    b.HasOne("HealthIsWealth.Domain.Booking", "Booking")
-                        .WithMany()
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("HealthIsWealth.Data.HealthIsWealthUser", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Booking");
-
-                    b.Navigation("User");
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Timeslot", b =>
                 {
                     b.HasOne("HealthIsWealth.Domain.Facility", "Facility")
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                         .WithMany("Timeslots")
-========
-                        .WithMany()
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                         .HasForeignKey("FacilityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-<<<<<<<< HEAD:Migrations/20260113164030_ForeignKeysAdded.Designer.cs
                     b.Navigation("Facility");
-========
-                    b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
-                        .WithMany()
-                        .HasForeignKey("VenueId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Facility");
-
-                    b.Navigation("Venue");
->>>>>>>> fdb8d118d97a38006f96233f2ea5a2f8540a77c2:Migrations/20260112084823_Initial2.Designer.cs
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

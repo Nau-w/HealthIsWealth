@@ -11,7 +11,7 @@ namespace HealthIsWealth.Domain
         public string? UserId { get; set; }
 
         //Foreign Key
-        public Booking? Booking { get; set; }
-        public HealthIsWealthUser? User { get; set; }
+        public Booking Booking { get; set; }
+        public HealthIsWealthUser User { get; set; }
     }
 }

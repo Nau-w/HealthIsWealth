@@ -9,14 +9,7 @@ namespace HealthIsWealth.Configurations.Entities
         public void Configure(EntityTypeBuilder<Facility> builder)
         {
             builder.HasData(
-                new Facility
-                {
-                    FacilityId = 1,
-                    Location = "",
-                    Name = "",
-                    Price = 0.0f,
-                    VenueId = 1
-                }
+                
             );
         }
     }

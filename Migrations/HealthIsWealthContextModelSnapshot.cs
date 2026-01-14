@@ -97,19 +97,37 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "a4ad4ba3-d407-49bf-9206-f9a44f97faf2",
-                            Email = "test1@localhost.com",
+                            ConcurrencyStamp = "e735f18b-268f-4e9e-abab-b4d15276d8a4",
+                            Email = "test1@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "test",
                             LastName = "1",
                             LockoutEnabled = false,
-                            NormalizedEmail = "TEST1@LOCALHOST.COM",
-                            NormalizedUserName = "TEST1@LOCALHOST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEOMrv752Bov0wHeIiNj9J+EJ3zlLlhf1e/9fMuJMudaCdiD61jvMu320wZMeq+9uhQ==",
+                            NormalizedEmail = "TEST1@GMAIL.COM",
+                            NormalizedUserName = "TEST1@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEGd2hZdfGZas43Yae0T32yBI6ygnza9OeP1inTk+F/LYF/w5+FlHsJ6VJg8lzPgDVQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "052f437b-79ed-43c2-80e7-dce102dc29d5",
+                            SecurityStamp = "27158ec3-ca24-4d92-8cbf-00c5b7983425",
                             TwoFactorEnabled = false,
-                            UserName = "test1@localhost.com"
+                            UserName = "test1@gmail.com"
+                        },
+                        new
+                        {
+                            Id = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "2b162e1e-8d8b-4641-8200-501eee3f481c",
+                            Email = "test2@gmail.com",
+                            EmailConfirmed = true,
+                            FirstName = "test",
+                            LastName = "2",
+                            LockoutEnabled = false,
+                            NormalizedEmail = "TEST2@GMAIL.COM",
+                            NormalizedUserName = "TEST2@GMAIL.COM",
+                            PasswordHash = "AQAAAAIAAYagAAAAEMfLk7PcQhUQGV+EPjmefGdRl7JbrWXxNINGS81dwO6etXXylKSW1xzIrRQN16v3BQ==",
+                            PhoneNumberConfirmed = false,
+                            SecurityStamp = "b1c9f9f1-9007-464a-b694-cc153caf05ae",
+                            TwoFactorEnabled = false,
+                            UserName = "test2@gmail.com"
                         });
                 });
 
@@ -125,31 +143,15 @@ namespace HealthIsWealth.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("BookingId");
 
-                    b.ToTable("Booking");
+                    b.HasIndex("TimeslotId");
 
-                    b.HasData(
-                        new
-                        {
-                            BookingId = 1,
-                            TimeslotId = 1,
-                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
-                        },
-                        new
-                        {
-                            BookingId = 2,
-                            TimeslotId = 2,
-                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
-                        },
-                        new
-                        {
-                            BookingId = 3,
-                            TimeslotId = 3,
-                            UserId = "3781efa7-66dc-47f0-860f-e506d04102e4"
-                        });
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Booking");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
@@ -244,37 +246,15 @@ namespace HealthIsWealth.Migrations
                         .HasColumnType("real");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("ReviewId");
 
-                    b.ToTable("Review");
+                    b.HasIndex("BookingId");
 
-                    b.HasData(
-                        new
-                        {
-                            ReviewId = 1,
-                            BookingId = 1,
-                            Feedback = "Good facility venue has a lot of ammenities",
-                            Rating = 4.5f,
-                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
-                        },
-                        new
-                        {
-                            ReviewId = 2,
-                            BookingId = 2,
-                            Feedback = "Dirty equipments but gym has alot of machines",
-                            Rating = 4f,
-                            UserId = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69"
-                        },
-                        new
-                        {
-                            ReviewId = 3,
-                            BookingId = 3,
-                            Feedback = "Best volleyball court ever",
-                            Rating = 5f,
-                            UserId = "3781efa7-66dc-47f0-860f-e506d04102e4"
-                        });
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Review");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Sport", b =>
@@ -499,6 +479,23 @@ namespace HealthIsWealth.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("HealthIsWealth.Domain.Booking", b =>
+                {
+                    b.HasOne("HealthIsWealth.Domain.Timeslot", "Timeslot")
+                        .WithMany()
+                        .HasForeignKey("TimeslotId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthIsWealth.Data.HealthIsWealthUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Timeslot");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("HealthIsWealth.Domain.Facility", b =>
                 {
                     b.HasOne("HealthIsWealth.Domain.Venue", "Venue")
@@ -538,6 +535,23 @@ namespace HealthIsWealth.Migrations
                     b.Navigation("Facility");
 
                     b.Navigation("Sport");
+                });
+
+            modelBuilder.Entity("HealthIsWealth.Domain.Review", b =>
+                {
+                    b.HasOne("HealthIsWealth.Domain.Booking", "Booking")
+                        .WithMany()
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("HealthIsWealth.Data.HealthIsWealthUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Timeslot", b =>

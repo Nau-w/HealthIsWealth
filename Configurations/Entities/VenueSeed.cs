@@ -10,13 +10,7 @@ namespace HealthIsWealth.Configurations.Entities
         public void Configure(EntityTypeBuilder<Venue> builder)
         {
             builder.HasData(
-                new Venue
-                {
-                    VenueId = 1,
-                    Address = "Sambawang",
-                    PostalCode = "123456",
-                    UnitNumber = "01-1234",
-                }
+                
             );
         }
     }

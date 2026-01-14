@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace HealthIsWealth.Migrations
 {
     /// <inheritdoc />
-    public partial class ForeignKeysAdded : Migration
+    public partial class InitalMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -55,36 +55,6 @@ namespace HealthIsWealth.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Booking",
-                columns: table => new
-                {
-                    BookingId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    TimeslotId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Booking", x => x.BookingId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Review",
-                columns: table => new
-                {
-                    ReviewId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Rating = table.Column<float>(type: "real", nullable: false),
-                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    BookingId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Review", x => x.ReviewId);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "Sport",
                 columns: table => new
                 {
@@ -106,7 +76,8 @@ namespace HealthIsWealth.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PostalCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UnitNumber = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UnitNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ThumbnailImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -227,8 +198,9 @@ namespace HealthIsWealth.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    VenueId = table.Column<int>(type: "int", nullable: false),
-                    Price = table.Column<float>(type: "real", nullable: false)
+                    ThumbnailImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Price = table.Column<float>(type: "real", nullable: false),
+                    VenueId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -238,6 +210,46 @@ namespace HealthIsWealth.Migrations
                         column: x => x.VenueId,
                         principalTable: "Venue",
                         principalColumn: "VenueId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "VenueImage",
+                columns: table => new
+                {
+                    VenueImageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    VenueId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_VenueImage", x => x.VenueImageId);
+                    table.ForeignKey(
+                        name: "FK_VenueImage_Venue_VenueId",
+                        column: x => x.VenueId,
+                        principalTable: "Venue",
+                        principalColumn: "VenueId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "FacilityImage",
+                columns: table => new
+                {
+                    FacilityImageId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FacilityId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FacilityImage", x => x.FacilityImageId);
+                    table.ForeignKey(
+                        name: "FK_FacilityImage_Facility_FacilityId",
+                        column: x => x.FacilityId,
+                        principalTable: "Facility",
+                        principalColumn: "FacilityId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -288,29 +300,65 @@ namespace HealthIsWealth.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.InsertData(
-                table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "d7431560-2ab5-418a-a401-3c7ab63a2b67", "test1@localhost.com", true, "test", "1", false, null, "TEST1@LOCALHOST.COM", "TEST1@LOCALHOST.COM", "AQAAAAIAAYagAAAAEBvjQQLRoexESm131hreYf7/BJ7BKP3tBNPOAGA0XMJfL8Tua5c2KuGAzuE9YUeveA==", null, false, "343ed21b-9d0b-49ee-97c7-b4028ad599e7", false, "test1@localhost.com" });
-
-            migrationBuilder.InsertData(
-                table: "Booking",
-                columns: new[] { "BookingId", "TimeslotId", "UserId" },
-                values: new object[,]
+            migrationBuilder.CreateTable(
+                name: "Booking",
+                columns: table => new
                 {
-                    { 1, 1, "6d3d2829-89fa-4095-b0f9-0ef8e802fd69" },
-                    { 2, 2, "6d3d2829-89fa-4095-b0f9-0ef8e802fd69" },
-                    { 3, 3, "3781efa7-66dc-47f0-860f-e506d04102e4" }
+                    BookingId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    TimeslotId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Booking", x => x.BookingId);
+                    table.ForeignKey(
+                        name: "FK_Booking_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Booking_Timeslot_TimeslotId",
+                        column: x => x.TimeslotId,
+                        principalTable: "Timeslot",
+                        principalColumn: "TimeslotId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Review",
+                columns: table => new
+                {
+                    ReviewId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Rating = table.Column<float>(type: "real", nullable: false),
+                    Feedback = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BookingId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Review", x => x.ReviewId);
+                    table.ForeignKey(
+                        name: "FK_Review_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Review_Booking_BookingId",
+                        column: x => x.BookingId,
+                        principalTable: "Booking",
+                        principalColumn: "BookingId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
-                table: "Review",
-                columns: new[] { "ReviewId", "BookingId", "Feedback", "Rating", "UserId" },
+                table: "AspNetUsers",
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { 1, 1, "Good facility venue has a lot of ammenities", 4.5f, "6d3d2829-89fa-4095-b0f9-0ef8e802fd69" },
-                    { 2, 2, "Dirty equipments but gym has alot of machines", 4f, "6d3d2829-89fa-4095-b0f9-0ef8e802fd69" },
-                    { 3, 3, "Best volleyball court ever", 5f, "3781efa7-66dc-47f0-860f-e506d04102e4" }
+                    { "3781efa7-66dc-47f0-860f-e506d04102e4", 0, "e735f18b-268f-4e9e-abab-b4d15276d8a4", "test1@gmail.com", true, "test", "1", false, null, "TEST1@GMAIL.COM", "TEST1@GMAIL.COM", "AQAAAAIAAYagAAAAEGd2hZdfGZas43Yae0T32yBI6ygnza9OeP1inTk+F/LYF/w5+FlHsJ6VJg8lzPgDVQ==", null, false, "27158ec3-ca24-4d92-8cbf-00c5b7983425", false, "test1@gmail.com" },
+                    { "6d3d2829-89fa-4095-b0f9-0ef8e802fd69", 0, "2b162e1e-8d8b-4641-8200-501eee3f481c", "test2@gmail.com", true, "test", "2", false, null, "TEST2@GMAIL.COM", "TEST2@GMAIL.COM", "AQAAAAIAAYagAAAAEMfLk7PcQhUQGV+EPjmefGdRl7JbrWXxNINGS81dwO6etXXylKSW1xzIrRQN16v3BQ==", null, false, "b1c9f9f1-9007-464a-b694-cc153caf05ae", false, "test2@gmail.com" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -353,9 +401,24 @@ namespace HealthIsWealth.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Booking_TimeslotId",
+                table: "Booking",
+                column: "TimeslotId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Booking_UserId",
+                table: "Booking",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Facility_VenueId",
                 table: "Facility",
                 column: "VenueId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_FacilityImage_FacilityId",
+                table: "FacilityImage",
+                column: "FacilityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_FacilitySport_FacilityId",
@@ -368,9 +431,24 @@ namespace HealthIsWealth.Migrations
                 column: "SportId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Review_BookingId",
+                table: "Review",
+                column: "BookingId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Review_UserId",
+                table: "Review",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Timeslot_FacilityId",
                 table: "Timeslot",
                 column: "FacilityId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_VenueImage_VenueId",
+                table: "VenueImage",
+                column: "VenueId");
         }
 
         /// <inheritdoc />
@@ -392,13 +470,7 @@ namespace HealthIsWealth.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Review");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
-
-            migrationBuilder.DropTable(
-                name: "Booking");
+                name: "FacilityImage");
 
             migrationBuilder.DropTable(
                 name: "FacilitySport");
@@ -407,16 +479,22 @@ namespace HealthIsWealth.Migrations
                 name: "Review");
 
             migrationBuilder.DropTable(
-                name: "Timeslot");
+                name: "VenueImage");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
+                name: "Sport");
+
+            migrationBuilder.DropTable(
+                name: "Booking");
+
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Sport");
+                name: "Timeslot");
 
             migrationBuilder.DropTable(
                 name: "Facility");

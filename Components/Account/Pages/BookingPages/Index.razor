@@ -67,14 +67,14 @@ else
             <img src=""/>
             @booking.Timeslot.Facility.Name
             @booking.Timeslot.Facility.Location <br>
-            @booking.Timeslot.Venue.Address <br>
-            @booking.Timeslot.Venue.PostalCode <br>
-            @booking.Timeslot.Venue.UnitNumber <br>
+            @booking.Timeslot.Facility.Venue.Address <br>
+            @booking.Timeslot.Facility.Venue.PostalCode <br>
+            @booking.Timeslot.Facility.Venue.UnitNumber <br>
             @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") to @booking.Timeslot.EndDT.ToString("dd/MM/yyyy") <br> 
 
             @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm")
             (@((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours) Hours)
-            <a href="/facilitysports/@booking.Timeslot.Facility.FacilitySportId"> 
+            <a href="/facilitysports/@booking.Timeslot.Facility.FacilitySports"> 
                 View Details
             </a>
         </div>

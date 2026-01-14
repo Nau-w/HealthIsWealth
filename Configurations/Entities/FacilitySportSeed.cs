@@ -10,18 +10,7 @@ namespace HealthIsWealth.Configurations.Entities
         {
             builder.HasData
             (
-                new FacilitySport
-                {
-                    FacilitySportId = 1,
-                    SportId = 1,
-                    VenueId = 1
-                },
-                new FacilitySport
-                {
-                    FacilitySportId = 2,
-                    SportId = 2,
-                    VenueId = 1
-                }
+                
             );
         }
     }

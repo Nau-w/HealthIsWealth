@@ -19,11 +19,11 @@
     <div class="container-grid">
     @foreach (Sport sport in Sports)
     {
-        <div style="background-image: radial-gradient(rgb(0,0,0,0.4), rgb(0,0,0,0.6)), 
-                    url(@sport.ThumbnailImageUrl), url(/images/placeholder/sports.jpg)"
-                 class="image-single container-large text-white">
-            <p class="no-margin">@sport.Name</p>
-        </div>
+            <a href="/venues?sportid=@sport.SportId" style="background-image: radial-gradient(rgb(0,0,0,0.4), rgb(0,0,0,0.6)),
+                        url(@sport.ThumbnailImageUrl), url(/images/placeholder/sports.jpg)"
+                     class="image-single container-large text-white text-decoration-none">
+                <p class="no-margin">@sport.Name</p>
+            </a>
     }
     </div>
 </body>

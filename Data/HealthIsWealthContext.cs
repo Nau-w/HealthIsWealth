@@ -22,9 +22,9 @@ namespace HealthIsWealth.Data
 
             builder.ApplyConfiguration(new UserSeed());
             builder.ApplyConfiguration(new SportSeed());
+            builder.ApplyConfiguration(new VenueSeed());
             builder.ApplyConfiguration(new FacilitySportSeed());
             builder.ApplyConfiguration(new FacilitySeed());
-            builder.ApplyConfiguration(new VenueSeed());
             builder.ApplyConfiguration(new TimeslotSeed());
             builder.ApplyConfiguration(new BookingSeed());
             builder.ApplyConfiguration(new ReviewSeed());

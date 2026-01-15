@@ -97,7 +97,7 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "3781efa7-66dc-47f0-860f-e506d04102e4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e735f18b-268f-4e9e-abab-b4d15276d8a4",
+                            ConcurrencyStamp = "2dc34989-ddd0-4798-b567-63c77cb0dfb3",
                             Email = "test1@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "test",
@@ -105,9 +105,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST1@GMAIL.COM",
                             NormalizedUserName = "TEST1@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGd2hZdfGZas43Yae0T32yBI6ygnza9OeP1inTk+F/LYF/w5+FlHsJ6VJg8lzPgDVQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECjguqX6UdZrsFVXM71lpQWw1HYQW5PQPMXYm01nkHKTDjMgPfd26Vr6bIBGYo3JRg==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "27158ec3-ca24-4d92-8cbf-00c5b7983425",
+                            SecurityStamp = "18b01ae5-5243-42cb-a20b-a8c2ba08986f",
                             TwoFactorEnabled = false,
                             UserName = "test1@gmail.com"
                         },
@@ -115,7 +115,7 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "2b162e1e-8d8b-4641-8200-501eee3f481c",
+                            ConcurrencyStamp = "77d40f9f-60cf-4e63-aceb-f24a8d23aebb",
                             Email = "test2@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "test",
@@ -123,9 +123,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST2@GMAIL.COM",
                             NormalizedUserName = "TEST2@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMfLk7PcQhUQGV+EPjmefGdRl7JbrWXxNINGS81dwO6etXXylKSW1xzIrRQN16v3BQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEO0heYyj53y6Skv8gexmoa1gLi7ulij52vFPyp73ZHA7ZLU5rz9S2FUgcaAGUPF+4Q==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "b1c9f9f1-9007-464a-b694-cc153caf05ae",
+                            SecurityStamp = "aa363195-16b1-43f3-96e3-fc79ee116309",
                             TwoFactorEnabled = false,
                             UserName = "test2@gmail.com"
                         });
@@ -182,6 +182,179 @@ namespace HealthIsWealth.Migrations
                     b.HasIndex("VenueId");
 
                     b.ToTable("Facility");
+
+                    b.HasData(
+                        new
+                        {
+                            FacilityId = 1,
+                            Location = "01-01",
+                            Name = "The Gym 1",
+                            Price = 5f,
+                            ThumbnailImageUrl = "images/facilities/one_gym_0.jpg",
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilityId = 2,
+                            Location = "01-02",
+                            Name = "The Gym 2",
+                            Price = 5f,
+                            ThumbnailImageUrl = "images/facilities/one_gym_0.jpg",
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilityId = 3,
+                            Location = "02-01",
+                            Name = "The Gym Premium",
+                            Price = 10f,
+                            ThumbnailImageUrl = "images/facilities/one_gym_0.jpg",
+                            VenueId = 1
+                        },
+                        new
+                        {
+                            FacilityId = 4,
+                            Location = "Level 2 MPH",
+                            Name = "Court 1",
+                            Price = 4f,
+                            ThumbnailImageUrl = "images/facilities/court_complex_0.jpg",
+                            VenueId = 2
+                        },
+                        new
+                        {
+                            FacilityId = 5,
+                            Location = "Level 2 MPH",
+                            Name = "Court 2",
+                            Price = 4f,
+                            ThumbnailImageUrl = "images/facilities/court_complex_0.jpg",
+                            VenueId = 2
+                        },
+                        new
+                        {
+                            FacilityId = 6,
+                            Location = "Level 2 MPH",
+                            Name = "Basketball Court",
+                            Price = 6f,
+                            ThumbnailImageUrl = "images/facilities/court_complex_bb_court.jpg",
+                            VenueId = 2
+                        },
+                        new
+                        {
+                            FacilityId = 7,
+                            Location = "",
+                            Name = "Private Pool",
+                            Price = 8f,
+                            ThumbnailImageUrl = "images/facilities/pool_space_0.jpg",
+                            VenueId = 3
+                        },
+                        new
+                        {
+                            FacilityId = 8,
+                            Location = "Level 3 MPH",
+                            Name = "Court 1",
+                            Price = 5f,
+                            ThumbnailImageUrl = "images/facilities/universe_sports_court.jpg",
+                            VenueId = 4
+                        },
+                        new
+                        {
+                            FacilityId = 9,
+                            Location = "Level 3 MPH",
+                            Name = "Court 2",
+                            Price = 5f,
+                            ThumbnailImageUrl = "images/facilities/universe_sports_court.jpg",
+                            VenueId = 4
+                        },
+                        new
+                        {
+                            FacilityId = 10,
+                            Location = "Level 3 MPH",
+                            Name = "Court 3",
+                            Price = 5f,
+                            ThumbnailImageUrl = "images/facilities/universe_sports_court.jpg",
+                            VenueId = 4
+                        },
+                        new
+                        {
+                            FacilityId = 11,
+                            Location = "Level 2 MPH",
+                            Name = "Basketball Court 1",
+                            Price = 8f,
+                            ThumbnailImageUrl = "images/facilities/universe_sports_bb_court.jpg",
+                            VenueId = 4
+                        },
+                        new
+                        {
+                            FacilityId = 12,
+                            Location = "Level 2 MPH",
+                            Name = "Basketball Court 2",
+                            Price = 8f,
+                            ThumbnailImageUrl = "images/facilities/universe_sports_bb_court.jpg",
+                            VenueId = 4
+                        },
+                        new
+                        {
+                            FacilityId = 13,
+                            Location = "Ruby Wing 01-01",
+                            Name = "Basketball Court 1",
+                            Price = 8f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_bb_court.jpg",
+                            VenueId = 5
+                        },
+                        new
+                        {
+                            FacilityId = 14,
+                            Location = "Ruby Wing 01-02",
+                            Name = "Basketball Court 2",
+                            Price = 8f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_bb_court.jpg",
+                            VenueId = 5
+                        },
+                        new
+                        {
+                            FacilityId = 15,
+                            Location = "Sapphire Wing 01-01",
+                            Name = "Luxury Pool 1",
+                            Price = 32f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_pool.jpg",
+                            VenueId = 5
+                        },
+                        new
+                        {
+                            FacilityId = 16,
+                            Location = "Sapphire Wing 01-01",
+                            Name = "Luxury Pool 2",
+                            Price = 32f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_pool.jpg",
+                            VenueId = 5
+                        },
+                        new
+                        {
+                            FacilityId = 17,
+                            Location = "Emerald Wing 01-01",
+                            Name = "Badminton Court 1",
+                            Price = 10f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_court.jpg",
+                            VenueId = 5
+                        },
+                        new
+                        {
+                            FacilityId = 18,
+                            Location = "Emerald Wing 01-01",
+                            Name = "Badminton Court 2",
+                            Price = 10f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_court.jpg",
+                            VenueId = 5
+                        },
+                        new
+                        {
+                            FacilityId = 19,
+                            Location = "Gold Wing 01-01",
+                            Name = "Luxury Private Gym",
+                            Price = 20f,
+                            ThumbnailImageUrl = "images/facilities/diamond_hub_gym.jpg",
+                            VenueId = 5
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.FacilityImage", b =>
@@ -226,6 +399,152 @@ namespace HealthIsWealth.Migrations
                     b.HasIndex("SportId");
 
                     b.ToTable("FacilitySport");
+
+                    b.HasData(
+                        new
+                        {
+                            FacilitySportId = 1,
+                            FacilityId = 6,
+                            SportId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 2,
+                            FacilityId = 11,
+                            SportId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 3,
+                            FacilityId = 12,
+                            SportId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 4,
+                            FacilityId = 13,
+                            SportId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 5,
+                            FacilityId = 14,
+                            SportId = 1
+                        },
+                        new
+                        {
+                            FacilitySportId = 6,
+                            FacilityId = 4,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 7,
+                            FacilityId = 5,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 8,
+                            FacilityId = 8,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 9,
+                            FacilityId = 9,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 10,
+                            FacilityId = 10,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 11,
+                            FacilityId = 17,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 12,
+                            FacilityId = 18,
+                            SportId = 2
+                        },
+                        new
+                        {
+                            FacilitySportId = 13,
+                            FacilityId = 4,
+                            SportId = 3
+                        },
+                        new
+                        {
+                            FacilitySportId = 14,
+                            FacilityId = 5,
+                            SportId = 3
+                        },
+                        new
+                        {
+                            FacilitySportId = 15,
+                            FacilityId = 8,
+                            SportId = 3
+                        },
+                        new
+                        {
+                            FacilitySportId = 16,
+                            FacilityId = 9,
+                            SportId = 3
+                        },
+                        new
+                        {
+                            FacilitySportId = 17,
+                            FacilityId = 10,
+                            SportId = 3
+                        },
+                        new
+                        {
+                            FacilitySportId = 18,
+                            FacilityId = 7,
+                            SportId = 4
+                        },
+                        new
+                        {
+                            FacilitySportId = 19,
+                            FacilityId = 15,
+                            SportId = 4
+                        },
+                        new
+                        {
+                            FacilitySportId = 20,
+                            FacilityId = 16,
+                            SportId = 4
+                        },
+                        new
+                        {
+                            FacilitySportId = 21,
+                            FacilityId = 1,
+                            SportId = 5
+                        },
+                        new
+                        {
+                            FacilitySportId = 22,
+                            FacilityId = 2,
+                            SportId = 5
+                        },
+                        new
+                        {
+                            FacilitySportId = 23,
+                            FacilityId = 3,
+                            SportId = 5
+                        },
+                        new
+                        {
+                            FacilitySportId = 24,
+                            FacilityId = 19,
+                            SportId = 5
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Review", b =>
@@ -271,9 +590,49 @@ namespace HealthIsWealth.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ThumbnailImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("SportId");
 
                     b.ToTable("Sport");
+
+                    b.HasData(
+                        new
+                        {
+                            SportId = 1,
+                            Description = "A fun sport, enjoyable by many and with many formats. For your next game, book a court today.",
+                            Name = "Basketball",
+                            ThumbnailImageUrl = "images/sports/basketball.jpg"
+                        },
+                        new
+                        {
+                            SportId = 2,
+                            Description = "An exciting racquet sport, enjoyable by all. Get your game on and book a court today.",
+                            Name = "Badminton",
+                            ThumbnailImageUrl = "images/sports/badminton.jpg"
+                        },
+                        new
+                        {
+                            SportId = 3,
+                            Description = "An enjoyable racquet sport with strategy and skill. Play with a friend and book a court today.",
+                            Name = "Tennis",
+                            ThumbnailImageUrl = "images/sports/tennis.jpg"
+                        },
+                        new
+                        {
+                            SportId = 4,
+                            Description = "A great sport for both fun and exercise. Cool down in the warm weather and book a pool today.",
+                            Name = "Swimming",
+                            ThumbnailImageUrl = "images/sports/swimming.jpg"
+                        },
+                        new
+                        {
+                            SportId = 5,
+                            Description = "A gym is a good place to concentrate and workout. Find a space to train with us today.",
+                            Name = "Gym",
+                            ThumbnailImageUrl = "images/sports/gym.jpg"
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.Timeslot", b =>
@@ -311,6 +670,9 @@ namespace HealthIsWealth.Migrations
                     b.Property<string>("Address")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PostalCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -323,6 +685,53 @@ namespace HealthIsWealth.Migrations
                     b.HasKey("VenueId");
 
                     b.ToTable("Venue");
+
+                    b.HasData(
+                        new
+                        {
+                            VenueId = 1,
+                            Address = "211 Jurong East Street 21, Block 211, Singapore",
+                            Name = "One Gym",
+                            PostalCode = "600021",
+                            ThumbnailImageUrl = "images/venues/one_gym_0.jpg",
+                            UnitNumber = "#21-234"
+                        },
+                        new
+                        {
+                            VenueId = 2,
+                            Address = "57 Lor. 5 Toa Payoh, Block 57",
+                            Name = "Court Complex",
+                            PostalCode = "310057",
+                            ThumbnailImageUrl = "images/venues/court_complex_0.jpg",
+                            UnitNumber = "#57-575"
+                        },
+                        new
+                        {
+                            VenueId = 3,
+                            Address = "200 Commonwealth Ave W",
+                            Name = "Pool Space",
+                            PostalCode = "138677",
+                            ThumbnailImageUrl = "images/venues/pool_space_0.jpg",
+                            UnitNumber = "32"
+                        },
+                        new
+                        {
+                            VenueId = 4,
+                            Address = "33 Yio Chu Kang Rd",
+                            Name = "Universe Sports",
+                            PostalCode = "545677",
+                            ThumbnailImageUrl = "images/venues/universe_sports_0.jpg",
+                            UnitNumber = ""
+                        },
+                        new
+                        {
+                            VenueId = 5,
+                            Address = "1 Choa Chu Kang Street 53",
+                            Name = "Diamond Hub",
+                            PostalCode = "689236",
+                            ThumbnailImageUrl = "images/venues/diamond_hub_0.jpg",
+                            UnitNumber = ""
+                        });
                 });
 
             modelBuilder.Entity("HealthIsWealth.Domain.VenueImage", b =>

@@ -1,2 +1,23 @@
-﻿body {
+﻿#welcome {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    min-height: 700px;
+    background-image: linear-gradient(rgb(255, 255, 255, 0.4), rgb(255, 255, 255, 1)), url(/images/backgrounds/SportsHubBackground.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
 }
+
+    #welcome h1 {
+        font-family: 'Segoe UI', Geneva;
+        font-weight: bold;
+    }
+
+    #welcome p {
+        font-size: 28px;
+        color: darkslategrey;
+        max-width: 800px;
+    }

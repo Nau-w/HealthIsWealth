@@ -49,3 +49,37 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.no-margin{
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.image-single{
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.container-white{
+    background-color: white;
+    color: black;
+}
+
+.container-grid {
+   display: grid;
+   grid-template-columns: repeat(3, 1fr);
+   margin-left: 10px;
+   margin-right: 10px;
+}
+
+.container-large {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 24px;
+    border-radius: 25px;
+    margin: 20px;
+    min-height: 230px;
+}

@@ -1,8 +1,12 @@
 ﻿@page "/"
+@using HealthIsWealth.Data
+@using HealthIsWealth.Domain
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<HealthIsWealthContext> DbFactory;
 <PageTitle>HealthIsWealth | Home</PageTitle>
 
 <body>
-    <div id="welcome" class="overlay">
+    <div id="welcome">
         <h1>Welcome to HealthIsWealth</h1>
         <h1>your gateway to wellness and fitness venues</h1>
         <p>
@@ -12,4 +16,25 @@
             and book your session in just a few clicks.
         </p>
      </div>
+    <div class="container-grid">
+    @foreach (Sport sport in Sports)
+    {
+        <div style="background-image: radial-gradient(rgb(0,0,0,0.4), rgb(0,0,0,0.6)), 
+                    url(@sport.ThumbnailImageUrl), url(/images/placeholder/sports.jpg)"
+                 class="image-single container-large text-white">
+            <p class="no-margin">@sport.Name</p>
+        </div>
+    }
+    </div>
 </body>
+
+@code{
+    HealthIsWealthContext context = default!;
+    IList<Sport> Sports; 
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+        Sports = context.Sport.ToList();
+    }
+}

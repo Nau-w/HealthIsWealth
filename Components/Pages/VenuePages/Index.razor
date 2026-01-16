@@ -29,9 +29,20 @@
 @code {
     private HealthIsWealthContext context = default!;
 
-    protected override void OnInitialized()
+    [SupplyParameterFromQuery (Name="sportid")]
+    private int? SportId { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
+        if (SportId is not null && context.Sport.Find(SportId) is null)
+        {
+            // Navigates to venues page without sportid and replaces current entry in history stack
+            NavigationManager.NavigateTo("/venues", false, true);
+        }
+        
+        await base.OnInitializedAsync();
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

@@ -1,19 +1,31 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@using HealthIsWealth.Domain
+@using Microsoft.AspNetCore.Identity
 @using HealthIsWealth.Data
 @using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
 @inject UserManager<HealthIsWealthUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IDbContextFactory<HealthIsWealthContext> DbFactory
 
 <div>
     <nav class="nav-bar">
         <h3 class="nav-branding">HealthIsWealth</h3>
         <ul>
             <li><a href="">Home</a></li>
-            <li><a href="/venues">Venues</a></li>
+            <li>
+                <div class="dropdown">
+                    <a class="dropbtn" href="/venues">Venues</a>
+                    <div class="dropdown-content">
+                        @foreach(Sport sport in Sports)
+                        {
+                            <a href="/venues?sportid=@sport.SportId">@sport.Name</a>
+                        }
+                    </div>
+                </div>
+            </li>
             <li><a href="/Bookings">Bookings</a></li>
             <li><a href="/Account/Profile">Profile</a></li>
-            <li><input type="text" class="search-input" placeholder="Search sports..." /></li>
         </ul>
 
         <div class="nav-auth">
@@ -44,6 +56,9 @@
 <div class="overlay @(isPanelOpen ? "active" : "")" @onclick="ToggleSidePanel"></div>
 
 @code {
+    HealthIsWealthContext context = default!;
+    IList<Sport> Sports;
+
     private bool isPanelOpen = false;
 
     private void ToggleSidePanel()
@@ -60,5 +75,8 @@
     {
         var authState = await authenticationStateTask;
         var user = authState.User;
+
+        context = DbFactory.CreateDbContext();
+        Sports = context.Sport.ToList();
     }
 }

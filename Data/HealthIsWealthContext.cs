@@ -15,6 +15,8 @@ namespace HealthIsWealth.Data
         public DbSet<Venue> Venue { get; set; } = default!;
         public DbSet<Booking> Booking { get; set; } = default!;
         public DbSet<Review> Review { get; set; } = default!;
+        public DbSet<FacilityImage> FacilityImage { get; set; } = default!;
+        public DbSet<VenueImage> VenueImage { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
@@ -28,6 +30,8 @@ namespace HealthIsWealth.Data
             builder.ApplyConfiguration(new TimeslotSeed());
             builder.ApplyConfiguration(new BookingSeed());
             builder.ApplyConfiguration(new ReviewSeed());
+            builder.ApplyConfiguration(new FacilityImageSeed());
+            builder.ApplyConfiguration(new VenueImageSeed());
 
         }
     }

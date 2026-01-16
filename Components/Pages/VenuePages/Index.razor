@@ -9,7 +9,7 @@
 
 <PageTitle>Browse Venues</PageTitle>
 
-<QuickGrid Class="table" Items="context.Venue">
+<QuickGrid Class="table" Items="FilteredVenues">
     <TemplateColumn Context="venue">
         <ChildContent>
             <p class="">@venue.Name</p>
@@ -18,7 +18,7 @@
     <PropertyColumn Property="venue => venue.Name" Title=""/>
     <PropertyColumn Property="venue => venue.Address" />
     <PropertyColumn Property="venue => venue.PostalCode" />
-    <PropertyColumn Property="venue => venue.UnitNumber" />
+    <PropertyColumn Property="venue => venue.Facilities.Min(f => f.Price)" />
     <PropertyColumn Property="venue => venue.ThumbnailImageUrl" />
 
     <TemplateColumn Context="venue">
@@ -32,6 +32,7 @@
     [SupplyParameterFromQuery (Name="sportid")]
     private int? SportId { get; set; }
 
+    private IQueryable<Venue> FilteredVenues;
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,6 +42,17 @@
             // Navigates to venues page without sportid and replaces current entry in history stack
             NavigationManager.NavigateTo("/venues", false, true);
         }
+
+        // Filters venue and facilities that supports the searched sport
+        FilteredVenues = SportId is null
+        ? context.Venue.Include(v => v.Facilities) :
+        context.Venue.Include(v => v.Facilities
+            .Where(f=>f.FacilitySports
+                .Where(fs=>fs.SportId==SportId).Any()))
+            .Where(v => v.Facilities
+                .Where(f => f.FacilitySports
+                    .Where(fs => fs.SportId == SportId)
+                    .Any()).Any());
         
         await base.OnInitializedAsync();
     }

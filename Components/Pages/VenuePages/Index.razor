@@ -9,9 +9,16 @@
 
 <PageTitle>Browse Venues</PageTitle>
 <div>
-<div class="container-large" id="nav-focus">
-        <h1>Test</h1>
-</div>
+    <div class="banner-large image-single"
+         style="background-image: linear-gradient(rgb(255,255,255,0.4),rgb(255,255,255,0.4)), url(images/placeholder/sports_banner.jpg)"
+         id="nav-focus">
+        <h1 class="fw-bold">
+        @sportName
+        </h1>
+        <p class="fw-bold">
+        @sportDesc
+        </p>
+    </div>
 <QuickGrid Class="table-no-header table-light" Items="FilteredVenues">
     <TemplateColumn Context="venue">
         <div class="image-single container-medium" style="background-image: url(@venue.ThumbnailImageUrl),
@@ -35,6 +42,9 @@
 
     [SupplyParameterFromQuery (Name="sportid")]
     private int? SportId { get; set; }
+
+    private string? sportName;
+    private string? sportDesc;
 
     private IQueryable<Venue> FilteredVenues;
     private IQueryable<Review> Reviews;
@@ -63,6 +73,17 @@
             r.Booking).ThenInclude(b=>
                 b.Timeslot).ThenInclude(t=>
                     t.Facility);
+
+        if (SportId is null)
+        {
+            sportName = "All";
+            sportDesc = "Looking for a place for sports? Search for a facility below.";
+        }
+        else
+        {
+            sportName = context.Sport.Find(SportId).Name;
+            sportDesc = context.Sport.Find(SportId).Description;
+        }
 
         await base.OnInitializedAsync();
     }

@@ -6,6 +6,7 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.AspNetCore.WebUtilities
 @using HealthIsWealth.Data
+@using Microsoft.EntityFrameworkCore
 
 @inject UserManager<HealthIsWealthUser> UserManager
 @inject IUserStore<HealthIsWealthUser> UserStore
@@ -29,6 +30,13 @@
         <EditForm Model="Input" asp-route-returnUrl="@ReturnUrl" method="post" OnValidSubmit="RegisterUser" FormName="register">
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert" />
+
+            @if (!string.IsNullOrEmpty(errorMessage))
+            {
+                <div class="alert alert-danger">
+                    @errorMessage
+                </div>
+            }
 
             <div class="input-wrapper">
                     <InputText @bind-Value="Input.FirstName"
@@ -93,6 +101,8 @@
 </div>
 
 @code {
+    private string? errorMessage;
+
     private IEnumerable<IdentityError>? identityErrors;
 
     [SupplyParameterFromForm]
@@ -105,11 +115,36 @@
 
     public async Task RegisterUser()
     {
+        var nameExists = await UserManager.Users.AnyAsync(u =>
+        u.FirstName.ToLower() == Input.FirstName.ToLower() &&
+        u.LastName.ToLower() == Input.LastName.ToLower());
+
+        if (nameExists)
+        {
+            errorMessage = "A user with this Name already exists.";
+            return;
+        }
+        var phoneExists = await UserManager.Users.AnyAsync(u => u.PhoneNumber == Input.ContactNumber);
+        if (phoneExists)
+        {
+            errorMessage = "This Phone Number is already in use.";
+            return;
+        }
+        else if (Input.ContactNumber.Length != 8)
+        {
+            errorMessage = "Phone number must only be 8 digits long";
+            return;
+            
+        }
+        errorMessage = null;
+
         var user = CreateUser();
+
 
         user.FirstName = Input.FirstName;
         user.LastName = Input.LastName;
         user.PhoneNumber = Input.ContactNumber;
+        user.ProfilePictureUrl = "/images/ProfilePicture/DefaultProfile.png";
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         await ((IUserEmailStore<HealthIsWealthUser>)UserStore).SetEmailAsync(user, Input.Email, CancellationToken.None);
@@ -154,7 +189,7 @@
         public string LastName { get; set; } = "";
 
         [Required]
-        [StringLength(20, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 8)]
+        [StringLength(9, ErrorMessage = "The {0} must be {1} characters long.", MinimumLength = 8)]
         [Display(Name = "Contact Number")]
         public string ContactNumber { get; set; } = "";
 

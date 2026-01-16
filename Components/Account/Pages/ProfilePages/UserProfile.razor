@@ -10,76 +10,102 @@
 @inject UserManager<HealthIsWealthUser> UserManager
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject IWebHostEnvironment Environment
+@rendermode InteractiveServer
 @attribute [Authorize]
-
-@code {
-    private HealthIsWealthContext dbContext = default!;
-    private HealthIsWealthUser? currentUser;
-
-    private List<Booking> upcomingBookings = new();
-    private List<Booking> pastBookings = new();
-
-    protected override async Task OnInitializedAsync()
-    {
-        dbContext = DbFactory.CreateDbContext();
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            var userId = user.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
-            currentUser = await UserManager.GetUserAsync(user);
-
-            if (currentUser != null)
-            {
-
-                var allBookings = await dbContext.Booking
-                .Include(booking => booking.Timeslot)
-                .ThenInclude(timeslot => timeslot.Facility)
-                .ThenInclude(facility => facility.Venue)
-                .Where(booking => booking.UserId == userId)
-                .OrderBy(booking => booking.Timeslot.StartDT)
-                .ToListAsync();
-
-                var now = DateTime.Now;
-
-                upcomingBookings = allBookings
-                    .Where(b => b.Timeslot.StartDT > now)
-                    .ToList();
-
-                pastBookings = allBookings
-                    .Where(b => b.Timeslot.StartDT <= now)
-                    .OrderByDescending(b => b.Timeslot.StartDT)
-                    .ToList();
-            }
-        }
-    }
-}
 
 <PageTitle>HealthIsWealth | Profile</PageTitle>
 
-<div class="name">
-    <h3>Hello, @(currentUser?.FirstName + " " + currentUser?.LastName) !</h3>
-</div>
+<div class="profile-container" style="max-width: 600px; margin: 0 auto;">
 
-<h4 style="margin-top: 30px;">Upcoming Bookings</h4>
-<hr />
-@if (!upcomingBookings.Any())
-{
-    <p>You have no upcoming bookings.</p>
-}
-else
-{
-    @foreach (var booking in upcomingBookings)
+    <div class="profile-field" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+        @if (isEditingName)
+        {
+            <div class="edit-mode">
+                <h4>Edit Name</h4>
+
+                <div style="margin-bottom: 10px;">
+                    <label>First Name:</label>
+                    <input @bind="newFirstName" class="form-control" placeholder="John" />
+                </div>
+
+                <div style="margin-bottom: 10px;">
+                    <label>Last Name:</label>
+                    <input @bind="newLastName" class="form-control" placeholder="Tan" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(nameErrorMessage))
+                {
+                    <p style="color: red; font-weight: bold;">@nameErrorMessage</p>
+                }
+
+                <div class="button-group">
+                    <button class="btn btn-success" @onclick="SaveName">Save</button>
+                    <button class="btn btn-secondary" @onclick="CancelEditName">Cancel</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="view-mode">
+                @if (string.IsNullOrEmpty(currentUser?.FirstName) && string.IsNullOrEmpty(currentUser?.LastName))
+                {
+                    <h3>Name: <span style="color: gray; font-style: italic;">Not set</span></h3>
+                    <button class="btn btn-primary" @onclick="EditName">Add Name</button>
+                }
+                else
+                {
+                    <h3>Hello, @currentUser.FirstName @currentUser.LastName!</h3>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="EditName">Edit Name</button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="profile-field" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+        @if (isEditingPhone)
+        {
+            <div class="edit-mode">
+                <h4>Edit Phone</h4>
+                <label>Phone Number (8 Digits):</label>
+                <input @bind="newPhoneNumber" class="form-control" placeholder="81234567" />
+
+                @if (!string.IsNullOrEmpty(phoneErrorMessage))
+                {
+                    <p style="color: red; font-weight: bold; margin-top: 5px;">@phoneErrorMessage</p>
+                }
+
+                <div class="button-group" style="margin-top: 10px;">
+                    <button class="btn btn-success" @onclick="SavePhone">Save</button>
+                    <button class="btn btn-secondary" @onclick="CancelEditPhone">Cancel</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="view-mode">
+                @if (string.IsNullOrEmpty(currentUser?.PhoneNumber))
+                {
+                    <h3>Phone: <span style="color: gray; font-style: italic;">Not set</span></h3>
+                    <button class="btn btn-primary" @onclick="EditPhone">Add Phone</button>
+                }
+                else
+                {
+                    <h3>Phone Number: @currentUser.PhoneNumber</h3>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="EditPhone">Edit Phone</button>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="profile-field" style="margin-bottom: 20px; padding: 15px; border: 1px solid #ddd; border-radius: 8px;">
+        <h3>Email: @(currentUser?.Email)</h3>
+    </div>
+
+    @if (!string.IsNullOrEmpty(image))
     {
-        <div class="bookings-float">
-            <strong>@booking.Timeslot.Facility.Venue.Name</strong> (@booking.Timeslot.Facility.Name) <br>
-
-            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
-            @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm") <br>
-        </div>
+        <img src="@image" alt="Profile Picture" style="max-width: 200px; border-radius: 10px; margin-top: 20px;" />
     }
-}
+</div>
 
 <h4 style="margin-top: 30px;">Past History</h4>
 <hr />
@@ -91,12 +117,151 @@ else
 {
     @foreach (var booking in pastBookings)
     {
-        <div class="bookings-float">
+        <div class="bookings-float" style="border: 1px solid #eee; padding: 10px; margin-bottom: 10px;">
             <strong>@booking.Timeslot.Facility.Name</strong> <br>
             @booking.Timeslot.Facility.Location <br>
             @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
-            <h3>Leave a review</h3>
-            <a href="/reviews/@booking.BookingId">review</a>
+            <a href="/reviews/@booking.BookingId" class="btn btn-link">Write a Review</a>
         </div>
+    }
+}
+
+@code {
+    private HealthIsWealthContext dbContext = default!;
+    private HealthIsWealthUser? currentUser;
+
+    // Variables for display
+    private string? image;
+    private List<Booking> pastBookings = new();
+
+    // Variables for Editing
+    private bool isEditingName = false;
+    private bool isEditingPhone = false;
+
+    private string? newFirstName;
+    private string? newLastName;
+    private string? newPhoneNumber;
+
+    private string? nameErrorMessage;
+    private string? phoneErrorMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        dbContext = DbFactory.CreateDbContext();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity != null && user.Identity.IsAuthenticated)
+        {
+            currentUser = await UserManager.GetUserAsync(user);
+
+            if (currentUser != null)
+            {
+                image = currentUser.ProfilePictureUrl;
+
+                // Load bookings
+                var allBookings = await dbContext.Booking
+                    .Include(b => b.Timeslot).ThenInclude(t => t.Facility).ThenInclude(f => f.Venue)
+                    .Where(b => b.UserId == currentUser.Id)
+                    .OrderByDescending(b => b.Timeslot.StartDT)
+                    .ToListAsync();
+
+                pastBookings = allBookings.Where(b => b.Timeslot.StartDT <= DateTime.Now).ToList();
+            }
+        }
+    }
+
+    // --- NAME EDITING LOGIC ---
+    private void EditName()
+    {
+        nameErrorMessage = null; // Clear previous errors
+        isEditingName = true;
+        newFirstName = currentUser?.FirstName;
+        newLastName = currentUser?.LastName;
+    }
+
+    private void CancelEditName()
+    {
+        isEditingName = false;
+    }
+
+    private async Task SaveName()
+    {
+        if (currentUser != null)
+        {
+            // Reset error message
+            nameErrorMessage = null;
+
+            // Optional: Check if name is taken (Only if you really want unique names)
+            var existingUser = await dbContext.Users
+                .Where(u => u.Id != currentUser.Id && u.FirstName == newFirstName && u.LastName == newLastName)
+                .FirstOrDefaultAsync();
+
+            if (existingUser != null)
+            {
+                nameErrorMessage = "This name is already taken. Please choose a different one.";
+                return;
+            }
+
+            // Save to DB
+            currentUser.FirstName = newFirstName;
+            currentUser.LastName = newLastName;
+            await UserManager.UpdateAsync(currentUser);
+
+            isEditingName = false;
+        }
+    }
+
+    // --- PHONE EDITING LOGIC ---
+    private void EditPhone()
+    {
+        phoneErrorMessage = null; // Clear previous errors
+        isEditingPhone = true;
+        newPhoneNumber = currentUser?.PhoneNumber;
+    }
+
+    private void CancelEditPhone()
+    {
+        isEditingPhone = false;
+    }
+
+    private async Task SavePhone()
+    {
+        if (currentUser != null)
+        {
+            phoneErrorMessage = null;
+
+            if (!string.IsNullOrWhiteSpace(newPhoneNumber))
+            {
+                if (!newPhoneNumber.All(char.IsDigit))
+                {
+                    phoneErrorMessage = "Phone number must contain only digits.";
+                    return;
+                }
+
+                if (newPhoneNumber.Length != 8)
+                {
+                    phoneErrorMessage = "Phone number must be exactly 8 digits.";
+                    return;
+                }
+
+                // Check uniqueness
+                var existingUser = await dbContext.Users
+                    .Where(u => u.Id != currentUser.Id && u.PhoneNumber == newPhoneNumber)
+                    .FirstOrDefaultAsync();
+
+                if (existingUser != null)
+                {
+                    phoneErrorMessage = "This phone number is already registered to another user.";
+                    return;
+                }
+            }
+
+            // Save to DB
+            currentUser.PhoneNumber = newPhoneNumber;
+            await UserManager.UpdateAsync(currentUser);
+
+            isEditingPhone = false;
+        }
     }
 }

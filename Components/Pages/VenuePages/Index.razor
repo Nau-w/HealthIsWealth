@@ -9,21 +9,21 @@
 
 <PageTitle>Browse Venues</PageTitle>
 
-<QuickGrid Class="table" Items="FilteredVenues">
+<QuickGrid Class="table-no-header table-light" Items="FilteredVenues">
     <TemplateColumn Context="venue">
-        <ChildContent>
-            <p class="">@venue.Name</p>
-        </ChildContent>
+        <div class="image-single container-medium" style="background-image: url(@venue.ThumbnailImageUrl),
+            url(images/placeholder/sports.jpg)">
+        </div>
     </TemplateColumn>
-    <PropertyColumn Property="venue => venue.Name" Title=""/>
-    <PropertyColumn Property="venue => venue.Address" />
-    <PropertyColumn Property="venue => venue.PostalCode" />
-    <PropertyColumn Property="venue => venue.Facilities.Min(f => f.Price)" />
-    <PropertyColumn Property="venue => venue.ThumbnailImageUrl" />
-
     <TemplateColumn Context="venue">
-        <a href="@($"venues/details?venueid={venue.VenueId}")">Details</a>
-    </TemplateColumn>
+        <div>
+            <h1 class="fw-bolder">@venue.Name</h1>
+            <h5>@venue.Address</h5>
+            <h5>@venue.PostalCode</h5>
+            <h5>From: $@venue.Facilities.Min(f => f.Price)/hr</h5>
+            <h5>@getRating(venue)</h5>
+        </div>
+    </TemplateColumn>    
 </QuickGrid>
 
 @code {
@@ -33,6 +33,7 @@
     private int? SportId { get; set; }
 
     private IQueryable<Venue> FilteredVenues;
+    private IQueryable<Review> Reviews;
 
     protected override async Task OnInitializedAsync()
     {
@@ -53,8 +54,26 @@
                 .Where(f => f.FacilitySports
                     .Where(fs => fs.SportId == SportId)
                     .Any()).Any());
-        
+
+        Reviews = context.Review.Include(r=>
+            r.Booking).ThenInclude(b=>
+                b.Timeslot).ThenInclude(t=>
+                    t.Facility);
+
         await base.OnInitializedAsync();
+    }
+
+    public string getRating(Venue venue)
+    {
+        IQueryable<Review> VenueReviews = Reviews.Where(r => r.Booking.Timeslot.Facility.VenueId == venue.VenueId);
+        try
+        {
+            return $"{VenueReviews.Average(r => r.Rating)}/5   ({VenueReviews.Count()} reviews)";
+        } catch (System.InvalidOperationException)
+        {
+            return "No Reviews";
+        }
+
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

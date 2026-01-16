@@ -83,3 +83,44 @@ h1:focus {
     margin: 20px;
     min-height: 230px;
 }
+
+.container-medium {
+    display: flex;
+    align-items: start;
+    justify-content: left;
+    text-align: center;
+    font-size: 24px;
+    border-radius: 10px;
+    height: 250px;
+    width: 400px;
+}
+
+.table-no-header thead{
+    display: none;
+}
+
+.table-light{
+    table-layout: auto;
+    width: 100%;
+    align-items: start;
+    justify-content: start;
+}
+
+    .table-light tr {
+        display: flex;
+        align-items: flex-start;
+        justify-content: left;
+        text-align: left;
+        border-top: 1px solid #aaa;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        width: 100%;
+    }
+
+    .table-light tr:hover {
+        background-color: #cccccc;
+    }
+
+    .table-light td {
+
+    }

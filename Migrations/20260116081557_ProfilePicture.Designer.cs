@@ -4,6 +4,7 @@ using HealthIsWealth.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HealthIsWealth.Migrations
 {
     [DbContext(typeof(HealthIsWealthContext))]
-    partial class HealthIsWealthContextModelSnapshot : ModelSnapshot
+    [Migration("20260116081557_ProfilePicture")]
+    partial class ProfilePicture
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,9 +111,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST1@GMAIL.COM",
                             NormalizedUserName = "TEST1@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEMxbXB0jSVgc8zZACNUNDNSmKYUxtXyzZR8d4GwDKfySyO3HLsPI9EvfqznAkw/ATg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEOYrJpANUEq4lskE4p7jZhsuITdWb9SK/wbUNCsFTA77aarZkTAIJQptRubQiXxy8w==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "0f991472-fbb0-4220-a597-9e884fd1def7",
+                            SecurityStamp = "1781acf5-f66f-40e2-a841-cd40995334d6",
                             TwoFactorEnabled = false,
                             UserName = "test1@gmail.com"
                         },
@@ -118,7 +121,7 @@ namespace HealthIsWealth.Migrations
                         {
                             Id = "6d3d2829-89fa-4095-b0f9-0ef8e802fd69",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "07dab716-d0c2-40e7-9b0b-f297d839d68e",
+                            ConcurrencyStamp = "d6d49f62-0bf1-413b-9887-ac220eac17a7",
                             Email = "test2@gmail.com",
                             EmailConfirmed = true,
                             FirstName = "test",
@@ -126,9 +129,9 @@ namespace HealthIsWealth.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST2@GMAIL.COM",
                             NormalizedUserName = "TEST2@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIBb4FXdK/P8Y24p+VW4rtrgFy6NTKCP8dus1sDEstUgPEe8S/bY5OPtjgCspMKjlw==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEBQwLO27Ftp/fDRs3FcrG1a0zALO/TIso6i02BiVsYNZmYxLhyWBda0anr9kmDnpEA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "61913ab8-8bd7-4ded-8b18-822b90ac35e9",
+                            SecurityStamp = "a6eafda6-c189-4d74-af14-ab4ba595fb6e",
                             TwoFactorEnabled = false,
                             UserName = "test2@gmail.com"
                         });

@@ -15,6 +15,7 @@
     private HealthIsWealthContext dbContext = default!;
 
     private List<Booking>? myBookings;
+    private List<Booking> upcomingBookings = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -36,11 +37,19 @@
                     .Where(booking => booking.UserId == userId)
                     .OrderBy(booking => booking.Timeslot.StartDT)
                     .ToListAsync();
+
+                var now = DateTime.Now;
+
+                upcomingBookings = myBookings
+                    .Where(b => b.Timeslot.StartDT > now)
+                    .ToList();
             }
         }
     }
     public async ValueTask DisposeAsync() => await dbContext.DisposeAsync();
 }
+
+
 <PageTitle>My Bookings</PageTitle>
 
 <div>
@@ -61,7 +70,7 @@ else if (!myBookings.Any())
 else
 {
 
-    @foreach (var booking in myBookings)
+    @foreach (var booking in upcomingBookings)
     {
         <div class="bookings-float">
             <img src=""/>

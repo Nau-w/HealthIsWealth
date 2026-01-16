@@ -1,0 +1,77 @@
+﻿@page "/reviews/{id:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.Domain
+@using HealthIsWealth.Data
+
+@implements IAsyncDisposable
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@attribute [Authorize]
+
+
+<PageTitle>Booking Reviews</PageTitle>
+<div class="review">
+    <h1>Reviews for Booking #@Id</h1>
+</div>
+
+<div class="container">
+
+
+    <p>
+        <a href="@($"/reviews/create?bookingid={Id}")" class="btn btn-primary">Write a Review</a>
+    </p>
+
+    <hr />
+
+    @if (reviews == null)
+    {
+        <p><em>Loading reviews...</em></p>
+    }
+    else if (!reviews.Any())
+    {
+        <div class="alert alert-info">
+            No reviews yet for this booking. Be the first to leave one!
+        </div>
+    }
+    else
+    {
+        <div class="review-list">
+            @foreach (var review in reviews)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Rating: @review.Rating / 5</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">User ID: @review.UserId</h6>
+                        <p class="card-text">@review.Feedback</p>
+
+                        <div class="mt-2">
+                            <a href="@($"reviews/edit?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <a href="@($"reviews/details?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-info">Details</a>
+                            <a href="@($"reviews/delete?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private HealthIsWealthContext context = default!;
+    private List<Review>? reviews;
+
+    protected override async Task OnInitializedAsync()
+    {
+        context = DbFactory.CreateDbContext();
+
+        // Load the reviews for this specific booking into a list
+        reviews = await context.Review
+            .Where(r => r.BookingId == Id)
+            .ToListAsync();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

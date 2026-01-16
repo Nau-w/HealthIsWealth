@@ -1,4 +1,8 @@
 ﻿.logout-backdrop {
+    background-image: linear-gradient(rgb(255, 255, 255, 0.2)), url(/images/backgrounds/SportsHubBackground.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     position: fixed;
     top: 0;
     left: 0;
@@ -73,7 +77,7 @@ h6 {
     text-align: center;
     text-decoration: none;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.3);
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 12px;
@@ -84,6 +88,6 @@ h6 {
 }
 
     .btn-cancel:hover {
-        background: rgba(255, 255, 255, 0.6);
+        background: rgba(0, 0, 0, 0.6);
         color: white;
     }

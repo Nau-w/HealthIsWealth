@@ -1,102 +1,106 @@
-﻿.profile-container {
+﻿/* Container Layout */
+.profile-container {
     max-width: 600px;
-    margin: 2rem auto;
-    padding: 1rem;
+    margin-top: 80px;
+    box-sizing: border-box;
+    margin: 40 auto;
 }
 
 .profile-field {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+    margin-bottom: 20px;
+    padding: 15px;
     border: 1px solid #ddd;
     border-radius: 8px;
-    background: #f9f9f9;
+    overflow: hidden; /* This prevents content from spilling out */
+    background-color: white;
 }
 
-.view-mode {
+/* Edit Mode Layouts */
+.edit-mode .form-group {
+    margin-bottom: 15px;
+}
+
+.edit-mode .button-group {
+    margin-top: 10px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap; /* Buttons will stack if space is tight */
 }
 
-    .view-mode h3 {
-        margin: 0;
-        font-size: 1.1rem;
-    }
+/* Image Handling - PREVIEW MODE */
+.img-preview-container {
+    margin-bottom: 15px;
+    text-align: center;
+    width: 100%;
+}
 
-.empty-field {
-    color: #999;
+.preview-img {
+    /* Responsive sizing */
+    width: 200px;
+    height: 200px;
+    max-width: 100%; /* Critical: Prevents overflowing parent */
+
+    border-radius: 50%;
+    border: 2px solid #28a745;
+    margin-bottom: 10px;
+    object-fit: cover; /* Ensures image doesn't stretch weirdly */
+}
+
+.preview-label {
+    font-size: 0.9em;
+    color: green;
+    display: block;
+}
+
+.current-img-faded {
+    width: 150px;
+    height: 150px;
+    max-width: 100%;
+    border-radius: 50%;
+    opacity: 0.5;
+    object-fit: cover;
+}
+
+/* Image Handling - VIEW MODE */
+.profile-thumb-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap; /* Allows wrapping on very small screens */
+}
+
+.profile-thumb {
+    width: 80px;
+    height: 80px;
+    /* Ensure it stays a circle and doesn't squash */
+    min-width: 80px;
+    min-height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid #ccc;
+}
+
+/* Typography & Status */
+.text-not-set {
+    color: gray;
     font-style: italic;
 }
 
-.edit-mode {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-}
-
-    .edit-mode label {
-        font-weight: 600;
-        margin-top: 0.5rem;
-    }
-
-    .edit-mode input {
-        padding: 0.5rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        font-size: 1rem;
-    }
-
 .error-message {
-    padding: 0.75rem;
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
-    border-radius: 4px;
-    color: #721c24;
-    font-size: 0.9rem;
+    color: red;
+    font-weight: bold;
+    margin-top: 5px;
+    word-wrap: break-word; /* Prevents long error text from breaking layout */
 }
 
-.button-group {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+/* Past History Section */
+.history-header {
+    margin-top: 30px;
 }
 
-.btn-edit {
-    padding: 0.4rem 1rem;
-    background: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
+.booking-card {
+    border: 1px solid #eee;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
 }
-
-    .btn-edit:hover {
-        background: #0056b3;
-    }
-
-.btn-save {
-    padding: 0.5rem 1rem;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-    .btn-save:hover {
-        background: #218838;
-    }
-
-.btn-cancel {
-    padding: 0.5rem 1rem;
-    background: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-}
-
-    .btn-cancel:hover {
-        background: #545b62;
-    }

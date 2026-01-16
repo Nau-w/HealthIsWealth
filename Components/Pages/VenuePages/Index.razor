@@ -98,18 +98,6 @@
         await base.OnInitializedAsync();
     }
 
-    private void onVenueClick(Venue venue)
-    {
-        if (SportId is null)
-        {
-            NavigationManager.NavigateTo($"/venues/details?venueid={venue.VenueId}");
-        } else
-        {
-            NavigationManager.NavigateTo($"/venues/details?venueid={venue.VenueId}&sportid={SportId}");
-        }
-
-    }
-
     private float getLowestPrice(Venue venue)
     {
         return venue.Facilities.Min(f => f.Price);
@@ -120,7 +108,8 @@
         IQueryable<Review> VenueReviews = Reviews.Where(r => r.Booking.Timeslot.Facility.VenueId == venue.VenueId);
         try
         {
-            return VenueReviews.Average(r => r.Rating);
+            float averageRating = VenueReviews.Average(r => r.Rating);
+            return (float) Math.Floor(averageRating * 100) / 100;
         }
         catch (System.InvalidOperationException)
         {

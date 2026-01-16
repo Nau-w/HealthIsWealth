@@ -13,11 +13,15 @@
 @attribute [Authorize]
 
 @code {
+    private string? image;
+
     private HealthIsWealthContext dbContext = default!;
     private HealthIsWealthUser? currentUser;
 
     private List<Booking> upcomingBookings = new();
     private List<Booking> pastBookings = new();
+
+    private HealthIsWealthUser? myProfile;
 
     protected override async Task OnInitializedAsync()
     {
@@ -32,6 +36,11 @@
 
             if (currentUser != null)
             {
+                // Load existing profile picture if it exists
+                if (!string.IsNullOrEmpty(currentUser.ProfilePictureUrl))
+                {
+                    image = currentUser.ProfilePictureUrl + $"?v={DateTime.Now.Ticks}";
+                }
 
                 var allBookings = await dbContext.Booking
                 .Include(booking => booking.Timeslot)
@@ -54,6 +63,34 @@
             }
         }
     }
+
+    private async Task HandleImageUpload(InputFileChangeEventArgs e)
+    {
+        var photo = e.File;
+
+        var resizePhoto = await photo.RequestImageFileAsync("image/jpeg", 400, 400);
+
+        var fileName = $"{currentUser.Id}.png";
+
+        var folderPath = Path.Combine(Environment.WebRootPath, "images", "ProfilePicture");
+        var fullPath = Path.Combine(folderPath, fileName);
+
+        await using (var stream = resizePhoto.OpenReadStream(maxAllowedSize: 1024 * 1024 * 5))
+        await using (var fs = new FileStream(fullPath, FileMode.Create))
+        {
+            await stream.CopyToAsync(fs);
+        }
+
+        currentUser.ProfilePictureUrl = $"/images/ProfilePicture/{fileName}";
+
+        await UserManager.UpdateAsync(currentUser);
+
+        // 6. Update local variable to show the image immediately without refreshing
+        // We add a timestamp (?v=...) to force the browser to ignore the old cached image
+        image = currentUser.ProfilePictureUrl + $"?v={DateTime.Now.Ticks}";
+
+        StateHasChanged();
+    }
 }
 
 <PageTitle>HealthIsWealth | Profile</PageTitle>
@@ -62,24 +99,15 @@
     <h3>Hello, @(currentUser?.FirstName + " " + currentUser?.LastName) !</h3>
 </div>
 
-<h4 style="margin-top: 30px;">Upcoming Bookings</h4>
-<hr />
-@if (!upcomingBookings.Any())
-{
-    <p>You have no upcoming bookings.</p>
-}
-else
-{
-    @foreach (var booking in upcomingBookings)
-    {
-        <div class="bookings-float">
-            <strong>@booking.Timeslot.Facility.Venue.Name</strong> (@booking.Timeslot.Facility.Name) <br>
+<InputFile accept="image/*" OnChange="HandleImageUpload" />
 
-            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
-            @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm") <br>
-        </div>
-    }
+@if (!string.IsNullOrEmpty(image))
+{
+    <div>
+        <img src="@image" alt="Uploaded" style="max-width: 200px; margin-top: 20px;" />
+    </div>
 }
+
 
 <h4 style="margin-top: 30px;">Past History</h4>
 <hr />

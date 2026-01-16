@@ -22,7 +22,9 @@ namespace HealthIsWealth.Configurations.Entities
                     UserName = "test1@gmail.com",
                     NormalizedUserName = "TEST1@GMAIL.COM",
                     PasswordHash = hasher.HashPassword(null, "P@ssword1"),
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    ProfilePictureUrl = "/images/ProfilePicture/backgroundImage.jpg"
+
                 },
                 new HealthIsWealthUser
                 {
@@ -34,7 +36,8 @@ namespace HealthIsWealth.Configurations.Entities
                     UserName = "test2@gmail.com",
                     NormalizedUserName = "TEST2@GMAIL.COM",
                     PasswordHash = hasher.HashPassword(null, "P@ssword1"),
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    ProfilePictureUrl = "/images/ProfilePicture/Dog Icon.jpeg"
                 }
             );
         }

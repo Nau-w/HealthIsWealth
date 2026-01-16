@@ -1,5 +1,5 @@
 ﻿.logout-backdrop {
-    background-image: linear-gradient(rgb(255, 255, 255, 0.2)), url(/images/backgrounds/SportsHubBackground.jpg);
+    background-image: linear-gradient(rgb(255, 255, 255, 0.4)), url(/images/backgrounds/SportsHubBackground.jpg);
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -11,7 +11,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9998;
+    z-index: 999;
 }
 
 .logout-window {
@@ -40,7 +40,7 @@ h6 {
     font-size: 1rem;
     text-align: center;
     font-weight: 500;
-    color: #bdbdbd;
+    color: rgba(0, 0, 0, 0.8);
     margin-bottom: 5px;
 }
 

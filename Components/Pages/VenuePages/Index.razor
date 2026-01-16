@@ -1,0 +1,38 @@
+﻿@page "/venues"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.QuickGrid
+@using HealthIsWealth.Domain
+@using HealthIsWealth.Data
+@implements IAsyncDisposable
+@inject NavigationManager NavigationManager
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+
+<PageTitle>Browse Venues</PageTitle>
+
+<QuickGrid Class="table" Items="context.Venue">
+    <TemplateColumn Context="venue">
+        <ChildContent>
+            <p class="">@venue.Name</p>
+        </ChildContent>
+    </TemplateColumn>
+    <PropertyColumn Property="venue => venue.Name" Title=""/>
+    <PropertyColumn Property="venue => venue.Address" />
+    <PropertyColumn Property="venue => venue.PostalCode" />
+    <PropertyColumn Property="venue => venue.UnitNumber" />
+    <PropertyColumn Property="venue => venue.ThumbnailImageUrl" />
+
+    <TemplateColumn Context="venue">
+        <a href="@($"venues/details?venueid={venue.VenueId}")">Details</a>
+    </TemplateColumn>
+</QuickGrid>
+
+@code {
+    private HealthIsWealthContext context = default!;
+
+    protected override void OnInitialized()
+    {
+        context = DbFactory.CreateDbContext();
+    }
+
+    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+}

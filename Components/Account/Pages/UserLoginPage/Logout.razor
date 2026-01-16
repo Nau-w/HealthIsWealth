@@ -16,7 +16,7 @@
 
             <form action="/Account/Logout" method="post">
                 <AntiforgeryToken />
-                <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                <input type="hidden" name="ReturnUrl" value="@HomePage" />
                 <button type="submit" class="btn-primary">
                     Logout
                 </button>
@@ -36,8 +36,14 @@
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
+        // Update currentUrl when the user moves to a new page
         currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
+    }
+
+    private void HomePage()
+    {
+       NavigationManager.NavigateTo("/");
     }
 
     public void Dispose()

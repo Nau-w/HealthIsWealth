@@ -20,28 +20,29 @@
         </p>
     </div>
 <QuickGrid Class="table-no-header table-light" Items="FilteredVenues">
-        <TemplateColumn Context="venue">
+    <TemplateColumn Context="venue">
         <div class="image-single container-medium" style="background-image: url(@venue.ThumbnailImageUrl),
             url(images/placeholder/sports.jpg)">
         </div>
     </TemplateColumn>
     <TemplateColumn Context="venue">
-        <div>
-            <h1 class="fw-bolder">@venue.Name</h1>
-            <h5>@venue.Address</h5>
-            <h5>@venue.PostalCode</h5>
-            <h5>From: $@venue.Facilities.Min(f => f.Price)/hr</h5>
-            <h5>
-            @if (getReviewCount(venue) > 0)
-            {
-                <span>Rating: @calculateRating(venue)/5 (@getReviewCount(venue) reviews)</span>
-            } 
-            else
-            {
-                <span>No Reviews</span>
-            }
-            </h5>
-        </div>
+        <h1 class="fw-bolder">@venue.Name</h1>
+        <h5>@venue.Address</h5>
+        <h5>@venue.PostalCode</h5>
+        <h5>From: $@venue.Facilities.Min(f => f.Price)/hr</h5>
+        <h5>
+        @if (getReviewCount(venue) > 0)
+        {
+            <span>Rating: @calculateRating(venue)/5 (@getReviewCount(venue) reviews)</span>
+        } 
+        else
+        {
+            <span>No Reviews</span>
+        }
+        </h5>
+        <a class="btn-medium" href="/venues/details?venueid=@venue.VenueId&sportid=@SportId">
+            View Details
+        </a>
     </TemplateColumn>    
 </QuickGrid>
 </div>
@@ -97,12 +98,24 @@
         await base.OnInitializedAsync();
     }
 
-    public float getLowestPrice(Venue venue)
+    private void onVenueClick(Venue venue)
+    {
+        if (SportId is null)
+        {
+            NavigationManager.NavigateTo($"/venues/details?venueid={venue.VenueId}");
+        } else
+        {
+            NavigationManager.NavigateTo($"/venues/details?venueid={venue.VenueId}&sportid={SportId}");
+        }
+
+    }
+
+    private float getLowestPrice(Venue venue)
     {
         return venue.Facilities.Min(f => f.Price);
     }
 
-    public float? calculateRating(Venue venue)
+    private float? calculateRating(Venue venue)
     {
         IQueryable<Review> VenueReviews = Reviews.Where(r => r.Booking.Timeslot.Facility.VenueId == venue.VenueId);
         try
@@ -115,7 +128,7 @@
         }
     }
 
-    public int getReviewCount(Venue venue)
+    private int getReviewCount(Venue venue)
     {
         IQueryable<Review> VenueReviews = Reviews.Where(r => r.Booking.Timeslot.Facility.VenueId == venue.VenueId);
         return VenueReviews.Count();

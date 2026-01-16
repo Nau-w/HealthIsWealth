@@ -135,10 +135,6 @@ h1:focus {
         width: 100%;
     }
 
-    .table-light>tbody>tr:hover {
-        background-color: #cccccc;
-    }
-
 .dropdown{
     position: relative;
     display: inline-block;
@@ -173,4 +169,22 @@ h1:focus {
     background-color: #f6f6f6;
     color: #652bd4;
     transition: 0.5s;
+}
+
+.btn-medium {
+    display: block;
+    padding: 10px;
+    border: 2px solid;
+    border-radius: 10px;
+    text-decoration: none;
+    text-align: center;
+    margin: 10px;
+    min-width: fit-content;
+    width: 300px;
+    font-size: 22px;
+}
+
+.btn-medium:hover {
+    color: white;
+    background-color: darkblue;
 }

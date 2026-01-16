@@ -92,9 +92,11 @@ else
     @foreach (var booking in pastBookings)
     {
         <div class="bookings-float">
-            <strong>@booking.Timeslot.Facility.Venue.Name</strong> <br>
+            <strong>@booking.Timeslot.Facility.Name</strong> <br>
             @booking.Timeslot.Facility.Location <br>
             @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
+            <h3>Leave a review</h3>
+            <a href="/reviews/@booking.BookingId">review</a>
         </div>
     }
 }

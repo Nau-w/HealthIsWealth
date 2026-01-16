@@ -1,6 +1,8 @@
-﻿/* --- LOGIN POPUP STYLES (Global) --- */
-
-.register-backdrop {
+﻿.register-backdrop {
+    background-image: linear-gradient(rgba(255, 255, 255, 0)), url('/images/backgrounds/backgroundImage.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     position: fixed;
     top: 0;
     left: 0;
@@ -9,7 +11,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 9999;
+    z-index: 9998;
 }
 
 .register-window {

@@ -1,38 +1,76 @@
-﻿@page "/reviews"
+﻿@page "/reviews/{id:int}"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
-@using Microsoft.AspNetCore.Components.QuickGrid
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
+
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@attribute [Authorize]
 
-<PageTitle>Index</PageTitle>
 
-<h1>Index</h1>
+<PageTitle>Booking Reviews</PageTitle>
+<div class="review">
+    <h1>Reviews for Booking #@Id</h1>
+</div>
 
-<p>
-    <a href="reviews/create">Create New</a>
-</p>
+<div class="container">
 
-<QuickGrid Class="table" Items="context.Review">
-    <PropertyColumn Property="review => review.Rating" />
-    <PropertyColumn Property="review => review.Feedback" />
-    <PropertyColumn Property="review => review.BookingId" />
-    <PropertyColumn Property="review => review.UserId" />
 
-    <TemplateColumn Context="review">
-        <a href="@($"reviews/edit?reviewid={review.ReviewId}")">Edit</a> |
-        <a href="@($"reviews/details?reviewid={review.ReviewId}")">Details</a> |
-        <a href="@($"reviews/delete?reviewid={review.ReviewId}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+    <p>
+        <a href="@($"/reviews/create?bookingid={Id}")" class="btn btn-primary">Write a Review</a>
+    </p>
+
+    <hr />
+
+    @if (reviews == null)
+    {
+        <p><em>Loading reviews...</em></p>
+    }
+    else if (!reviews.Any())
+    {
+        <div class="alert alert-info">
+            No reviews yet for this booking. Be the first to leave one!
+        </div>
+    }
+    else
+    {
+        <div class="review-list">
+            @foreach (var review in reviews)
+            {
+                <div class="card mb-3 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Rating: @review.Rating / 5</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">User ID: @review.UserId</h6>
+                        <p class="card-text">@review.Feedback</p>
+
+                        <div class="mt-2">
+                            <a href="@($"reviews/edit?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-secondary">Edit</a>
+                            <a href="@($"reviews/details?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-info">Details</a>
+                            <a href="@($"reviews/delete?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
 
 @code {
-    private HealthIsWealthContext context = default!;
+    [Parameter]
+    public int Id { get; set; }
 
-    protected override void OnInitialized()
+    private HealthIsWealthContext context = default!;
+    private List<Review>? reviews;
+
+    protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
+
+        // Load the reviews for this specific booking into a list
+        reviews = await context.Review
+            .Where(r => r.BookingId == Id)
+            .ToListAsync();
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

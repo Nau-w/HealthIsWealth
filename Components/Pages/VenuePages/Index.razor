@@ -8,7 +8,10 @@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 
 <PageTitle>Browse Venues</PageTitle>
-
+<div>
+<div class="container-large" id="nav-focus">
+        <h1>Test</h1>
+</div>
 <QuickGrid Class="table-no-header table-light" Items="FilteredVenues">
     <TemplateColumn Context="venue">
         <div class="image-single container-medium" style="background-image: url(@venue.ThumbnailImageUrl),
@@ -25,6 +28,7 @@
         </div>
     </TemplateColumn>    
 </QuickGrid>
+</div>
 
 @code {
     private HealthIsWealthContext context = default!;

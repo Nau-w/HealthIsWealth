@@ -28,30 +28,49 @@
         </div>
         </section>
         }
-    @if (venue is null)
-    {
-        <h1><em>Loading...</em></h1>
-    }
-    else {
-        <h1 class="fw-bolder" style="color: crimson">@venue.Name</h1>
-        <dl class="row">
-            <dt class="col-sm-2">Address</dt>
-            <dd class="col-sm-10">@venue.Address</dd>
-            <dt class="col-sm-2">PostalCode</dt>
-            <dd class="col-sm-10">@venue.PostalCode</dd>
-            <dt class="col-sm-2">UnitNumber</dt>
-            <dd class="col-sm-10">@venue.UnitNumber</dd>
-        </dl>
+        <hr />
         <div>
-
+            @if (venue is null)
+            {
+                <h1><em>Loading...</em></h1>
+            } else {
+                <h1 class="title-large" style="color: crimson">@venue.Name</h1>
+                <dl class="row">
+                    <dt class="col-sm-2 title-small">Address</dt>
+                    <dd class="col-sm-10" style="font-size: 20px">| @venue.Address</dd>
+                    <dt class="col-sm-2 title-small">Postal Code</dt>
+                    <dd class="col-sm-10" style="font-size: 20px">| @venue.PostalCode</dd>
+                @if (venue.UnitNumber is not null && !venue.UnitNumber.Equals(""))
+                {
+                    <dt class="col-sm-2 title-small">Unit Number</dt>
+                    <dd class="col-sm-10" style="font-size: 20px">| @venue.UnitNumber</dd>
+                }
+                </dl>
+            }
         </div>
-    }
+        <hr/>
+        @if (FilteredFacility is not null && OtherFacility is not null){
+            <div>
+                <h1 class="title-medium">Facilities:</h1>
+                <table>
+                    @foreach (Facility facility in FilteredFacility)
+                    {
+                        <tr>
+                            <td><a class="btn-small btn-red" style="width: 100%" href=""> @facility.Name </a></td>
+                            <td><p></p></td>
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
     </div>
 </div>
 
 @code {
     private Venue? venue;
     private IList<VenueImage> VenueImage;
+    private IList<Facility> FilteredFacility;
+    private IList<Facility> OtherFacility;
 
     [SupplyParameterFromQuery (Name = "venueid")]
     private int VenueId { get; set; }
@@ -67,6 +86,16 @@
         {
             NavigationManager.NavigateTo("notfound");
         }
-        VenueImage = context.VenueImage.Where(v => v.VenueId == VenueId).ToList();
+        VenueImage = await context.VenueImage.Where(v => v.VenueId == VenueId).ToListAsync();
+
+        FilteredFacility = await context.Facility.Where(f => f.VenueId == VenueId)
+            .Include(f => f.FacilitySports).ThenInclude(fs => fs.Sport)
+                .Where(f => f.FacilitySports.Where(fs => fs.SportId == SportId).Any())
+                    .ToListAsync();
+
+        OtherFacility = await context.Facility.Where(f => f.VenueId == VenueId)
+            .Include(f => f.FacilitySports).ThenInclude(fs => fs.Sport)
+                .Where(f => f.FacilitySports.All(fs => fs.SportId != SportId))
+                    .ToListAsync();
     }
 }

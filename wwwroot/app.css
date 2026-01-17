@@ -180,20 +180,40 @@ h1:focus {
 
 .btn-medium {
     display: block;
-    padding: 10px;
+    padding: 0.75rem;
     border: 2px solid;
-    border-radius: 10px;
+    border-radius: 1rem;
     text-decoration: none;
     text-align: center;
-    margin: 10px;
+    margin: 0.75rem;
     min-width: fit-content;
-    width: 300px;
+    width: 20rem;
     font-size: 22px;
+    font-weight: 500;
 }
 
-.btn-medium:hover {
+.btn-small {
+    display: block;
+    padding: 0.75rem;
+    border: 2px solid;
+    border-radius: 1rem;
+    text-decoration: none;
+    text-align: center;
+    margin: 0.75rem;
+    min-width: fit-content;
+    width: 10rem;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.btn-red {
+    color: crimson;
+    border-color: crimson;
+}
+
+.btn-red:hover {
     color: white;
-    background-color: darkblue;
+    background-color: crimson;
 }
 
 .slider-container{
@@ -250,4 +270,19 @@ h1:focus {
 .slider-nav a:hover{
     opacity: 1;
     background-color: red;
+}
+
+.title-large {
+    font-size: 60px;
+    font-weight: 700;
+}
+
+.title-medium{
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.title-small {
+    font-size: 20px;
+    font-weight: 550;
 }

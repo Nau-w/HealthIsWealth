@@ -4,51 +4,114 @@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Details</PageTitle>
-
-<h1>Details</h1>
-
-<div>
-    <h2>Venue</h2>
-    <hr />
-    @if (venue is null)
-    {
-        <p><em>Loading...</em></p>
-    }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@venue.Name</dd>
-            <dt class="col-sm-2">Address</dt>
-            <dd class="col-sm-10">@venue.Address</dd>
-            <dt class="col-sm-2">PostalCode</dt>
-            <dd class="col-sm-10">@venue.PostalCode</dd>
-            <dt class="col-sm-2">UnitNumber</dt>
-            <dd class="col-sm-10">@venue.UnitNumber</dd>
-            <dt class="col-sm-2">ThumbnailImageUrl</dt>
-            <dd class="col-sm-10">@venue.ThumbnailImageUrl</dd>
-        </dl>
-        <div>
-            <a href="@($"/venues/edit?venueid={venue.VenueId}")">Edit</a> |
-            <a href="@($"/venues")">Back to List</a>
+<PageTitle>Venue Booking</PageTitle>
+<div class="container-centered">
+    <div style="width: 60%">
+        @if (venue is not null && VenueImage is not null)
+        {
+            <section class="slider-container">
+                <div class="slider-wrapper">
+            <div class="slider">
+                <img src="@venue.ThumbnailImageUrl" alt="" id="thumbnail" />
+                @for (int i=0; i < VenueImage.Count; i++)
+                {
+                <img src=@VenueImage.ElementAt(i).ImageUrl alt="" id="slide-@i.ToString()" />
+                }
+            </div>
+            <div class="slider-nav">
+                <a href="@NavigationManager.Uri#thumbnail" />
+                @for (int i = 0; i < VenueImage.Count; i++)
+                {
+                <a href="@NavigationManager.Uri#slide-@i.ToString()" />
+                }
+            </div>
         </div>
-    }
+        </section>
+        }
+        <hr />
+        <div>
+            @if (venue is null)
+            {
+                <h1><em>Loading...</em></h1>
+            } else {
+                <h1 class="title-large" style="color: crimson">@venue.Name</h1>
+                <dl class="row">
+                    <dt class="col-sm-2 title-small">Address</dt>
+                    <dd class="col-sm-10" style="font-size: 20px">| @venue.Address</dd>
+                    <dt class="col-sm-2 title-small">Postal Code</dt>
+                    <dd class="col-sm-10" style="font-size: 20px">| @venue.PostalCode</dd>
+                @if (venue.UnitNumber is not null && !venue.UnitNumber.Equals(""))
+                {
+                    <dt class="col-sm-2 title-small">Unit Number</dt>
+                    <dd class="col-sm-10" style="font-size: 20px">| @venue.UnitNumber</dd>
+                }
+                </dl>
+            }
+        </div>
+        <hr/>
+        @if (FilteredFacility is not null && OtherFacility is not null){
+            <div>
+                <h1 class="title-medium">Facilities:</h1>
+                @if (sport is not null)
+                {
+                    @foreach (Facility facility in FilteredFacility)
+                    {
+                        <div class="wrapper">
+                            <img class="container-h" src="@facility.ThumbnailImageUrl" width="250" height="150"
+                                 onerror="if (this.src != 'images/placeholder/no_image.jpg') this.src='images/placeholder/no_image.jpg';" />
+                            <div class="container-h">
+                                <p style="font-size: 20px;">
+                                    Price: $@facility.Price/hr<br />
+                                    Sports: @sport.Name
+                                    @foreach (FacilitySport facilitySport in
+                                                    facility.FacilitySports.Where(fs => fs.SportId != SportId))
+                                    {
+                                        <span>, @facilitySport.Sport.Name</span>
+                                    }
+                                </p>
+                                <a class="btn-small btn-red" href=""> @facility.Name </a>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        }
+    </div>
 </div>
 
 @code {
     private Venue? venue;
+    private Sport? sport;
+    private IList<VenueImage> VenueImage;
+    private IList<Facility> FilteredFacility;
+    private IList<Facility> OtherFacility;
 
-    [SupplyParameterFromQuery]
+    [SupplyParameterFromQuery (Name = "venueid")]
     private int VenueId { get; set; }
+
+    [SupplyParameterFromQuery (Name = "sportid")]
+    private int SportId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
         venue = await context.Venue.FirstOrDefaultAsync(m => m.VenueId == VenueId);
-
         if (venue is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
+        sport = await context.Sport.FirstOrDefaultAsync(s => s.SportId == SportId);
+
+        VenueImage = await context.VenueImage.Where(v => v.VenueId == VenueId).ToListAsync();
+
+        FilteredFacility = await context.Facility.Where(f => f.VenueId == VenueId)
+            .Include(f => f.FacilitySports).ThenInclude(fs => fs.Sport)
+                .Where(f => f.FacilitySports.Where(fs => fs.SportId == SportId).Any())
+                    .ToListAsync();
+
+        OtherFacility = await context.Facility.Where(f => f.VenueId == VenueId)
+            .Include(f => f.FacilitySports).ThenInclude(fs => fs.Sport)
+                .Where(f => f.FacilitySports.All(fs => fs.SportId != SportId))
+                    .ToListAsync();
     }
 }

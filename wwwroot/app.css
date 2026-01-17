@@ -61,6 +61,10 @@ h1:focus {
     background-position: center;
 }
 
+.wrapper{
+    padding: 10px;
+}
+
 .container-white{
     background-color: white;
     color: black;
@@ -71,6 +75,18 @@ h1:focus {
    grid-template-columns: repeat(3, 1fr);
    padding-left: 10px;
    padding-right: 10px;
+}
+
+.container-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.container-h {
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .banner-large {
@@ -113,13 +129,18 @@ h1:focus {
     width: 400px;
 }
 
+.container-fit-content{
+    width: fit-content;
+    height: fit-content;
+}
+
 .table-no-header thead{
     display: none;
 }
 
 .table-light{
     table-layout: auto;
-    width: 100%;
+    width: 80%;
     align-items: start;
     justify-content: start;
 }
@@ -153,7 +174,7 @@ h1:focus {
     color: black;
     padding: 12px 16px;
     text-decoration: none;
-    display: block
+    display: block;
 }
 
 .dropdown-content a:hover{
@@ -161,7 +182,7 @@ h1:focus {
 }
 
 .dropdown:hover .dropdown-content{
-    display:block
+    display: block;
 }
 
 .dropdown:hover .dropbtn {
@@ -173,18 +194,109 @@ h1:focus {
 
 .btn-medium {
     display: block;
-    padding: 10px;
+    padding: 0.75rem;
     border: 2px solid;
-    border-radius: 10px;
+    border-radius: 1rem;
     text-decoration: none;
     text-align: center;
-    margin: 10px;
+    margin: 0.75rem;
     min-width: fit-content;
-    width: 300px;
+    width: 20rem;
     font-size: 22px;
+    font-weight: 500;
 }
 
-.btn-medium:hover {
+.btn-small {
+    display: block;
+    padding: 0.75rem;
+    border: 2px solid;
+    border-radius: 1rem;
+    text-decoration: none;
+    text-align: center;
+    margin: 0.75rem;
+    min-width: fit-content;
+    width: 10rem;
+    font-size: 16px;
+    font-weight: 750;
+}
+
+.btn-red {
+    color: crimson;
+    border-color: crimson;
+}
+
+.btn-red:hover {
     color: white;
-    background-color: darkblue;
+    background-color: crimson;
+}
+
+.slider-container{
+    padding: 2rem;
+}
+
+.slider-wrapper {
+    position: relative;
+    max-width: 48rem;
+    margin: 0 auto;
+    box-sizing: border-box;
+    background-image: url(images/placeholder/no_image.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.slider {
+    display: flex;
+    aspect-ratio: 16/9;
+    overflow-x: hidden;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    box-shadow: 0 1.5rem 3rem -0.75rem rgb(0,0,0,0.25);
+    border-radius: 0.5rem;
+}
+
+    .slider img {
+        flex: 1 0 100%;
+        scroll-snap-align: start;
+        object-fit: cover;
+        box-sizing: border-box;
+    }
+
+.slider-nav{
+    display: flex;
+    column-gap: 1rem;
+    position: absolute;
+    bottom: 1.25rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1;
+}
+
+.slider-nav a {
+    width: 2rem;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background-color: #fff;
+    opacity: 0.75;
+    transition: opacity ease 0.25s, background-color linear 0.25;
+}
+
+.slider-nav a:hover{
+    opacity: 1;
+    background-color: red;
+}
+
+.title-large {
+    font-size: 60px;
+    font-weight: 700;
+}
+
+.title-medium{
+    font-size: 32px;
+    font-weight: 600;
+}
+
+.title-small {
+    font-size: 20px;
+    font-weight: 550;
 }

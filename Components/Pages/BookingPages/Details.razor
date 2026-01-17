@@ -4,27 +4,51 @@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Details</PageTitle>
+<PageTitle>Booking Details</PageTitle>
 
-<h1>Details</h1>
+<div class="full-screen-bg"></div>
 
-<div>
-    <h2>Booking</h2>
-    <hr />
+<div class="review-container">
+
+    <div class="review-header-card" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
+        <div class="review-header-content">
+            <h1>Booking Ticket 🎟️</h1>
+            <p>Ref: #@BookingId</p>
+        </div>
+    </div>
+
     @if (booking is null)
     {
-        <p><em>Loading...</em></p>
+        <p class="text-center text-white"><em>Loading ticket...</em></p>
     }
-    else {
-        <dl class="row">
-            <dt class="col-sm-2">UserId</dt>
-            <dd class="col-sm-10">@booking.UserId</dd>
-            <dt class="col-sm-2">TimeslotId</dt>
-            <dd class="col-sm-10">@booking.TimeslotId</dd>
-        </dl>
-        <div>
-            <a href="@($"/bookings/edit?bookingid={booking.BookingId}")">Edit</a> |
-            <a href="@($"/bookings")">Back to List</a>
+    else
+    {
+        <div class="review-card text-center pb-5">
+
+            <h2 class="text-uppercase text-primary mt-3">@booking.Timeslot?.Facility?.Name</h2>
+            <p class="text-muted">@booking.Timeslot?.Facility?.Venue?.Address</p>
+
+            <hr class="w-50 mx-auto my-4" />
+
+            <div class="row justify-content-center">
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded border">
+                        <small class="d-block text-muted fw-bold">DATE</small>
+                        <span class="fs-5">@booking.Timeslot?.StartDT.ToString("ddd, dd MMM yyyy")</span>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="p-3 bg-light rounded border">
+                        <small class="d-block text-muted fw-bold">TIME</small>
+                        <span class="fs-5">@booking.Timeslot?.StartDT.ToString("h:mm tt") - @booking.Timeslot?.EndDT.ToString("h:mm tt")</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-center gap-3">
+                <a href="/bookings" class="btn btn-outline-secondary">Back to List</a>
+                <a href="@($"/bookings/edit?bookingid={booking.BookingId}")" class="btn btn-primary">Reschedule / Edit</a>
+            </div>
         </div>
     }
 </div>
@@ -38,7 +62,10 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        booking = await context.Booking.FirstOrDefaultAsync(m => m.BookingId == BookingId);
+        // Include deep details so we can show names/dates
+        booking = await context.Booking
+            .Include(b => b.Timeslot).ThenInclude(t => t.Facility).ThenInclude(f => f.Venue)
+            .FirstOrDefaultAsync(m => m.BookingId == BookingId);
 
         if (booking is null)
         {

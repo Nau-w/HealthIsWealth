@@ -8,6 +8,7 @@ using HealthIsWealth.Data;
 using HealthIsWealth.Domain;
 using System.IO;
 
+
 namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
     public partial class UserProfile
     {

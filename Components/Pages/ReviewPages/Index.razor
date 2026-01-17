@@ -3,34 +3,56 @@
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
-
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthStateProvider
 @attribute [Authorize]
-
+@rendermode InteractiveServer
 
 <PageTitle>Booking Reviews</PageTitle>
-<div class="review">
-    <h1>Reviews for Booking #@Id</h1>
-</div>
 
-<div class="container">
+<div class="full-screen-bg"></div>
 
+<div class="review-container">
 
-    <p>
-        <a href="@($"/reviews/create?bookingid={Id}")" class="btn btn-primary">Write a Review</a>
-    </p>
+    <div class="review-header-card">
+        <div class="review-header-content">
+            @if (relatedBooking != null)
+            {
+                <h1>@relatedBooking.Timeslot?.Facility?.Name</h1>
+                <p>
+                    <span style="opacity:0.7">Session on</span>
+                    <strong>@relatedBooking.Timeslot?.StartDT.ToString("dd MMM yyyy, h:mm tt")</strong>
+                </p>
+                <p class="small opacity-75">Booking Ref: #@Id</p>
+            }
+            else
+            {
+                <h1>Booking #@Id</h1>
+                <p>Loading details...</p>
+            }
 
-    <hr />
+            <a href="@($"/reviews/create?bookingid={Id}")" class="header-action-btn">
+                + Write a Review
+            </a>
+        </div>
+    </div>
 
-    @if (reviews == null)
+    @if (isLoading)
     {
-        <p><em>Loading reviews...</em></p>
+        <div class="text-center mt-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Loading reviews...</p>
+        </div>
     }
-    else if (!reviews.Any())
+    else if (reviews == null || !reviews.Any())
     {
-        <div class="alert alert-info">
-            No reviews yet for this booking. Be the first to leave one!
+        <div class="empty-state">
+            <h3>No reviews yet 📝</h3>
+            <p>How was your experience? Be the first to leave feedback!</p>
         </div>
     }
     else
@@ -38,22 +60,45 @@
         <div class="review-list">
             @foreach (var review in reviews)
             {
-                <div class="card mb-3 shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Rating: @review.Rating / 5</h5>
-                        <h6 class="card-subtitle mb-2 text-muted">User ID: @review.UserId</h6>
-                        <p class="card-text">@review.Feedback</p>
+                <div class="review-card">
 
-                        <div class="mt-2">
-                            <a href="@($"reviews/edit?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-secondary">Edit</a>
-                            <a href="@($"reviews/details?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-info">Details</a>
-                            <a href="@($"reviews/delete?reviewid={review.ReviewId}")" class="btn btn-sm btn-outline-danger">Delete</a>
+                    <div class="review-top-row">
+                        <div class="star-rating" title="Rating: @review.Rating / 5">
+                            @RenderStars(review.Rating)
                         </div>
+
+                        <div class="reviewer-name">
+                            @if (review.User != null)
+                            {
+                                <span>@review.User.FirstName @review.User.LastName</span>
+                            }
+                            else
+                            {
+                                <span>User #@review.UserId</span>
+                            }
+                        </div>
+                    </div>
+
+                    <p class="review-text">"@review.Feedback"</p>
+
+                    <div class="card-actions">
+                        <a href="@($"reviews/details?reviewid={review.ReviewId}")" class="btn-action btn-details">View Details</a>
+
+                        @if (review.UserId == currentUserId)
+                        {
+                            <a href="@($"reviews/edit?reviewid={review.ReviewId}")" class="btn-action btn-edit">Edit</a>
+                            <a href="@($"reviews/delete?reviewid={review.ReviewId}")" class="btn-action btn-delete">Delete</a>
+                        }
                     </div>
                 </div>
             }
         </div>
     }
+
+    <div class="mt-4">
+        <a href="/bookings" class="text-secondary text-decoration-none">← Back to My Bookings</a>
+    </div>
+
 </div>
 
 @code {
@@ -62,15 +107,59 @@
 
     private HealthIsWealthContext context = default!;
     private List<Review>? reviews;
+    private Booking? relatedBooking;
+    private bool isLoading = true;
+
+    // Store the ID of the person currently looking at the page
+    private string? currentUserId;
 
     protected override async Task OnInitializedAsync()
     {
         context = DbFactory.CreateDbContext();
 
-        // Load the reviews for this specific booking into a list
-        reviews = await context.Review
-            .Where(r => r.BookingId == Id)
-            .ToListAsync();
+        // 1. Get Current User ID
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            // Fetch the ID from the claims
+            currentUserId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        }
+
+        try
+        {
+            // 2. Fetch Booking Details
+            relatedBooking = await context.Booking
+                .Include(b => b.Timeslot)
+                .ThenInclude(t => t.Facility)
+                .FirstOrDefaultAsync(b => b.BookingId == Id);
+
+            // 3. Fetch Reviews
+            reviews = await context.Review
+                .Include(r => r.User)
+                .Where(r => r.BookingId == Id)
+                .OrderByDescending(r => r.ReviewId)
+                .ToListAsync();
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private MarkupString RenderStars(double rating)
+    {
+        int roundedRating = (int)Math.Round(rating);
+        var stars = "";
+        for (int i = 1; i <= 5; i++)
+        {
+            if (i <= roundedRating)
+                stars += "★";
+            else
+                stars += "☆";
+        }
+        return new MarkupString(stars);
     }
 
     public async ValueTask DisposeAsync() => await context.DisposeAsync();

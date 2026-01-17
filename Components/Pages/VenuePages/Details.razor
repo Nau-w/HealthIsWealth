@@ -52,15 +52,21 @@
         @if (FilteredFacility is not null && OtherFacility is not null){
             <div>
                 <h1 class="title-medium">Facilities:</h1>
-                <table>
+                @if (sport is not null)
+                {
                     @foreach (Facility facility in FilteredFacility)
                     {
-                        <tr>
-                            <td><a class="btn-small btn-red" style="width: 100%" href=""> @facility.Name </a></td>
-                            <td><p></p></td>
-                        </tr>
+                        <a class="btn-small btn-red" href=""> @facility.Name </a>
+                        <p style="font-size: 20px; margin-left: 1rem; margin-bottom: 2.5rem;">
+                            Supported Sports: @sport.Name
+                            @foreach (FacilitySport facilitySport in
+                                            facility.FacilitySports.Where(fs => fs.SportId != SportId))
+                            {
+                                <span>, @facilitySport.Sport.Name</span>
+                            }
+                        </p>
                     }
-                </table>
+                }
             </div>
         }
     </div>
@@ -68,6 +74,7 @@
 
 @code {
     private Venue? venue;
+    private Sport? sport;
     private IList<VenueImage> VenueImage;
     private IList<Facility> FilteredFacility;
     private IList<Facility> OtherFacility;
@@ -86,6 +93,8 @@
         {
             NavigationManager.NavigateTo("notfound");
         }
+        sport = await context.Sport.FirstOrDefaultAsync(s => s.SportId == SportId);
+
         VenueImage = await context.VenueImage.Where(v => v.VenueId == VenueId).ToListAsync();
 
         FilteredFacility = await context.Facility.Where(f => f.VenueId == VenueId)

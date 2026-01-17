@@ -120,6 +120,11 @@ h1:focus {
     width: 400px;
 }
 
+.container-fit-content{
+    width: fit-content;
+    height: fit-content;
+}
+
 .table-no-header thead{
     display: none;
 }

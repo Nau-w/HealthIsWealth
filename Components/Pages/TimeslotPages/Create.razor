@@ -1,0 +1,96 @@
+﻿@page "/venues/facility-booking/new-booking/{facilityId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.Domain
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Timeslot</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm Model="@timeslotInputModel" method="post" OnValidSubmit="AddBookingTimeslot" FormName="create" Enhance>
+            <CustomValidation @ref="customValidation" />
+            <ValidationSummary class="text-danger" role="alert"/>
+            <div class="mb-3">
+                <label for="timeslotDate" class="form-label">Booking Date:</label> 
+                <InputDate id="timeslotDate" @onchange="FindTimeslots" @bind-value="timeslotDate" class="form-control"
+                           min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
+            </div>
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/timeslots">Back to List</a>
+</div>
+
+@code {
+    [Parameter]
+    public int facilityId { get; set; }
+
+    [SupplyParameterFromForm]
+    private DateOnly timeslotDate { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+
+    private IQueryable<Timeslot> Timeslots;
+
+    private DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+    private DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
+
+    private CustomValidation? customValidation;
+
+    private TimeslotInputModel timeslotInputModel { get; set; } = new();
+
+    private Facility? facility;
+
+    private string? userId;
+
+    
+
+    protected override async void OnInitialized()
+    {
+        using var context = DbFactory.CreateDbContext();
+        facility = await context.Facility.FirstOrDefaultAsync(f=>f.FacilityId==facilityId);
+        if (facility is null)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userIdClaim = user.FindFirst("userId");
+
+        if (userIdClaim != null)
+        {
+            userId = userIdClaim.Value;
+        }
+
+        Timeslots = context.Timeslot.Where(t => t.FacilityId == facilityId);
+    }
+
+    private async Task AddBookingTimeslot()
+    {
+        using var context = DbFactory.CreateDbContext();
+        // context.Timeslot.Add();
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/timeslots");
+    }
+
+    private sealed class TimeslotInputModel
+    {
+        public DateOnly timeslotDate;
+    }
+
+    private void FindTimeslots()
+    {
+        
+    }
+}

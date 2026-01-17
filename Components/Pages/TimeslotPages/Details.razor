@@ -1,0 +1,50 @@
+﻿@page "/timeslots/details"
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.Domain
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Timeslot</h2>
+    <hr />
+    @if (timeslot is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="row">
+            <dt class="col-sm-2">StartDT</dt>
+            <dd class="col-sm-10">@timeslot.StartDT</dd>
+            <dt class="col-sm-2">EndDT</dt>
+            <dd class="col-sm-10">@timeslot.EndDT</dd>
+            <dt class="col-sm-2">FacilityId</dt>
+            <dd class="col-sm-10">@timeslot.FacilityId</dd>
+        </dl>
+        <div>
+            <a href="@($"/timeslots/edit?timeslotid={timeslot.TimeslotId}")">Edit</a> |
+            <a href="@($"/timeslots")">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Timeslot? timeslot;
+
+    [SupplyParameterFromQuery]
+    private int TimeslotId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+        timeslot = await context.Timeslot.FirstOrDefaultAsync(m => m.TimeslotId == TimeslotId);
+
+        if (timeslot is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}

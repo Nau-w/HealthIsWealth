@@ -5,39 +5,45 @@
 @inject NavigationManager NavigationManager
 
 <PageTitle>Venue Booking</PageTitle>
-
-@if (venue is null)
-{
-    <h1><em>Loading...</em></h1>
-}
-else
-{
-    <h1>@venue.Name</h1>
-}
-
-<div>
+<div class="container-centered">
+    <div style="width: 60%">
+        @if (venue is not null)
+        {
+            <section class="slider-container">
+                <div class="slider-wrapper">
+            <div class="slider">
+                <img src="@venue.ThumbnailImageUrl" alt="" id="slide-1" />
+                <img src="images/placeholder/sports_banner.jpg" alt="" id="slide-2" />
+                <img src="images/placeholder/sports.jpg" alt="" id="slide-3" />
+            </div>
+            <div class="slider-nav">
+                <a href="@NavigationManager.Uri#slide-1" />
+                <a href="@NavigationManager.Uri#slide-2" />
+                <a href="@NavigationManager.Uri#slide-3" />
+            </div>
+        </div>
+        </section>
+        }
     <hr />
     @if (venue is null)
     {
-        <p><em>Loading...</em></p>
+        <h1><em>Loading...</em></h1>
     }
     else {
+        <h1>@venue.Name</h1>
         <dl class="row">
-            <dt class="col-sm-2">Name</dt>
-            <dd class="col-sm-10">@venue.Name</dd>
             <dt class="col-sm-2">Address</dt>
             <dd class="col-sm-10">@venue.Address</dd>
             <dt class="col-sm-2">PostalCode</dt>
             <dd class="col-sm-10">@venue.PostalCode</dd>
             <dt class="col-sm-2">UnitNumber</dt>
             <dd class="col-sm-10">@venue.UnitNumber</dd>
-            <dt class="col-sm-2">ThumbnailImageUrl</dt>
-            <dd class="col-sm-10">@venue.ThumbnailImageUrl</dd>
         </dl>
         <div>
             <a href="@($"/venues")">Back to List</a>
         </div>
     }
+    </div>
 </div>
 
 @code {

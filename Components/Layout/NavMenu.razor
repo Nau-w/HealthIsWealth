@@ -13,16 +13,14 @@
         <h3 class="nav-branding">HealthIsWealth</h3>
         <ul>
             <li><a href="">Home</a></li>
-            <li>
-                <div class="dropdown">
-                    <a class="dropbtn" href="/venues">Venues</a>
-                    <div class="dropdown-content">
-                        @foreach(Sport sport in Sports)
-                        {
-                            <a href="/venues?sportid=@sport.SportId">@sport.Name</a>
-                        }
-                    </div>
-                </div>
+            <li><a class="dropbtn" href="/venues">Venues</a>
+                <ul>
+                    <li><a class="dropbtn" href="/venues">All Sports</a></li>
+                    @foreach (Sport sport in Sports)
+                    {
+                        <li><a href="/venues?sportid=@sport.SportId">@sport.Name</a></li>
+                    }
+                </ul>
             </li>
             <li><a href="/Bookings">Bookings</a></li>
             <li><a href="/Account/Profile">Profile</a></li>

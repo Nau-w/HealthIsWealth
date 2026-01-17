@@ -1,59 +1,107 @@
 ﻿@page "/reviews/create"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthStateProvider
+@attribute [Authorize]
+@rendermode InteractiveServer
 
-<PageTitle>Create</PageTitle>
 
-<h1>Create</h1>
+<PageTitle>Write a Review</PageTitle>
 
-<h2>Review</h2>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="full-screen-bg"></div>
+
+<div class="review-container">
+
+    <div class="review-header-card">
+        <div class="review-header-content">
+            <h1>Write a Review ✍️</h1>
+            <p>Share your experience for Booking #@BookingId</p>
+        </div>
+    </div>
+
+    <div class="review-card">
         <EditForm method="post" Model="Review" OnValidSubmit="AddReview" FormName="create" Enhance>
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert"/>
-            <div class="mb-3">
-                <label for="rating" class="form-label">Rating:</label> 
-                <InputNumber id="rating" @bind-Value="Review.Rating" class="form-control" /> 
-                <ValidationMessage For="() => Review.Rating" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="feedback" class="form-label">Feedback:</label> 
-                <InputText id="feedback" @bind-Value="Review.Feedback" class="form-control" /> 
-                <ValidationMessage For="() => Review.Feedback" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="bookingid" class="form-label">BookingId:</label> 
-                <InputNumber id="bookingid" @bind-Value="Review.BookingId" class="form-control" /> 
-                <ValidationMessage For="() => Review.BookingId" class="text-danger" /> 
-            </div>        
-            <div class="mb-3">
-                <label for="userid" class="form-label">UserId:</label> 
-                <InputText id="userid" @bind-Value="Review.UserId" class="form-control" /> 
-                <ValidationMessage For="() => Review.UserId" class="text-danger" /> 
-            </div>        
-            <button type="submit" class="btn btn-primary">Create</button>
+            <ValidationSummary class="text-danger" role="alert" />
+
+            <input type="hidden" name="Review.BookingId" value="@Review.BookingId" />
+            <input type="hidden" name="Review.UserId" value="@Review.UserId" />
+
+            <div class="mb-4 text-center">
+                <label class="form-label d-block fw-bold">How would you rate it?</label>
+                <div class="d-flex justify-content-center gap-2">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        var starValue = i;
+                        <span class="star-rating-input @(Review.Rating >= starValue ? "filled" : "")"
+                              @onclick="() => SetRating(starValue)">
+                            ★
+                        </span>
+                    }
+                </div>
+                <InputNumber @bind-Value="Review.Rating" class="d-none" />
+                <ValidationMessage For="() => Review.Rating" class="text-danger text-center" />
+            </div>
+
+            <div class="mb-4">
+                <label for="feedback" class="form-label fw-bold">Your Feedback</label>
+                <InputTextArea id="feedback" @bind-Value="Review.Feedback" class="form-control" rows="4" placeholder="Tell us what you liked or what could be improved..." />
+                <ValidationMessage For="() => Review.Feedback" class="text-danger" />
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="@($"/reviews/{BookingId}")" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-success px-4">Submit Review</button>
+            </div>
         </EditForm>
     </div>
 </div>
 
-<div>
-    <a href="/reviews">Back to List</a>
-</div>
-
 @code {
+    [SupplyParameterFromQuery]
+    public int BookingId { get; set; }
+
     [SupplyParameterFromForm]
     private Review Review { get; set; } = new();
 
-    // To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    protected override async Task OnInitializedAsync()
+    {
+        // 1. Set Booking ID from URL Query
+        if (Review.BookingId == 0)
+        {
+            Review.BookingId = BookingId;
+        }
+
+        // 2. Get Current Logged In User ID
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            // Assuming the ID is stored in the NameIdentifier claim
+            var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+            if (!string.IsNullOrEmpty(userId))
+            {
+                Review.UserId = userId;
+            }
+        }
+    }
+
+    private void SetRating(int rating)
+    {
+        Review.Rating = rating;
+    }
+
     private async Task AddReview()
     {
         using var context = DbFactory.CreateDbContext();
         context.Review.Add(Review);
         await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/reviews");
+        NavigationManager.NavigateTo($"/reviews/{Review.BookingId}");
     }
 }

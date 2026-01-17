@@ -1,55 +1,69 @@
 ﻿@page "/reviews/edit"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
+@rendermode InteractiveServer
 
-<PageTitle>Edit</PageTitle>
+<PageTitle>Edit Review</PageTitle>
 
-<h1>Edit</h1>
+<div class="full-screen-bg"></div>
 
-<h2>Review</h2>
-<hr />
-@if (Review is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Review" OnValidSubmit="UpdateReview" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Review.ReviewId" value="@Review.ReviewId" />
-                <div class="mb-3">
-                    <label for="rating" class="form-label">Rating:</label>
-                    <InputNumber id="rating" @bind-Value="Review.Rating" class="form-control" />
-                    <ValidationMessage For="() => Review.Rating" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="feedback" class="form-label">Feedback:</label>
-                    <InputText id="feedback" @bind-Value="Review.Feedback" class="form-control" />
-                    <ValidationMessage For="() => Review.Feedback" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="bookingid" class="form-label">BookingId:</label>
-                    <InputNumber id="bookingid" @bind-Value="Review.BookingId" class="form-control" />
-                    <ValidationMessage For="() => Review.BookingId" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="userid" class="form-label">UserId:</label>
-                    <InputText id="userid" @bind-Value="Review.UserId" class="form-control" />
-                    <ValidationMessage For="() => Review.UserId" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
+<div class="review-container">
+
+    <div class="review-header-card">
+        <div class="review-header-content">
+            <h1>Edit Review ✏️</h1>
+            <p>Update your feedback</p>
         </div>
     </div>
-}
 
-<div>
-    <a href="/reviews">Back to List</a>
+    @if (Review is null)
+    {
+        <p class="text-center text-white"><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="review-card">
+            <EditForm method="post" Model="Review" OnValidSubmit="UpdateReview" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert" />
+
+                <input type="hidden" name="Review.ReviewId" value="@Review.ReviewId" />
+                <input type="hidden" name="Review.BookingId" value="@Review.BookingId" />
+                <input type="hidden" name="Review.UserId" value="@Review.UserId" />
+
+                <div class="mb-4 text-center">
+                    <label class="form-label d-block fw-bold">Update Rating</label>
+                    <div class="d-flex justify-content-center gap-2">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            var starValue = i;
+                            <span class="star-rating-input @(Review.Rating >= starValue ? "filled" : "")"
+                                  @onclick="() => SetRating(starValue)">
+                                ★
+                            </span>
+                        }
+                    </div>
+                    <InputNumber @bind-Value="Review.Rating" class="d-none" />
+                    <ValidationMessage For="() => Review.Rating" class="text-danger" />
+                </div>
+
+                <div class="mb-4">
+                    <label for="feedback" class="form-label fw-bold">Feedback</label>
+                    <InputTextArea id="feedback" @bind-Value="Review.Feedback" class="form-control" rows="4" />
+                    <ValidationMessage For="() => Review.Feedback" class="text-danger" />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="@($"/reviews/{Review.BookingId}")" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                </div>
+            </EditForm>
+        </div>
+    }
 </div>
 
 @code {
@@ -70,8 +84,11 @@ else
         }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+    private void SetRating(int rating)
+    {
+        if (Review != null) Review.Rating = rating;
+    }
+
     private async Task UpdateReview()
     {
         using var context = DbFactory.CreateDbContext();
@@ -84,16 +101,12 @@ else
         catch (DbUpdateConcurrencyException)
         {
             if (!ReviewExists(Review!.ReviewId))
-            {
                 NavigationManager.NavigateTo("notfound");
-            }
             else
-            {
                 throw;
-            }
         }
 
-        NavigationManager.NavigateTo("/reviews");
+        NavigationManager.NavigateTo($"/reviews/{Review.BookingId}");
     }
 
     private bool ReviewExists(int reviewid)

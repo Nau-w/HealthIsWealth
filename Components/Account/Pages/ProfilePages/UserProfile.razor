@@ -5,201 +5,206 @@
 
 <PageTitle>HealthIsWealth | Profile</PageTitle>
 
-<div class="profile-container">
+<div class="profile-layout">
+    <div class="profile-layout-wrapper">
+        <div class="full-screen-bg"></div>
+    </div>
 
-    <div class="profile-field">
+    <div class="profile-card header-card">
+        <div class="card-banner"></div>
+
+        <div class="avatar-section">
+            <div class="avatar-wrapper">
+                @if (!string.IsNullOrEmpty(previewImage))
+                {
+                    <img src="@previewImage" class="profile-avatar" />
+                    <span class="preview-badge">Preview</span>
+                }
+                else if (!string.IsNullOrEmpty(image))
+                {
+                    <img src="@image" class="profile-avatar" />
+                }
+                else
+                {
+                    <div class="profile-avatar placeholder-avatar"></div>
+                }
+
+                <button class="camera-btn" @onclick="EditPhoto">
+                    📷
+                </button>
+            </div>
+        </div>
+
         @if (isEditingPhoto)
         {
-            <div class="edit-mode">
-                <h4>Edit Profile Picture</h4>
-
-                <div class="img-preview-container">
-                    @if (!string.IsNullOrEmpty(previewImage))
-                    {
-                        <img src="@previewImage" class="preview-img" />
-                        <p class="preview-label">Preview</p>
-                    }
-                    else if (!string.IsNullOrEmpty(image))
-                    {
-                        <img src="@image" class="current-img-faded" />
-                    }
-                </div>
-
-                <div class="form-group">
-                    <label>Upload New Image (.jpg, .png, max 3MB):</label>
-                    <InputFile OnChange="HandleFileSelected" class="form-control" accept=".jpg,.jpeg,.png" />
-                </div>
-
+            <div class="photo-edit-controls">
+                <InputFile OnChange="HandleFileSelected" class="form-control-sm" accept=".jpg,.jpeg,.png" />
                 @if (!string.IsNullOrEmpty(photoErrorMessage))
                 {
-                    <p class="error-message">@photoErrorMessage</p>
+                    <p class="text-danger small">@photoErrorMessage</p>
                 }
-
-                <div class="button-group">
-                    <button class="btn btn-success" @onclick="SavePhoto" disabled="@(selectedFile == null)">Save Photo</button>
-                    <button class="btn btn-secondary" @onclick="CancelEditPhoto">Cancel</button>
+                <div class="mt-2">
+                    <button class="btn btn-sm btn-success" @onclick="SavePhoto" disabled="@(selectedFile == null)">Save</button>
+                    <button class="btn btn-sm btn-secondary" @onclick="CancelEditPhoto">Cancel</button>
                 </div>
             </div>
         }
-        else
-        {
-            <div class="view-mode">
-                @if (string.IsNullOrEmpty(image))
-                {
-                    <h3>Profile Picture: <span class="text-not-set">Not set</span></h3>
-                    <button class="btn btn-primary" @onclick="EditPhoto">Add Photo</button>
-                }
-                else
-                {
-                    <div class="profile-thumb-container">
-                        <img src="@image" alt="Profile" class="profile-thumb" />
-                        <div>
-                            <h3>Profile Picture</h3>
-                            <button class="btn btn-outline-primary btn-sm" @onclick="EditPhoto">Change Photo</button>
+
+        <div class="user-summary">
+            <h2>@(currentUser?.FirstName ?? "User") @(currentUser?.LastName ?? "")</h2>
+            <p class="user-email">@currentUser?.Email</p>
+            <div class="badges">
+                <span class="badge badge-member">Member</span>
+                <span class="badge badge-verified">Verified</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="profile-card details-card">
+        <div class="card-header-row">
+            <h3>Personal Information</h3>
+            <h4 class="privacy-link">Edit</h4>
+        </div>
+
+        <div class="info-row">
+            @if (isEditingName)
+            {
+                <div class="edit-mode-inline">
+                    <label>First Name</label>
+                    <input @bind="newFirstName" class="form-control" />
+                    <label>Last Name</label>
+                    <input @bind="newLastName" class="form-control" />
+                    @if (!string.IsNullOrEmpty(nameErrorMessage))
+                    {
+                        <p class="text-danger">@nameErrorMessage</p>
+                    }
+                    <div class="btn-row">
+                        <button class="btn btn-sm btn-success" @onclick="SaveName">Save</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="CancelEditName">Cancel</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="view-mode-inline">
+                    <div>
+                        <span class="label-text">FULL NAME</span>
+                        <div class="value-text">
+                            @if (string.IsNullOrEmpty(currentUser?.FirstName))
+                            {
+                                <span class="text-muted">Not Set</span>
+                            }
+                            else
+                            {
+
+                                @currentUser.FirstName@currentUser.LastName
+                            }
                         </div>
                     </div>
-                }
-            </div>
-        }
+                    <button class="edit-icon" @onclick="EditName">✎</button>
+                </div>
+            }
+        </div>
+
+        <div class="info-row">
+            @if (isEditingPhone)
+            {
+                <div class="edit-mode-inline">
+                    <label>Phone</label>
+                    <input @bind="newPhoneNumber" class="form-control" />
+                    @if (!string.IsNullOrEmpty(phoneErrorMessage))
+                    {
+                        <p class="text-danger">@phoneErrorMessage</p>
+                    }
+                    <div class="btn-row">
+                        <button class="btn btn-sm btn-success" @onclick="SavePhone">Save</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="CancelEditPhone">Cancel</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="view-mode-inline">
+                    <div>
+                        <span class="label-text">PHONE NUMBER</span>
+                        <div class="value-text">
+                            @if (string.IsNullOrEmpty(currentUser?.PhoneNumber))
+                            {
+                                <span class="text-muted">Not Set</span>
+                            }
+                            else
+                            {
+
+                                @currentUser.PhoneNumber
+                            }
+                        </div>
+                    </div>
+                    <button class="edit-icon" @onclick="EditPhone">✎</button>
+                </div>
+            }
+        </div>
+
+        <div class="info-row">
+            @if (isEditingEmail)
+            {
+                <div class="edit-mode-inline">
+                    <label>Email</label>
+                    <input @bind="newEmail" class="form-control" />
+                    @if (!string.IsNullOrEmpty(emailErrorMessage))
+                    {
+                        <p class="text-danger">@emailErrorMessage</p>
+                    }
+                    <div class="btn-row">
+                        <button class="btn btn-sm btn-success" @onclick="SaveEmail">Save</button>
+                        <button class="btn btn-sm btn-secondary" @onclick="CancelEditEmail">Cancel</button>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="view-mode-inline">
+                    <div>
+                        <span class="label-text">EMAIL ADDRESS</span>
+                        <div class="value-text">
+                            @if (string.IsNullOrEmpty(currentUser?.Email))
+                            {
+                                <span class="text-muted">Not Set</span>
+                            }
+                            else
+                            {
+
+                                @currentUser.Email
+                            }
+                        </div>
+                    </div>
+                    <button class="edit-icon" @onclick="EditEmail">✎</button>
+                </div>
+            }
+        </div>
+
     </div>
 
-    <div class="profile-field">
-        @if (isEditingName)
-        {
-            <div class="edit-mode">
-                <h4>Edit Name</h4>
-
-                <div class="form-group">
-                    <label>First Name:</label>
-                    <input @bind="newFirstName" class="form-control" placeholder="John" />
-                </div>
-
-                <div class="form-group">
-                    <label>Last Name:</label>
-                    <input @bind="newLastName" class="form-control" placeholder="Tan" />
-                </div>
-
-                @if (!string.IsNullOrEmpty(nameErrorMessage))
-                {
-                    <p class="error-message">@nameErrorMessage</p>
-                }
-
-                <div class="button-group">
-                    <button class="btn btn-success" @onclick="SaveName">Save</button>
-                    <button class="btn btn-secondary" @onclick="CancelEditName">Cancel</button>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="view-mode">
-                @if (string.IsNullOrEmpty(currentUser?.FirstName) && string.IsNullOrEmpty(currentUser?.LastName))
-                {
-                    <h3>Name: <span class="text-not-set">Not set</span></h3>
-                    <button class="btn btn-primary" @onclick="EditName">Add Name</button>
-                }
-                else
-                {
-                    <h3>Hello, @currentUser.FirstName @currentUser.LastName!</h3>
-                    <button class="btn btn-outline-primary btn-sm" @onclick="EditName">Edit Name</button>
-                }
-            </div>
-        }
-    </div>
-
-    <div class="profile-field">
-        @if (isEditingPhone)
-        {
-            <div class="edit-mode">
-                <h4>Edit Phone</h4>
-                <div class="form-group">
-                    <label>Phone Number (8 Digits):</label>
-                    <input @bind="newPhoneNumber" class="form-control" placeholder="81234567" />
-                </div>
-
-                @if (!string.IsNullOrEmpty(phoneErrorMessage))
-                {
-                    <p class="error-message">@phoneErrorMessage</p>
-                }
-
-                <div class="button-group">
-                    <button class="btn btn-success" @onclick="SavePhone">Save</button>
-                    <button class="btn btn-secondary" @onclick="CancelEditPhone">Cancel</button>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="view-mode">
-                @if (string.IsNullOrEmpty(currentUser?.PhoneNumber))
-                {
-                    <h3>Phone: <span class="text-not-set">Not set</span></h3>
-                    <button class="btn btn-primary" @onclick="EditPhone">Add Phone</button>
-                }
-                else
-                {
-                    <h3>Phone Number: @currentUser.PhoneNumber</h3>
-                    <button class="btn btn-outline-primary btn-sm" @onclick="EditPhone">Edit Phone</button>
-                }
-            </div>
-        }
-    </div>
-
-    <div class="profile-field">
-        @if (isEditingEmail)
-        {
-            <div class="edit-mode">
-                <h4>Edit Email</h4>
-                <div class="form-group">
-                    <label>Email Address:</label>
-                    <input @bind="newEmail" class="form-control" placeholder="yourname@gmail.com" />
-                </div>
-
-                @if (!string.IsNullOrEmpty(emailErrorMessage))
-                {
-                    <p class="error-message">@emailErrorMessage</p>
-                }
-
-                <div class="button-group">
-                    <button class="btn btn-success" @onclick="SaveEmail">Save</button>
-                    <button class="btn btn-secondary" @onclick="CancelEditEmail">Cancel</button>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="view-mode">
-                @if (string.IsNullOrEmpty(currentUser?.Email))
-                {
-                    <h3>Email: <span class="text-not-set">Not set</span></h3>
-                    <button class="btn btn-primary" @onclick="EditEmail">Add Email</button>
-                }
-                else
-                {
-                    <h3>Email: @currentUser.Email</h3>
-                    <button class="btn btn-outline-primary btn-sm" @onclick="EditEmail">Edit Email</button>
-                }
-            </div>
-        }
-    </div>
-
-</div>
-
-<h4 class="history-header">Past History</h4>
-<hr />
-@if (!pastBookings.Any())
-{
-    <p>No booking history found.</p>
-}
-else
-{
-    @foreach (var booking in pastBookings)
+    <h4 class="history-header">Past History</h4>
+    @if (!pastBookings.Any())
     {
-        <div class="booking-card">
-            <strong>@booking.Timeslot.Facility.Name</strong> <br>
-            @booking.Timeslot.Facility.Location <br>
-            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
-            <a href="/reviews/@booking.BookingId" class="btn btn-link">Write a Review</a>
+        <p class="text-muted">No booking history found.</p>
+    }
+    else
+    {
+        <div class="history-grid">
+            @foreach (var booking in pastBookings)
+            {
+                <div class="booking-card">
+                    <div>
+                        <strong>@booking.Timeslot.Facility.Name</strong>
+                        <div class="small text-muted">@booking.Timeslot.Facility.Location</div>
+                    </div>
+                    <div class="text-end">
+                        <div class="booking-date">@booking.Timeslot.StartDT.ToString("dd MMM yyyy")</div>
+                        <a href="/reviews/@booking.BookingId" class="btn btn-link btn-sm p-0">Write Review</a>
+                    </div>
+                </div>
+            }
         </div>
     }
-}
+</div>

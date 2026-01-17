@@ -181,12 +181,6 @@ namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
 
                 if (result.Succeeded)
                 {
-                    if (!string.IsNullOrEmpty(oldUrl))
-                    {
-                        var oldFilePath = Path.Combine(Environment.WebRootPath, oldUrl.TrimStart('/'));
-                        if (File.Exists(oldFilePath)) try { File.Delete(oldFilePath); } catch {}
-                    }
-
                     image = relativePath;
                     isEditingPhoto = false;
                     selectedFile = null;

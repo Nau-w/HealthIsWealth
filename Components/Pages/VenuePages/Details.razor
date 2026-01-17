@@ -4,12 +4,18 @@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Details</PageTitle>
+<PageTitle>Venue Booking</PageTitle>
 
-<h1>Details</h1>
+@if (venue is null)
+{
+    <h1><em>Loading...</em></h1>
+}
+else
+{
+    <h1>@venue.Name</h1>
+}
 
 <div>
-    <h2>Venue</h2>
     <hr />
     @if (venue is null)
     {
@@ -29,7 +35,6 @@
             <dd class="col-sm-10">@venue.ThumbnailImageUrl</dd>
         </dl>
         <div>
-            <a href="@($"/venues/edit?venueid={venue.VenueId}")">Edit</a> |
             <a href="@($"/venues")">Back to List</a>
         </div>
     }
@@ -37,18 +42,22 @@
 
 @code {
     private Venue? venue;
+    private IQueryable<Facility> Facility;
 
-    [SupplyParameterFromQuery]
+    [SupplyParameterFromQuery (Name = "venueid")]
     private int VenueId { get; set; }
+
+    [SupplyParameterFromQuery (Name = "sportid")]
+    private int SportId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
         venue = await context.Venue.FirstOrDefaultAsync(m => m.VenueId == VenueId);
-
         if (venue is null)
         {
             NavigationManager.NavigateTo("notfound");
         }
+        Facility = context.Facility.Include(f => f.FacilitySports).ThenInclude(fs=>fs.Sport);
     }
 }

@@ -60,9 +60,9 @@
                             <img class="container-h" src="@facility.ThumbnailImageUrl" width="250" height="150"
                                  onerror="if (this.src != 'images/placeholder/no_image.jpg') this.src='images/placeholder/no_image.jpg';" />
                             <div class="container-h">
-                                <p style="font-size: 20px;">
+                                <p style="font-size: 20px">
                                     Price: $@facility.Price/hr<br />
-                                    Sports: @sport.Name
+                                    Sports: <span class="fw-bold">@sport.Name</span>
                                     @foreach (FacilitySport facilitySport in
                                                     facility.FacilitySports.Where(fs => fs.SportId != SportId))
                                     {
@@ -74,6 +74,28 @@
                         </div>
                     }
                 }
+                    @foreach (Facility facility in OtherFacility)
+                    {
+                        <div class="wrapper">
+                            <img class="container-h" src="@facility.ThumbnailImageUrl" width="250" height="150"
+                                 onerror="if (this.src != 'images/placeholder/no_image.jpg') this.src='images/placeholder/no_image.jpg';" />
+                            <div class="container-h">
+                                <p style="font-size: 20px;">
+                                    Price: $@facility.Price/hr<br />
+                                    Sports: 
+                                    @for (int i=0; i<facility.FacilitySports.ToList().Count(); i++)
+                                    {
+                                    if (i != 0)
+                                        {
+                                            <span>,&nbsp;</span>
+                                        }
+                                        <span>@facility.FacilitySports.ElementAt(i).Sport.Name</span>
+                                    }
+                                </p>
+                                <a class="btn-small btn-red" href=""> @facility.Name </a>
+                            </div>
+                        </div>
+                    }
             </div>
         }
     </div>

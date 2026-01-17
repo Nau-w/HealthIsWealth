@@ -56,15 +56,22 @@
                 {
                     @foreach (Facility facility in FilteredFacility)
                     {
-                        <a class="btn-small btn-red" href=""> @facility.Name </a>
-                        <p style="font-size: 20px; margin-left: 1rem; margin-bottom: 2.5rem;">
-                            Supported Sports: @sport.Name
-                            @foreach (FacilitySport facilitySport in
-                                            facility.FacilitySports.Where(fs => fs.SportId != SportId))
-                            {
-                                <span>, @facilitySport.Sport.Name</span>
-                            }
-                        </p>
+                        <div class="wrapper">
+                            <img class="container-h" src="@facility.ThumbnailImageUrl" width="250" height="150"
+                                 onerror="if (this.src != 'images/placeholder/no_image.jpg') this.src='images/placeholder/no_image.jpg';" />
+                            <div class="container-h">
+                                <p style="font-size: 20px;">
+                                    Price: $@facility.Price/hr<br />
+                                    Sports: @sport.Name
+                                    @foreach (FacilitySport facilitySport in
+                                                    facility.FacilitySports.Where(fs => fs.SportId != SportId))
+                                    {
+                                        <span>, @facilitySport.Sport.Name</span>
+                                    }
+                                </p>
+                                <a class="btn-small btn-red" href=""> @facility.Name </a>
+                            </div>
+                        </div>
                     }
                 }
             </div>

@@ -1,17 +1,5 @@
 ﻿@page "/Account/profile"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Identity
-@using HealthIsWealth.Data
-@using HealthIsWealth.Domain
-@using Microsoft.EntityFrameworkCore
-@using System.IO
-
-@inject AuthenticationStateProvider AuthenticationStateProvider
-@inject UserManager<HealthIsWealthUser> UserManager
-@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
-@inject IWebHostEnvironment Environment
 @rendermode InteractiveServer
-@attribute [Authorize]
 
 <PageTitle>HealthIsWealth | Profile</PageTitle>
 
@@ -156,7 +144,41 @@
     </div>
 
     <div class="profile-field">
-        <h3>Email: @(currentUser?.Email)</h3>
+        @if (isEditingEmail)
+        {
+            <div class="edit-mode">
+                <h4>Edit Email</h4>
+                <div class="form-group">
+                    <label>Email Address:</label>
+                    <input @bind="newEmail" class="form-control" placeholder="yourname@gmail.com" />
+                </div>
+
+                @if (!string.IsNullOrEmpty(emailErrorMessage))
+                {
+                    <p class="error-message">@emailErrorMessage</p>
+                }
+
+                <div class="button-group">
+                    <button class="btn btn-success" @onclick="SaveEmail">Save</button>
+                    <button class="btn btn-secondary" @onclick="CancelEditEmail">Cancel</button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="view-mode">
+                @if (string.IsNullOrEmpty(currentUser?.Email))
+                {
+                    <h3>Email: <span class="text-not-set">Not set</span></h3>
+                    <button class="btn btn-primary" @onclick="EditEmail">Add Email</button>
+                }
+                else
+                {
+                    <h3>Email: @currentUser.Email</h3>
+                    <button class="btn btn-outline-primary btn-sm" @onclick="EditEmail">Edit Email</button>
+                }
+            </div>
+        }
     </div>
 
 </div>
@@ -177,256 +199,5 @@ else
             @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") <br>
             <a href="/reviews/@booking.BookingId" class="btn btn-link">Write a Review</a>
         </div>
-    }
-}
-
-@code {
-    private HealthIsWealthContext dbContext = default!;
-    private HealthIsWealthUser? currentUser;
-
-    // Variables for display
-    private string? image;
-    private List<Booking> pastBookings = new();
-
-    // Variables for Editing
-    private bool isEditingName = false;
-    private bool isEditingPhone = false;
-    private bool isEditingPhoto = false;
-
-    private string? newFirstName;
-    private string? newLastName;
-    private string? newPhoneNumber;
-
-    // Variables for Photo Upload
-    private IBrowserFile? selectedFile;
-    private string? previewImage;
-    private string? photoErrorMessage;
-    private long maxFileSize = 1024 * 1024 * 3; // 3 MB Limit
-
-    private string? nameErrorMessage;
-    private string? phoneErrorMessage;
-
-    protected override async Task OnInitializedAsync()
-    {
-        dbContext = DbFactory.CreateDbContext();
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-
-        if (user.Identity != null && user.Identity.IsAuthenticated)
-        {
-            currentUser = await UserManager.GetUserAsync(user);
-
-            if (currentUser != null)
-            {
-                image = currentUser.ProfilePictureUrl;
-
-                // Load bookings
-                var allBookings = await dbContext.Booking
-                    .Include(b => b.Timeslot).ThenInclude(t => t.Facility).ThenInclude(f => f.Venue)
-                    .Where(b => b.UserId == currentUser.Id)
-                    .OrderByDescending(b => b.Timeslot.StartDT)
-                    .ToListAsync();
-
-                pastBookings = allBookings.Where(b => b.Timeslot.StartDT <= DateTime.Now).ToList();
-            }
-        }
-    }
-
-    // --- PHOTO EDITING LOGIC ---
-    private void EditPhoto()
-    {
-        photoErrorMessage = null;
-        selectedFile = null;
-        previewImage = null;
-        isEditingPhoto = true;
-    }
-
-    private void CancelEditPhoto()
-    {
-        isEditingPhoto = false;
-        selectedFile = null;
-        previewImage = null;
-        photoErrorMessage = null;
-    }
-
-    private async Task HandleFileSelected(InputFileChangeEventArgs e)
-    {
-        photoErrorMessage = null;
-        selectedFile = e.File;
-
-        if (selectedFile.Size > maxFileSize)
-        {
-            photoErrorMessage = "File size exceeds 3MB limit.";
-            selectedFile = null;
-            return;
-        }
-
-        if (selectedFile.ContentType != "image/jpeg" && selectedFile.ContentType != "image/png")
-        {
-            photoErrorMessage = "Only JPG and PNG files are allowed.";
-            selectedFile = null;
-            return;
-        }
-
-        try
-        {
-            var buffer = new byte[selectedFile.Size];
-            using var stream = selectedFile.OpenReadStream(maxFileSize);
-            await stream.ReadAsync(buffer);
-            var imageData = Convert.ToBase64String(buffer);
-            previewImage = $"data:{selectedFile.ContentType};base64,{imageData}";
-        }
-        catch (Exception ex)
-        {
-            photoErrorMessage = "Error creating preview: " + ex.Message;
-            selectedFile = null;
-        }
-    }
-
-    private async Task SavePhoto()
-    {
-        if (currentUser == null || selectedFile == null)
-        {
-            photoErrorMessage = "No file selected or user not found.";
-            return;
-        }
-
-        try
-        {
-            var folderPath = Path.Combine(Environment.WebRootPath, "uploads", "profiles");
-            if (!Directory.Exists(folderPath))
-            {
-                Directory.CreateDirectory(folderPath);
-            }
-
-            if (!string.IsNullOrEmpty(currentUser.ProfilePictureUrl))
-            {
-                var oldFilePath = Path.Combine(Environment.WebRootPath, currentUser.ProfilePictureUrl.TrimStart('/'));
-                if (File.Exists(oldFilePath))
-                {
-                    try { File.Delete(oldFilePath); } catch { }
-                }
-            }
-
-            var extension = Path.GetExtension(selectedFile.Name);
-            var fileName = $"{currentUser.Id}_{Guid.NewGuid()}{extension}";
-            var filePath = Path.Combine(folderPath, fileName);
-
-            using (var fs = new FileStream(filePath, FileMode.Create))
-            {
-                using var stream = selectedFile.OpenReadStream(maxFileSize);
-                await stream.CopyToAsync(fs);
-            }
-
-            var relativePath = $"/uploads/profiles/{fileName}";
-            currentUser.ProfilePictureUrl = relativePath;
-            var result = await UserManager.UpdateAsync(currentUser);
-
-            if (result.Succeeded)
-            {
-                image = relativePath;
-                isEditingPhoto = false;
-                selectedFile = null;
-                previewImage = null;
-                photoErrorMessage = null;
-            }
-            else
-            {
-                photoErrorMessage = "Failed to update profile: " + string.Join(", ", result.Errors.Select(e => e.Description));
-            }
-        }
-        catch (Exception ex)
-        {
-            photoErrorMessage = "Error saving file: " + ex.Message;
-        }
-    }
-
-    // --- NAME EDITING LOGIC ---
-    private void EditName()
-    {
-        nameErrorMessage = null;
-        isEditingName = true;
-        newFirstName = currentUser?.FirstName;
-        newLastName = currentUser?.LastName;
-    }
-
-    private void CancelEditName()
-    {
-        isEditingName = false;
-    }
-
-    private async Task SaveName()
-    {
-        if (currentUser != null)
-        {
-            nameErrorMessage = null;
-
-            var existingUser = await dbContext.Users
-                .Where(u => u.Id != currentUser.Id && u.FirstName == newFirstName && u.LastName == newLastName)
-                .FirstOrDefaultAsync();
-
-            if (existingUser != null)
-            {
-                nameErrorMessage = "This name is already taken. Please choose a different one.";
-                return;
-            }
-
-            currentUser.FirstName = newFirstName;
-            currentUser.LastName = newLastName;
-            await UserManager.UpdateAsync(currentUser);
-
-            isEditingName = false;
-        }
-    }
-
-    // --- PHONE EDITING LOGIC ---
-    private void EditPhone()
-    {
-        phoneErrorMessage = null;
-        isEditingPhone = true;
-        newPhoneNumber = currentUser?.PhoneNumber;
-    }
-
-    private void CancelEditPhone()
-    {
-        isEditingPhone = false;
-    }
-
-    private async Task SavePhone()
-    {
-        if (currentUser != null)
-        {
-            phoneErrorMessage = null;
-
-            if (!string.IsNullOrWhiteSpace(newPhoneNumber))
-            {
-                if (!newPhoneNumber.All(char.IsDigit))
-                {
-                    phoneErrorMessage = "Phone number must contain only digits.";
-                    return;
-                }
-
-                if (newPhoneNumber.Length != 8)
-                {
-                    phoneErrorMessage = "Phone number must be exactly 8 digits.";
-                    return;
-                }
-
-                var existingUser = await dbContext.Users
-                    .Where(u => u.Id != currentUser.Id && u.PhoneNumber == newPhoneNumber)
-                    .FirstOrDefaultAsync();
-
-                if (existingUser != null)
-                {
-                    phoneErrorMessage = "This phone number is already registered to another user.";
-                    return;
-                }
-            }
-
-            currentUser.PhoneNumber = newPhoneNumber;
-            await UserManager.UpdateAsync(currentUser);
-
-            isEditingPhone = false;
-        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/venues/facility-booking/new-booking/{facilityId:int}"
+@using HealthIsWealth.Data
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
@@ -15,17 +16,47 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <EditForm Model="@timeslotInputModel" method="post" OnValidSubmit="AddBookingTimeslot" FormName="create" Enhance>
+        <EditForm Model="@dateInputModel" method="post" OnValidSubmit="()=>FindTimeslots(timeslotDate)" FormName="create" Enhance>
             <CustomValidation @ref="customValidation" />
             <ValidationSummary class="text-danger" role="alert"/>
             <div class="mb-3">
                 <label for="timeslotDate" class="form-label">Booking Date:</label> 
-                <InputDate id="timeslotDate" @onchange="FindTimeslots" @bind-value="timeslotDate" class="form-control"
+                <InputDate id="timeslotDate" @bind-Value="@timeslotDate" class="form-control"
                            min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
             </div>
-            <button type="submit" class="btn btn-primary">Create</button>
+            <button type="submit" class="btn btn-primary">Find Timeslots</button>
         </EditForm>
     </div>
+</div>
+<div>
+    @if (AvailableEndTimes.Count() > 0 && AvailableStartTimes.Count() > 0)
+    {
+        <EditForm Model="@dateInputModel" method="post" OnValidSubmit="AddBookingTimeslot" FormName="create" Enhance>
+            <CustomValidation @ref="customValidation" />
+            <ValidationSummary class="text-danger" role="alert" />
+        
+            <div class="mb-3">
+                <label for="startTime" class="form-label">Start Time:</label>
+                <InputSelect id="startTime" @bind-Value="startTime" class="form-control">
+                    @foreach (TimeOnly time in AvailableStartTimes)
+                    {
+                        <option value="@time">@time.ToShortTimeString()</option>
+                    }
+                </InputSelect>
+                <InputSelect id="endTime" @bind-Value="endTime" class="form-control">
+                    @foreach (TimeOnly time in AvailableEndTimes)
+                    {
+                        <option value="@time">@time.ToShortTimeString()</option>
+                    }
+                </InputSelect>
+            </div>
+            <button type="submit" class="btn btn-primary">Find Timeslots</button>
+        </EditForm>
+    }
+        else
+    {
+        <p>No timeslots found.</p>
+    }
 </div>
 
 <div>
@@ -39,20 +70,27 @@
     [SupplyParameterFromForm]
     private DateOnly timeslotDate { get; set; } = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
 
-    private IQueryable<Timeslot> Timeslots;
+    [SupplyParameterFromForm]
+    private TimeOnly startTime { get; set; }
+
+    [SupplyParameterFromForm]
+    private TimeOnly endTime { get; set; }
+
+    private IList<TimeOnly> AvailableStartTimes = new List<TimeOnly>();
+    private IList<TimeOnly> AvailableEndTimes = new List<TimeOnly>();
 
     private DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
     private DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
 
     private CustomValidation? customValidation;
 
-    private TimeslotInputModel timeslotInputModel { get; set; } = new();
+    private DateInputModel dateInputModel { get; set; } = new();
 
     private Facility? facility;
 
     private string? userId;
 
-    
+
 
     protected override async void OnInitialized()
     {
@@ -72,25 +110,38 @@
         {
             userId = userIdClaim.Value;
         }
-
-        Timeslots = context.Timeslot.Where(t => t.FacilityId == facilityId);
     }
 
     private async Task AddBookingTimeslot()
     {
-        using var context = DbFactory.CreateDbContext();
+        // using var context = DbFactory.CreateDbContext();
         // context.Timeslot.Add();
-        await context.SaveChangesAsync();
-        NavigationManager.NavigateTo("/timeslots");
+        // await context.SaveChangesAsync();
+        // NavigationManager.NavigateTo("/timeslots");
+        FindTimeslots(timeslotDate);
     }
 
-    private sealed class TimeslotInputModel
+    private sealed class DateInputModel
     {
         public DateOnly timeslotDate;
     }
 
-    private void FindTimeslots()
+    private void FindTimeslots(DateOnly date)
     {
-        
+        using var context = DbFactory.CreateDbContext();
+        IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
+            DateOnly.FromDateTime(t.StartDT).Equals(timeslotDate)).ToList();
+        AvailableStartTimes = new List<TimeOnly>();
+        AvailableEndTimes = new List<TimeOnly>();
+        // 7AM TO 10PM
+        for (int i=7; i<22; i++)
+        {
+            if (!FilteredTimeslots.Any(t => t.StartDT.Hour <= i && i < t.EndDT.Hour))
+            {
+                AvailableStartTimes.Add(new TimeOnly(i, 0, 0)); // When a start time is available
+                AvailableEndTimes.Add(new TimeOnly(i + 1, 0, 0)); // The end time is available an hour later
+            }
+        }
+        StateHasChanged();
     }
 }

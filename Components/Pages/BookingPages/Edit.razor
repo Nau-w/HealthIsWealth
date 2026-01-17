@@ -4,42 +4,50 @@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
 
-<PageTitle>Edit</PageTitle>
+<PageTitle>Edit Booking</PageTitle>
 
-<h1>Edit</h1>
+<div class="full-screen-bg"></div>
 
-<h2>Booking</h2>
-<hr />
-@if (Booking is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Booking" OnValidSubmit="UpdateBooking" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Booking.BookingId" value="@Booking.BookingId" />
-                <div class="mb-3">
-                    <label for="userid" class="form-label">UserId:</label>
-                    <InputText id="userid" @bind-Value="Booking.UserId" class="form-control" />
-                    <ValidationMessage For="() => Booking.UserId" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="timeslotid" class="form-label">TimeslotId:</label>
-                    <InputNumber id="timeslotid" @bind-Value="Booking.TimeslotId" class="form-control" />
-                    <ValidationMessage For="() => Booking.TimeslotId" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
+<div class="review-container">
+    <div class="review-header-card">
+        <div class="review-header-content">
+            <h1>Edit Booking ✏️</h1>
+            <p>Update reservation details</p>
         </div>
     </div>
-}
 
-<div>
-    <a href="/bookings">Back to List</a>
+    @if (Booking is null)
+    {
+        <p class="text-center text-white"><em>Loading...</em></p>
+    }
+    else
+    {
+        <div class="review-card">
+            <EditForm method="post" Model="Booking" OnValidSubmit="UpdateBooking" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary role="alert" />
+
+                <input type="hidden" name="Booking.BookingId" value="@Booking.BookingId" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-muted">User ID (Read Only)</label>
+                    <InputText @bind-Value="Booking.UserId" class="form-control bg-light" readonly />
+                </div>
+
+                <div class="mb-4">
+                    <label for="timeslotid" class="form-label fw-bold">Timeslot ID</label>
+                    <InputNumber id="timeslotid" @bind-Value="Booking.TimeslotId" class="form-control" />
+                    <div class="form-text text-primary">Change this ID to reschedule the booking.</div>
+                    <ValidationMessage For="() => Booking.TimeslotId" class="text-danger" />
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="/bookings" class="btn btn-outline-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                </div>
+            </EditForm>
+        </div>
+    }
 </div>
 
 @code {
@@ -60,8 +68,6 @@ else
         }
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
     private async Task UpdateBooking()
     {
         using var context = DbFactory.CreateDbContext();
@@ -73,22 +79,12 @@ else
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!BookingExists(Booking!.BookingId))
-            {
+            if (!context.Booking.Any(e => e.BookingId == Booking!.BookingId))
                 NavigationManager.NavigateTo("notfound");
-            }
             else
-            {
                 throw;
-            }
         }
 
         NavigationManager.NavigateTo("/bookings");
-    }
-
-    private bool BookingExists(int bookingid)
-    {
-        using var context = DbFactory.CreateDbContext();
-        return context.Booking.Any(e => e.BookingId == bookingid);
     }
 }

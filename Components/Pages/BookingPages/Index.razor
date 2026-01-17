@@ -2,25 +2,103 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.AspNetCore.Identity
 @using HealthIsWealth.Domain
 @using HealthIsWealth.Data
-
 @implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
 
+<PageTitle>My Bookings</PageTitle>
+
+<div class="full-screen-bg"></div>
+
+<div class="review-container">
+
+    <div class="review-header-card">
+        <div class="review-header-content">
+            <h1>My Bookings</h1>
+            <p>Manage your upcoming sessions</p>
+            @if (upcomingBookings.Any())
+            {
+                <p class="badge bg-light text-primary mt-2">@upcomingBookings.Count Upcoming</p>
+            }
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="text-center mt-5">
+            <div class="spinner-border text-primary" role="status"></div>
+            <p class="mt-2 text-muted">Loading your schedule...</p>
+        </div>
+    }
+    else if (!upcomingBookings.Any())
+    {
+        <div class="empty-state">
+            <h3>No upcoming bookings</h3>
+            <p>Ready to get moving? Find a facility and book a slot!</p>
+            <a href="/Venues" class="btn btn-primary mt-3">Browse Venues</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var booking in upcomingBookings)
+            {
+                <div class="col-12 mb-4">
+                    <div class="review-card p-0 overflow-hidden d-flex flex-column flex-md-row">
+
+                        <div class="bg-light p-4 d-flex flex-column justify-content-center align-items-center text-center" style="min-width: 150px; border-right: 1px solid #eee;">
+                            <span class="fs-1 fw-bold text-primary">@booking.Timeslot.StartDT.ToString("dd")</span>
+                            <span class="text-uppercase fw-bold text-muted">@booking.Timeslot.StartDT.ToString("MMM")</span>
+                            <span class="badge bg-primary mt-2">@booking.Timeslot.StartDT.ToString("HH:mm")</span>
+                        </div>
+
+                        <div class="p-4 flex-grow-1">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h4 class="mb-1">@booking.Timeslot.Facility.Name</h4>
+                                    <p class="text-muted mb-2">@booking.Timeslot.Facility.Location</p>
+                                    <small class="text-muted">
+                                        📍 @booking.Timeslot.Facility.Venue.Address, @booking.Timeslot.Facility.Venue.PostalCode
+                                    </small>
+                                </div>
+                                <div class="text-end">
+                                    <span class="badge bg-success">Confirmed</span>
+                                    <div class="mt-1 small text-muted">#@booking.BookingId</div>
+                                </div>
+                            </div>
+
+                            <hr class="my-3" />
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="text-muted small">
+                                    Duration: @((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours) Hours
+                                </span>
+
+                                <div class="btn-group">
+                                    <a href="@($"/bookings/details?bookingid={booking.BookingId}")" class="btn btn-sm btn-outline-primary">Details</a>
+                                    <a href="@($"/bookings/edit?bookingid={booking.BookingId}")" class="btn btn-sm btn-outline-secondary">Reschedule</a>
+                                    <a href="@($"/bookings/delete?bookingid={booking.BookingId}")" class="btn btn-sm btn-outline-danger">Cancel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
 @code {
     private HealthIsWealthContext dbContext = default!;
-
-    private List<Booking>? myBookings;
     private List<Booking> upcomingBookings = new();
+    private bool isLoading = true;
 
     protected override async Task OnInitializedAsync()
     {
         dbContext = DbFactory.CreateDbContext();
-
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
@@ -30,64 +108,21 @@
 
             if (userId != null)
             {
-                myBookings = await dbContext.Booking
-                    .Include(booking => booking.Timeslot)
-                    .ThenInclude(timeslot => timeslot.Facility)
-                    .ThenInclude(timeslot => timeslot.Venue)
-                    .Where(booking => booking.UserId == userId)
-                    .OrderBy(booking => booking.Timeslot.StartDT)
+                var allMyBookings = await dbContext.Booking
+                    .Include(b => b.Timeslot)
+                        .ThenInclude(t => t.Facility)
+                            .ThenInclude(f => f.Venue)
+                    .Where(b => b.UserId == userId)
+                    .OrderBy(b => b.Timeslot.StartDT)
                     .ToListAsync();
 
-                var now = DateTime.Now;
-
-                upcomingBookings = myBookings
-                    .Where(b => b.Timeslot.StartDT > now)
+                upcomingBookings = allMyBookings
+                    .Where(b => b.Timeslot.StartDT > DateTime.Now)
                     .ToList();
             }
         }
+        isLoading = false;
     }
+
     public async ValueTask DisposeAsync() => await dbContext.DisposeAsync();
-}
-
-
-<PageTitle>My Bookings</PageTitle>
-
-<div>
-    <div class="booking-text">
-        <h1>My Bookings</h1>
-    </div>
-</div>
-
-
-@if (myBookings == null)
-{
-    <p>Loading your bookings...</p>
-}
-else if (!myBookings.Any())
-{
-    <p>You have no bookings yet.</p>
-}
-else
-{
-
-    @foreach (var booking in upcomingBookings)
-    {
-        <div class="bookings-float">
-            <img src=""/>
-            @booking.Timeslot.Facility.Name
-            @booking.Timeslot.Facility.Location <br>
-            @booking.Timeslot.Facility.Venue.Address <br>
-            @booking.Timeslot.Facility.Venue.PostalCode <br>
-            @booking.Timeslot.Facility.Venue.UnitNumber <br>
-            @booking.Timeslot.StartDT.ToString("dd/MM/yyyy") to @booking.Timeslot.EndDT.ToString("dd/MM/yyyy") <br> 
-
-            @booking.Timeslot.StartDT.ToString("HH:mm") to @booking.Timeslot.EndDT.ToString("HH:mm")
-            (@((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours) Hours)
-            <a href="/facilitysports/@booking.Timeslot.Facility.FacilitySports"> 
-                View Details
-            </a>
-        </div>
-        
-    }
-}
-
+}   

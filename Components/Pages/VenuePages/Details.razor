@@ -7,30 +7,33 @@
 <PageTitle>Venue Booking</PageTitle>
 <div class="container-centered">
     <div style="width: 60%">
-        @if (venue is not null)
+        @if (venue is not null && VenueImage is not null)
         {
             <section class="slider-container">
                 <div class="slider-wrapper">
             <div class="slider">
-                <img src="@venue.ThumbnailImageUrl" alt="" id="slide-1" />
-                <img src="images/placeholder/sports_banner.jpg" alt="" id="slide-2" />
-                <img src="images/placeholder/sports.jpg" alt="" id="slide-3" />
+                <img src="@venue.ThumbnailImageUrl" alt="" id="thumbnail" />
+                @for (int i=0; i < VenueImage.Count; i++)
+                {
+                <img src=@VenueImage.ElementAt(i).ImageUrl alt="" id="slide-@i.ToString()" />
+                }
             </div>
             <div class="slider-nav">
-                <a href="@NavigationManager.Uri#slide-1" />
-                <a href="@NavigationManager.Uri#slide-2" />
-                <a href="@NavigationManager.Uri#slide-3" />
+                <a href="@NavigationManager.Uri#thumbnail" />
+                @for (int i = 0; i < VenueImage.Count; i++)
+                {
+                <a href="@NavigationManager.Uri#slide-@i.ToString()" />
+                }
             </div>
         </div>
         </section>
         }
-    <hr />
     @if (venue is null)
     {
         <h1><em>Loading...</em></h1>
     }
     else {
-        <h1>@venue.Name</h1>
+        <h1 class="fw-bolder" style="color: crimson">@venue.Name</h1>
         <dl class="row">
             <dt class="col-sm-2">Address</dt>
             <dd class="col-sm-10">@venue.Address</dd>
@@ -40,7 +43,7 @@
             <dd class="col-sm-10">@venue.UnitNumber</dd>
         </dl>
         <div>
-            <a href="@($"/venues")">Back to List</a>
+
         </div>
     }
     </div>
@@ -48,7 +51,7 @@
 
 @code {
     private Venue? venue;
-    private IQueryable<Facility> Facility;
+    private IList<VenueImage> VenueImage;
 
     [SupplyParameterFromQuery (Name = "venueid")]
     private int VenueId { get; set; }
@@ -64,6 +67,6 @@
         {
             NavigationManager.NavigateTo("notfound");
         }
-        Facility = context.Facility.Include(f => f.FacilitySports).ThenInclude(fs=>fs.Sport);
+        VenueImage = context.VenueImage.Where(v => v.VenueId == VenueId).ToList();
     }
 }

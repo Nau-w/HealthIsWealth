@@ -26,7 +26,7 @@
             </div>
         </TemplateColumn>
         <TemplateColumn Context="venue">
-            <h1 class="fw-bolder">@venue.Name</h1>
+            <h1 class="fw-bolder" style="color: crimson">@venue.Name</h1>
             <h5>@venue.Address</h5>
             <h5>@venue.PostalCode</h5>
             <h5>From: $@venue.Facilities.Min(f => f.Price)/hr</h5>

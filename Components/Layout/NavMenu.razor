@@ -4,7 +4,6 @@
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.EntityFrameworkCore
 @inject NavigationManager NavigationManager
-@inject UserManager<HealthIsWealthUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IDbContextFactory<HealthIsWealthContext> DbFactory
 
@@ -12,8 +11,9 @@
     <nav class="nav-bar">
         <h3 class="nav-branding">HealthIsWealth</h3>
         <ul>
-            <li><a href="">Home</a></li>
-            <li><a class="dropbtn" href="/venues">Venues</a>
+            <li><a class="nav-click" href="">Home</a></li>
+            <li>
+                <a class="nav-click" href="/venues">Venues</a>
                 <ul>
                     <li><a class="dropbtn" href="/venues">All Sports</a></li>
                     @foreach (Sport sport in Sports)
@@ -22,14 +22,23 @@
                     }
                 </ul>
             </li>
-            <li><a href="/Bookings">Bookings</a></li>
-            <li><a href="/Account/Profile">Profile</a></li>
+            <li><a class="nav-click" href="/Bookings">Bookings</a></li>
+            <li><a class="nav-click" href="/Account/Profile">Profile</a></li>
         </ul>
 
         <div class="nav-auth">
             <AuthorizeView>
                 <Authorized>
-                    <button class="nav-settings" @onclick="ToggleSidePanel">Settings</button>
+
+                    <a class ="pic-link" href="/Account/Profile">
+                        <img src="@userProfilePic" class="nav-profile-img" alt="Profile" />
+                    </a>
+        
+                    <button class="hamburger @(isPanelOpen ? "active" : "")" @onclick="ToggleSidePanel">
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </button>
                 </Authorized>
                 <NotAuthorized>
                     <a href="Account/Login" class="auth-link">Login</a>
@@ -54,27 +63,42 @@
 <div class="overlay @(isPanelOpen ? "active" : "")" @onclick="ToggleSidePanel"></div>
 
 @code {
-    HealthIsWealthContext context = default!;
-    IList<Sport> Sports;
-
-    private bool isPanelOpen = false;
-
-    private void ToggleSidePanel()
-    {
-        isPanelOpen = !isPanelOpen;
-    }
-
-    private string fullName = "Loading...";
-
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
+    IList<Sport> Sports = new List<Sport>();
+
+    private bool isPanelOpen = false;
+    private string userProfilePic = "https://via.placeholder.com/150";
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await authenticationStateTask;
-        var user = authState.User;
+        var userPrincipal = authState.User;
 
-        context = DbFactory.CreateDbContext();
-        Sports = context.Sport.ToList();
+        using var context = await DbFactory.CreateDbContextAsync();
+
+
+        Sports = await context.Sport.ToListAsync();
+
+
+        if (userPrincipal.Identity != null && userPrincipal.Identity.IsAuthenticated)
+        {
+
+            var userId = userPrincipal.FindFirst(u => u.Type.Contains("nameidentifier"))?.Value;
+
+            if (userId != null)
+            {
+                var user = await context.Users.FindAsync(userId);
+                if (user != null && !string.IsNullOrEmpty(user.ProfilePictureUrl))
+                {
+                    userProfilePic = user.ProfilePictureUrl;
+                }
+            }
+        }
+    }
+
+    private void ToggleSidePanel()
+    {
+        isPanelOpen = !isPanelOpen;
     }
 }

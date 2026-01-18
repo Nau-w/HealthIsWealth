@@ -17,6 +17,7 @@ namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
         [Inject] public UserManager<HealthIsWealthUser> UserManager { get; set; } = default!;
         [Inject] public IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory { get; set; } = default!;
         [Inject] public IWebHostEnvironment Environment { get; set; } = default!;
+        [Inject] NavigationManager NavigationManager { get; set; } = default!;
 
         //Database
         private HealthIsWealthContext dbContext = default!;
@@ -186,6 +187,7 @@ namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
                     selectedFile = null;
                     previewImage = null;
                     photoErrorMessage = null;
+                    NavigationManager.NavigateTo(NavigationManager.Uri, forceLoad: true);
                 }
                 else
                 {

@@ -1,75 +1,88 @@
 ﻿@page "/bookings/details"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Components.Authorization
 @using HealthIsWealth.Domain
+@using HealthIsWealth.Data
+@implements IAsyncDisposable
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
-@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@attribute [Authorize]
+@rendermode InteractiveServer
 
 <PageTitle>Booking Details</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-
-    <div class="review-header-card" style="background: linear-gradient(135deg, #00c6ff, #0072ff);">
-        <div class="review-header-content">
-            <h1>Booking Ticket 🎟️</h1>
-            <p>Ref: #@BookingId</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Booking Ticket</h1>
+        <p>Ref: #@BookingId</p>
     </div>
 
     @if (booking is null)
     {
-        <p class="text-center text-white"><em>Loading ticket...</em></p>
+        <div style="text-align: center; color: white; margin-top: 50px;">
+            <p>Loading ticket...</p>
+        </div>
     }
     else
     {
-        <div class="review-card text-center pb-5">
+        <div class="booking-card">
 
-            <h2 class="text-uppercase text-primary mt-3">@booking.Timeslot?.Facility?.Name</h2>
-            <p class="text-muted">@booking.Timeslot?.Facility?.Venue?.Address</p>
-
-            <hr class="w-50 mx-auto my-4" />
-
-            <div class="row justify-content-center">
-                <div class="col-md-4 mb-3">
-                    <div class="p-3 bg-light rounded border">
-                        <small class="d-block text-muted fw-bold">DATE</small>
-                        <span class="fs-5">@booking.Timeslot?.StartDT.ToString("ddd, dd MMM yyyy")</span>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <div class="p-3 bg-light rounded border">
-                        <small class="d-block text-muted fw-bold">TIME</small>
-                        <span class="fs-5">@booking.Timeslot?.StartDT.ToString("h:mm tt") - @booking.Timeslot?.EndDT.ToString("h:mm tt")</span>
-                    </div>
-                </div>
+            <div class="card-details">
+                <h4>Facility Name: @booking.Timeslot.Facility.Name</h4>
+                <small class="address-text">
+                    @booking.Timeslot.Facility.Venue.Address
+                    <br />
+                    @booking.Timeslot.Facility.Venue.PostalCode
+                </small>
             </div>
 
-            <div class="mt-4 d-flex justify-content-center gap-3">
-                <a href="/bookings" class="btn btn-outline-secondary">Back to List</a>
-                <a href="@($"/bookings/edit?bookingid={booking.BookingId}")" class="btn btn-primary">Reschedule / Edit</a>
+            <div class="card-status">
+                <span class="status-badge">Confirmed</span>
+            </div>
+
+            <div class="card-time">
+                <div class="date-box">
+                    <span class="day">@booking.Timeslot.StartDT.ToString("dd")</span>
+                    <span class="month">@booking.Timeslot.StartDT.ToString("MMM")</span>
+                </div>
+                <span class="time-range">
+                    @booking.Timeslot.StartDT.ToString("HH:mm") - @booking.Timeslot.EndDT.ToString("HH:mm")
+                </span>
+                <span class="duration">
+                    @((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours)h
+                </span>
+            </div>
+
+            <div class="card-actions">
+                <a href="/bookings" class="btn-action btn-details">Back To Bookings</a>
+
+                <a href="@($"/bookings/edit?bookingid={booking.BookingId}")" class="btn-action btn-reschedule">Reschedule / Edit</a>
+                <a href="@($"/bookings/delete?bookingid={booking.BookingId}")" class="btn-action btn-cancel">Cancel Booking</a>
             </div>
         </div>
     }
 </div>
 
 @code {
-    private Booking? booking;
-
     [SupplyParameterFromQuery]
-    private int BookingId { get; set; }
+    public int BookingId { get; set; }
+
+    private HealthIsWealthContext dbContext = default!;
+    private Booking? booking;
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = DbFactory.CreateDbContext();
-        // Include deep details so we can show names/dates
-        booking = await context.Booking
-            .Include(b => b.Timeslot).ThenInclude(t => t.Facility).ThenInclude(f => f.Venue)
-            .FirstOrDefaultAsync(m => m.BookingId == BookingId);
+        dbContext = DbFactory.CreateDbContext();
 
-        if (booking is null)
-        {
-            NavigationManager.NavigateTo("notfound");
-        }
+        // Fetch the specific booking with all related data
+        booking = await dbContext.Booking
+            .Include(b => b.Timeslot)
+                .ThenInclude(t => t.Facility)
+                    .ThenInclude(f => f.Venue)
+            .FirstOrDefaultAsync(b => b.BookingId == BookingId);
     }
+
+    public async ValueTask DisposeAsync() => await dbContext.DisposeAsync();
 }

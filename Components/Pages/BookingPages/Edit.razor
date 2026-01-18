@@ -3,62 +3,73 @@
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
 @using System.Security.Claims
+@using HealthIsWealth.Data
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-<PageTitle>Edit Booking</PageTitle>
+<PageTitle>HealthIsWealth | Edit Booking</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-    <div class="review-header-card">
-        <div class="review-header-content">
-            <h1>Edit Booking ✏️</h1>
-            <p>Update reservation details</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Edit Booking ✏️</h1>
+        <p>Update reservation details</p>
     </div>
 
     @if (inputModel is null)
     {
-        <p class="text-center text-white"><em>Loading...</em></p>
+        <div style="text-align: center; color: white; margin-top: 50px;">
+            <p>Loading...</p>
+        </div>
     }
     else
     {
-        <div class="review-card">
-            <EditForm method="post" Model="inputModel" OnValidSubmit="UpdateBooking" FormName="edit" Enhance>
+        <div class="booking-card" style="display: block;">
+            <EditForm method="post" Model="inputModel" OnValidSubmit="Submit" FormName="edit" Enhance>
                 <CustomValidation @ref="timeslotValidation" />
-                <ValidationSummary role="alert" />
+                <ValidationSummary role="alert" class="text-danger mb-3" />
 
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-muted">Venue: (Read Only)</label>
-                    <InputText @bind-Value="inputModel.venueName" class="form-control bg-light" readonly />
+                    <label class="form-label fw-bold text-dark">Venue (View Only)</label>
+                    <InputText @bind-Value="inputModel.venueName" class="form-control" readonly
+                               style="background: rgba(255,255,255,0.7); border: none;" />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-muted">Facility: (Read Only)</label>
-                    <InputText @bind-Value="inputModel.facilityName" class="form-control bg-light" readonly />
+                    <label class="form-label fw-bold text-dark">Facility (View Only)</label>
+                    <InputText @bind-Value="inputModel.facilityName" class="form-control" readonly
+                               style="background: rgba(255,255,255,0.7); border: none;" />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-muted">Location: (Read Only)</label>
-                    <InputText @bind-Value="inputModel.venueLocation" class="form-control bg-light" readonly />
+                    <label class="form-label fw-bold text-dark">Location (View Only)</label>
+                    <InputText @bind-Value="inputModel.venueLocation" class="form-control" readonly
+                               style="background: rgba(255,255,255,0.7); border: none;" />
                 </div>
+
                 <div class="mb-3">
-                    <label class="form-label fw-bold text-muted">Date: (Read Only)</label>
-                    <InputDate @bind-Value="inputModel.bookingDate" class="form-control bg-light" readonly />
+                    <label class="form-label fw-bold text-dark">Date (View Only)</label>
+                    <InputDate @bind-Value="inputModel.bookingDate" class="form-control" readonly
+                               style="background: rgba(255,255,255,0.7); border: none;" />
                 </div>
+
                 @if (inputModel.bookingDate.Equals(DateOnly.FromDateTime(DateTime.Today)))
                 {
                     <div class="mb-4">
-                        <label for="timeslotid" class="form-label fw-bold text-muted">Timeslot: (@hours hrs) (uneditable on the same day)</label>
-                        <InputText id="timeslotid" @bind-Value="inputModel.constantDT" class="form-control" readonly />
+                        <label for="timeslotid" class="form-label fw-bold text-dark">Timeslot (@hours hrs) <small class="text-muted">(Locked for today)</small></label>
+                        <InputText id="timeslotid" @bind-Value="inputModel.constantDT" class="form-control" readonly
+                                   style="background: rgba(255,255,255,0.7); border: none;" />
                     </div>
-                } else
+                }
+                else
                 {
                     <div class="mb-4">
-                        <label for="timeslotid" class="form-label fw-bold">Timeslot: (@hours hrs)</label>
-                        <InputSelect id="timeslotid" @bind-Value="inputModel.startDT" class="form-control">
+                        <label for="timeslotid" class="form-label fw-bold text-dark">Select New Timeslot (@hours hrs)</label>
+                        <InputSelect id="timeslotid" @bind-Value="inputModel.startDT" class="form-control"
+                                     style="background: rgba(255,255,255,0.9); border: 1px solid #ccc;">
                             @foreach (DateTime startDT in AvailableStartTimes)
                             {
                                 <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
@@ -66,10 +77,13 @@
                         </InputSelect>
                     </div>
                 }
-                <div class="d-flex justify-content-between">
-                    <a href="/bookings" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+
+                <div class="card-actions" style="margin-top: 20px;">
+                    <a href="@($"/bookings/details?bookingid={BookingId}")" class="btn-action btn-reschedule" style="text-align: center;">Cancel</a>
+
+                    <button type="submit" class="btn-action btn-details" style="border:none; cursor:pointer;">Save Changes</button>
                 </div>
+
             </EditForm>
         </div>
     }
@@ -80,14 +94,10 @@
     private int BookingId { get; set; }
 
     private int hours;
-
     private Booking? booking;
     private Timeslot? timeslot;
-
     private String? userId;
-
     private CustomValidation? timeslotValidation;
-
     private List<DateTime> AvailableStartTimes = new List<DateTime>();
     private InputModel inputModel = new();
 
@@ -104,27 +114,30 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
-
         userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         booking ??= await context.Booking.Include(b => b.Timeslot)
-            .ThenInclude(t => t.Facility).ThenInclude(f => f.Venue).FirstOrDefaultAsync(m => m.BookingId == BookingId
-                && m.UserId.Equals(userId));
+            .ThenInclude(t => t.Facility).ThenInclude(f => f.Venue)
+            .FirstOrDefaultAsync(m => m.BookingId == BookingId && m.UserId.Equals(userId));
 
         if (booking is null)
         {
             NavigationManager.NavigateTo("notfound");
+            return;
         }
+
         timeslot = booking.Timeslot;
         hours = (timeslot.EndDT - timeslot.StartDT).Hours;
+
+        // Initialize Input Model
         inputModel.venueName = timeslot.Facility.Venue.Name;
         inputModel.facilityName = timeslot.Facility.Name;
         inputModel.venueLocation = timeslot.Facility.Venue.Address;
         inputModel.bookingDate = DateOnly.FromDateTime(timeslot.StartDT);
         inputModel.constantDT = $"{timeslot.StartDT.ToShortTimeString()} - {timeslot.EndDT.ToShortTimeString()}";
+
         await FindTimeslots(timeslot);
         inputModel.startDT = timeslot.StartDT;
     }
@@ -132,19 +145,24 @@
     private async void Submit()
     {
         timeslotValidation?.ClearErrors();
-
         var errors = new Dictionary<string, List<string>>();
-
-       DateTime endDT = inputModel.startDT.AddHours(hours);
+        DateTime endDT = inputModel.startDT.AddHours(hours);
 
         using var context = DbFactory.CreateDbContext();
-        if (await context.Timeslot.Where(t => t.TimeslotId != timeslot.TimeslotId &&  
+
+        // Check for overlap
+        bool isOccupied = await context.Timeslot.AnyAsync(t =>
+            t.TimeslotId != timeslot.TimeslotId &&
             t.FacilityId == timeslot.FacilityId &&
-            (t.StartDT >= inputModel.startDT && t.StartDT < endDT ||
-            t.EndDT > inputModel.startDT && t.EndDT <= endDT)).AnyAsync())
+            ((t.StartDT >= inputModel.startDT && t.StartDT < endDT) ||
+              (t.EndDT > inputModel.startDT && t.EndDT <= endDT))
+        );
+
+        if (isOccupied)
         {
-            errors.Add("timeslot", ["Timeslot is occupied."]);
+            errors.Add("timeslot", new List<string> { "Timeslot is occupied." });
         }
+
         if (errors.Any())
         {
             timeslotValidation?.DisplayErrors(errors);
@@ -153,7 +171,6 @@
         {
             await UpdateBooking();
         }
-
     }
 
     private async Task UpdateBooking()
@@ -162,6 +179,7 @@
         context.Attach(timeslot!).State = EntityState.Modified;
         timeslot.StartDT = inputModel.startDT;
         timeslot.EndDT = inputModel.startDT.AddHours(hours);
+
         try
         {
             await context.SaveChangesAsync();
@@ -174,31 +192,42 @@
                 throw;
         }
 
-        NavigationManager.NavigateTo("/bookings");
+        NavigationManager.NavigateTo($"/bookings/details?bookingid={BookingId}");
     }
 
     private async Task FindTimeslots(Timeslot timeslot)
     {
         using var context = DbFactory.CreateDbContext();
-        IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.TimeslotId != timeslot.TimeslotId && t.FacilityId == timeslot.FacilityId &&
-            DateOnly.FromDateTime(t.StartDT).Equals(inputModel.bookingDate)).ToList();
+
+        // Fetch existing timeslots for that facility on that day
+        IList<Timeslot> FilteredTimeslots = await context.Timeslot
+            .Where(t => t.TimeslotId != timeslot.TimeslotId &&
+                        t.FacilityId == timeslot.FacilityId &&
+                        t.StartDT.Date == inputModel.bookingDate.ToDateTime(TimeOnly.MinValue).Date) // Improved Date comparison
+            .ToListAsync();
 
         AvailableStartTimes = new List<DateTime>();
-        int count = 0;
 
-        // 7AM TO 10PM
+        // Logic to find free slots between 7 AM and 10 PM
         for (int i = 7; i < 22; i++)
         {
-            count += count != hours ? 1 : 0;
-            if (FilteredTimeslots.Any(t => t.StartDT.Hour <= i && i < t.EndDT.Hour))
+            // Check if a slot of 'hours' length can start at hour 'i'
+            // We need 'hours' consecutive free hours.
+            // Simplified logic: Check if the specific start time 'i' causes overlap
+
+            DateTime proposedStart = inputModel.bookingDate.ToDateTime(new TimeOnly(i, 0));
+            DateTime proposedEnd = proposedStart.AddHours(hours);
+
+            if (proposedEnd.Hour > 22 && proposedEnd.Date == proposedStart.Date) continue; // Don't go past 10 PM
+
+            bool overlap = FilteredTimeslots.Any(t =>
+                (t.StartDT < proposedEnd && t.EndDT > proposedStart) // Standard overlap check
+            );
+
+            if (!overlap)
             {
-                count = 0;
-            }
-            if (count == hours)
-            {
-                AvailableStartTimes.Add(new DateTime(inputModel.bookingDate, new TimeOnly(i - hours + 1, 0, 0)));
+                AvailableStartTimes.Add(proposedStart);
             }
         }
-        await Task.CompletedTask;
     }
 }

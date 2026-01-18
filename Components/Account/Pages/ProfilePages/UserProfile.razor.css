@@ -15,20 +15,15 @@
 
 /* --- 2. Updated Profile Layout (The White Card) --- */
 .profile-layout {
-    /* REMOVED: background-image properties from here */
-
     max-width: 70%;
     margin: 40px auto;
     padding: 20px;
-    background-color: white; /* This makes the card white/opaque */
+    background-color: white;
     border-radius: 15px;
-    /* Optional: Add a slight shadow to pop off the background */
-    box-shadow: 0 0 20px rgba(0,0,0,0.1);
 }
 
 /* --- Shared Card Style --- */
 .profile-card {
-    background: white;
     border-radius: 12px;
     box-shadow: 10px 10px 5px rgba(0,0,0,0.3);
     border: none;

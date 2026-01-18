@@ -1,0 +1,107 @@
+﻿@page "/venues/facility-booking/new-booking/{facilityId:int}/timeslots"
+@using HealthIsWealth.Data
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using HealthIsWealth.Domain
+@inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+@attribute [Authorize]
+@rendermode InteractiveServer
+
+<PageTitle>Find Timeslots</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Timeslot</h2>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label for="timeslot" class="form-label">Booking Timeslot:</label>
+            <select id="timeslot" class="form-control">
+                @foreach (DateTime startDT in AvailableStartTimes)
+                {
+                    <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Find Timeslots</button>
+    </div>
+</div>
+
+<div>
+    <a href="/timeslots">Back to List</a>
+</div>
+
+@code {
+    [Parameter]
+    public int facilityId { get; set; }
+
+    [SupplyParameterFromQuery(Name = "date")]
+    public string? dateAsString { get; set; }
+
+    [SupplyParameterFromQuery (Name="hours")]
+    public int hours { get; set; }
+
+    private DateOnly date;
+
+    private IList<DateTime> AvailableStartTimes = new List<DateTime>();
+
+    private CustomValidation? customValidation;
+
+    private Facility? facility;
+
+    private string? userId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = DbFactory.CreateDbContext();
+
+        facility = await context.Facility.FirstOrDefaultAsync(f => f.FacilityId == facilityId);
+        DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+        DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
+
+        if (facility is null || dateAsString is null || !DateOnly.TryParseExact(dateAsString, "yyyy-MM-dd", out date) 
+            || hours < 1 || hours > 4 || minDate > date || maxDate < date)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userIdClaim = user.FindFirst("userId");
+
+        if (userIdClaim != null)
+        {
+            userId = userIdClaim.Value;
+        }
+        await FindTimeslots(date, hours);
+    }
+
+    private async Task FindTimeslots(DateOnly date, int hours)
+    {
+        using var context = DbFactory.CreateDbContext();
+        IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
+            DateOnly.FromDateTime(t.StartDT).Equals(date)).ToList();
+
+        AvailableStartTimes = new List<DateTime>();
+        int count = 0;
+
+        // 7AM TO 10PM
+        for (int i = 7; i < 22; i++)
+        {
+            count += count != hours ? 1 : 0;
+            if (FilteredTimeslots.Any(t => t.StartDT.Hour <= i && i < t.EndDT.Hour))
+            {
+                count = 0;
+            }
+            if (count == hours)
+            {
+                AvailableStartTimes.Add(new DateTime(date, new TimeOnly(i-hours+1, 0, 0)));
+            }
+        }
+        await Task.CompletedTask;
+    }
+}

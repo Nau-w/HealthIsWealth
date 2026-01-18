@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
+@using System.Security.Claims
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -100,12 +101,8 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        var userIdClaim = user.FindFirst("userId");
+        userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null)
-        {
-            userId = userIdClaim.Value;
-        }
         inputModel = new();
         await FindTimeslots(date, hours);
     }

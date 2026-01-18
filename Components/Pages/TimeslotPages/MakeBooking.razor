@@ -101,7 +101,7 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        var userId = user.FindFirst(c=>c.Type == ClaimTypes.NameIdentifier)?.Value;
+        userId = user.FindFirst(c=>c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         inputModel = new();
         await FindTimeslots(date, hours);

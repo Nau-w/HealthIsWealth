@@ -109,7 +109,7 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
         timeslot = (await context.Booking.Include(b => b.Timeslot).ThenInclude(t => t.Facility).Where(b => b.UserId == userId)
             .FirstAsync(b => b.BookingId == bookingId)).Timeslot;

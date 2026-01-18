@@ -64,7 +64,6 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        // Include data so we can show what we are deleting
         booking = await context.Booking
             .Include(b => b.Timeslot).ThenInclude(t => t.Facility)
             .FirstOrDefaultAsync(m => m.BookingId == BookingId);
@@ -78,10 +77,23 @@
     private async Task DeleteBooking()
     {
         using var context = DbFactory.CreateDbContext();
-        context.Booking.Remove(booking!);
-        await context.SaveChangesAsync();
+        var bookingToDelete = await context.Booking
+            .Include(b => b.Timeslot)
+            .FirstOrDefaultAsync(b => b.BookingId == BookingId);
 
-        // After deletion, go back to the main list
+        if (bookingToDelete != null)
+        {
+            var timeslotToDelete = bookingToDelete.Timeslot;
+
+            context.Booking.Remove(bookingToDelete);
+
+            if (timeslotToDelete != null)
+            {
+                context.Timeslot.Remove(timeslotToDelete);
+            }
+
+            await context.SaveChangesAsync();
+        }
         NavigationManager.NavigateTo("/bookings");
     }
 }

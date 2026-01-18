@@ -9,41 +9,52 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-<PageTitle>Find Timeslots</PageTitle>
+<PageTitle>Book Timeslots</PageTitle>
 
-<h1>Create</h1>
-
-<h2>Timeslot</h2>
-<hr />
-@if (inputModel is not null){
-<div class="row">
-    <div class="col-md-4">
-        <div class="mb-3">
-            <EditForm Model="@inputModel" method="post"
-                      OnValidSubmit="@(()=>Submit())" FormName="search" Enhance>
-                <CustomValidation @ref="timeslotValidation" />
-                <ValidationSummary class="text-danger" role="alert" />
-                <div class="mb-3">
-                    <label for="timeslot" class="form-label">Booking Timeslot:</label>
-                    <InputSelect TValue="DateTime" id="timeslot" @bind-Value="inputModel.startDT">
-                        @foreach (DateTime startDT in AvailableStartTimes)
-                        {
-                            <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
-                        }
-                    </InputSelect>
-                </div>
-                <button type="submit" class="btn btn-primary">Book Timeslot</button>
-            </EditForm>
+<div class="container-centered">
+    <div style="width: 80%">
+        @if (facility is not null)
+        {
+            <h1 class="title-large" style="color: crimson">@facility.Venue.Name</h1>
+            <h2 class="title-medium" style="color: crimson">@facility.Name</h2>
+        } else
+        {
+            <p><em>loading...</em></p>
+        }
+        <hr />
+        <a class="btn-red" href="/venues/facility-booking/new-booking/@facilityId">&lt; Back</a>
+        @if (inputModel is not null && facility is not null){
+            
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <EditForm Model="@inputModel" method="post"
+                              OnValidSubmit="@(()=>Submit())" FormName="search" Enhance>
+                        <CustomValidation @ref="timeslotValidation" />
+                        <ValidationSummary class="text-danger" role="alert" />
+                        <div class="mb-3">
+                            <label for="timeslot" class="form-label">Booking Timeslot:</label>
+                            <InputSelect TValue="DateTime" id="timeslot" @bind-Value="inputModel.startDT">
+                                @foreach (DateTime startDT in AvailableStartTimes)
+                                {
+                                    <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
+                                }
+                            </InputSelect>
+                        </div>
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Total Price:</label>
+                                <p>$@(facility.Price*hours)</p>
+                            </div>
+                        <button type="submit" class="btn btn-primary">Book Timeslot</button>
+                    </EditForm>
+                 </div>
+            </div>
         </div>
-    </div>
-    </div>
 } else
 {
     <p><em>loading...</em></p>
 }
-
-<div>
-    <a href="/timeslots">Back to List</a>
+    </div>
 </div>
 
 @code {
@@ -76,7 +87,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        facility = await context.Facility.FirstOrDefaultAsync(f => f.FacilityId == facilityId);
+        facility = await context.Facility.Include(f=>f.Venue).FirstOrDefaultAsync(f => f.FacilityId == facilityId);
         DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
         DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
 

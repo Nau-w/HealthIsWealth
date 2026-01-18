@@ -11,44 +11,50 @@
 
 <PageTitle>Find Timeslots</PageTitle>
 
-<h1>Create</h1>
-
-<h2>Timeslot</h2>
-<hr />
-@if (dateInputModel is not null)
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm Model="@dateInputModel" method="post" 
-            OnValidSubmit="()=>FindTimeslots(dateInputModel.timeslotDate, dateInputModel.hours)" FormName="search" Enhance>
-                <ValidationSummary class="text-danger" role="alert"/>
-                <div class="mb-3">
-                    <label for="timeslotDate" class="form-label">Booking Date:</label> 
-                    <InputDate id="timeslotDate" @bind-Value="dateInputModel.timeslotDate" class="form-control"
-                    min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
+<div class="container-centered">
+    <div style="width: 80%">
+        @if (facility is not null)
+        {
+            <h1 class="title-large" style="color: crimson">@facility.Venue.Name</h1>
+            <h2 class="title-medium" style="color:crimson">@facility.Name</h2>
+        }
+        else
+        {
+            <p><em>loading...</em></p>
+        }
+        <hr />
+        @if (dateInputModel is not null)
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    <EditForm Model="@dateInputModel" method="post" 
+                    OnValidSubmit="()=>FindTimeslots(dateInputModel.timeslotDate, dateInputModel.hours)" FormName="search" Enhance>
+                        <ValidationSummary class="text-danger" role="alert"/>
+                        <div class="mb-3">
+                            <label for="timeslotDate" class="form-label">Booking Date:</label> 
+                            <InputDate id="timeslotDate" @bind-Value="dateInputModel.timeslotDate" class="form-control"
+                            min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="hours" class="form-label">Number of hours:</label>
+                            <InputNumber id="hours" @bind-Value="dateInputModel.hours" class="form-control"
+                            min="1" max="4" />
+                        </div>
+                        <button type="submit" class="btn btn-primary">Find Timeslots</button>
+                    </EditForm>
                 </div>
-                <div class="mb-3">
-                    <label for="hours" class="form-label">Number of hours:</label>
-                    <InputNumber id="hours" @bind-Value="dateInputModel.hours" class="form-control"
-                    min="1" max="4" />
-                </div>
-                <button type="submit" class="btn btn-primary">Find Timeslots</button>
-            </EditForm>
+            </div>
+        } else
+        {
+            <p><em>loading...</em></p>
+        }
+        <div>
+            @if (!timeslotsFound)
+            {
+                <p style="color: crimson">No timeslots found.</p>
+            }
         </div>
     </div>
-} else
-{
-    <p><em>loading...</em></p>
-}
-<div>
-    @if (!timeslotsFound)
-    {
-        <p>No timeslots found.</p>
-    }
-</div>
-
-<div>
-    <a href="/timeslots">Back to List</a>
 </div>
 
 @code {
@@ -65,7 +71,7 @@
 
     private DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
     private DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
-    
+
     private Facility? facility;
 
     private string? userId;
@@ -73,7 +79,7 @@
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        facility = await context.Facility.FirstOrDefaultAsync(f=>f.FacilityId==facilityId);
+        facility = await context.Facility.Include(f=>f.Venue).FirstOrDefaultAsync(f => f.FacilityId == facilityId);
         if (facility is null)
         {
             NavigationManager.NavigateTo("notfound");

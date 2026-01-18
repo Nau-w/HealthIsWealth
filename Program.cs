@@ -41,7 +41,14 @@ builder.Services.AddIdentityCore<HealthIsWealthUser>(options => options.SignIn.R
 
 builder.Services.AddSingleton<IEmailSender<HealthIsWealthUser>, IdentityNoOpEmailSender>();
 
+builder.Services.AddControllers();
+
 var app = builder.Build();
+
+#region API_Controllers
+app.MapDefaultControllerRoute();
+#endregion
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

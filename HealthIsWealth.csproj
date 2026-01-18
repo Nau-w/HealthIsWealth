@@ -28,9 +28,4 @@
     <None Include="wwwroot\images\ProfilePicture\backgroundImage.jpg" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="wwwroot\images\facilities\" />
-    <Folder Include="wwwroot\images\venues\" />
-  </ItemGroup>
-
 </Project>

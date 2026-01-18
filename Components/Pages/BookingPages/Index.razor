@@ -32,16 +32,16 @@
 
     @if (isLoading)
     {
-        <div class="status-message">
+        <div class="booking-card">
             <p>Loading your schedule...</p>
         </div>
     }
     else if (!upcomingBookings.Any())
     {
-        <div class="status-message">
-            <h3>No upcoming bookings</h3>
-            <p>Ready to get moving? Find a facility and book a slot!</p>
-            <a href="/Venues" class="btn-cta">Browse For Sports</a>
+        <div class="booking-card empty-state">
+            <h4>No upcoming bookings</h4>
+            <p class="location-text">Ready to get moving? Find a facility and book a slot!</p>
+            <a href="/Venues" class="btn-action btn-details">Browse For Sports</a>
         </div>
     }
     else

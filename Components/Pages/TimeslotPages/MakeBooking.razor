@@ -143,18 +143,31 @@
             StartDT = inputModel.startDT,
             FacilityId = facilityId,
         };
-        await context.Timeslot.AddAsync(timeslot);
-        await context.Booking.AddAsync(new Booking
+        // 1. Add Timeslot
+        context.Timeslot.Add(timeslot);
+
+        // 2. SAVE FIRST. This forces the DB to generate the ID and populate 'timeslot.TimeslotId'
+        await context.SaveChangesAsync();
+
+        // 3. Now use the actual generated ID
+        context.Booking.Add(new Booking
         {
-            TimeslotId = await context.Timeslot.MaxAsync(t=>t.TimeslotId),
+            TimeslotId = timeslot.TimeslotId, // EF has now updated this with the real ID
             UserId = userId
         });
+
+        // 4. Save the Booking
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/bookings");
     }
 
     private async Task FindTimeslots(DateOnly date, int hours)
     {
+        if (AvailableStartTimes.Any())
+        {
+            inputModel.startDT = AvailableStartTimes.First();
+        }
+
         using var context = DbFactory.CreateDbContext();
         IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
             DateOnly.FromDateTime(t.StartDT).Equals(date)).ToList();

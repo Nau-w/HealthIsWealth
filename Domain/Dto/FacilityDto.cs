@@ -6,7 +6,7 @@
         public string? Name { get; set; }
         public string? Location { get; set; }
         public float Price { get; set; }
-        public ICollection<Timeslot> Timeslots { get; set; }
-        public ICollection<Sport> Sports { get; set; }
+        public ICollection<TimeslotDto> Timeslots { get; set; }
+        public ICollection<SportDto> Sports { get; set; }
     }
 }

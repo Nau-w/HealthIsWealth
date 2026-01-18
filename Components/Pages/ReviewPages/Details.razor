@@ -12,70 +12,70 @@
 
 <PageTitle>Review Details</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-
-    <div class="review-header-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
-        <div class="review-header-content">
-            <h1>Review Details 📄</h1>
-            <p>Full feedback view</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Review Details</h1>
+        <p>Full feedback view</p>
     </div>
 
     @if (review is null)
     {
-        <p class="text-center text-white"><em>Loading...</em></p>
+        <div class="text-center mt-5" style="color: white;">
+            <p>Loading...</p>
+        </div>
     }
     else
     {
-        <div class="review-card">
+        <div class="booking-card" style="display: block; max-width: 700px; margin: 0 auto;">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="mb-0 text-secondary">Review for Booking #@review.BookingId</h5>
-                <div class="text-warning fs-3" title="@review.Rating / 5">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px;">
+                <h5 style="margin: 0; color: white;">Booking #@review.BookingId</h5>
+                <div class="star-rating" title="@review.Rating / 5">
                     @RenderStars(review.Rating)
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="small text-muted text-uppercase fw-bold">Feedback</label>
-                <div class="p-4 bg-light rounded border mt-1">
-                    <p class="mb-0 fs-5" style="font-style: italic; color: #555;">"@review.Feedback"</p>
+                <label style="font-size: 0.8rem; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: bold; margin-bottom: 5px; display: block;">Feedback</label>
+                <div style="padding: 20px; background: rgba(0,0,0,0.15); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);">
+                    <p style="margin: 0; font-size: 1.1rem; font-style: italic; color: white; line-height: 1.6;">
+                        "@review.Feedback"
+                    </p>
                 </div>
             </div>
 
             <div class="mb-4">
-                <label class="small text-muted text-uppercase fw-bold">Written By</label>
-                <div class="d-flex align-items-center mt-2">
-                    <div style="width: 40px; height: 40px; background-color: #e0e0e0; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 10px;">
+                <label style="font-size: 0.8rem; text-transform: uppercase; color: rgba(255,255,255,0.7); font-weight: bold; margin-bottom: 10px; display: block;">Written By</label>
+
+                <div style="display: flex; align-items: center; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 50px; width: fit-content; padding-right: 25px;">
+                    <div style="width: 40px; height: 40px; background-color: rgba(255,255,255,0.9); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #333;">
                         👤
                     </div>
+
                     <div>
                         @if (review.User != null)
                         {
-                            <div class="fw-bold text-dark">@review.User.FirstName @review.User.LastName</div>
-                            <div class="small text-muted">@review.User.Email</div>
+                            <div style="font-weight: bold; color: white;">@review.User.FirstName @review.User.LastName</div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">@review.User.Email</div>
                         }
                         else
                         {
-                            <div class="fw-bold text-dark">Unknown User</div>
-                            <div class="small text-muted">ID: @review.UserId</div>
+                            <div style="font-weight: bold; color: white;">Unknown User</div>
+                            <div style="font-size: 0.8rem; color: rgba(255,255,255,0.7);">ID: @review.UserId</div>
                         }
                     </div>
                 </div>
             </div>
 
-            <hr class="my-4" />
-
-            <div class="d-flex justify-content-between">
-                <a href="@($"/reviews/{review.BookingId}")" class="btn btn-outline-secondary">
+            <div class="card-actions" style="margin-top: 30px;">
+                <a href="@($"/reviews/{review.BookingId}")" class="btn-action btn-reschedule" style="text-align: center;">
                     ← Back to List
                 </a>
 
                 @if (review.UserId == currentUserId)
                 {
-                    <a href="@($"/reviews/edit?reviewid={review.ReviewId}")" class="btn btn-primary px-4">
+                    <a href="@($"/reviews/edit?reviewid={review.ReviewId}")" class="btn-action btn-details" style="text-align: center;">
                         Edit Review
                     </a>
                 }
@@ -89,25 +89,26 @@
     private Review? review;
     private string? currentUserId;
 
-    [SupplyParameterFromQuery]
-    private int ReviewId { get; set; }
+    // FIX 1: Add (Name = "reviewid") to ensure it matches the lowercase query string ?reviewid=...
+    [SupplyParameterFromQuery(Name = "reviewid")]
+    public int ReviewId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
 
-        // 1. Fetch Review with User Data included
+        // Include User so we can display their Name/Email
         review = await context.Review
-            .Include(r => r.User) // <--- CRITICAL: Loads the First/Last Name
+            .Include(r => r.User)
             .FirstOrDefaultAsync(m => m.ReviewId == ReviewId);
 
         if (review is null)
         {
+            // If ID is wrong or not found, redirect
             NavigationManager.NavigateTo("notfound");
             return;
         }
 
-        // 2. Get Current Logged-in User ID (to determine if they can edit)
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
         if (user.Identity is not null && user.Identity.IsAuthenticated)
@@ -116,9 +117,15 @@
         }
     }
 
-    private string RenderStars(double rating)
+    private MarkupString RenderStars(double rating)
     {
-        int r = (int)Math.Round(rating);
-        return new string('★', r) + new string('☆', 5 - r);
+        int roundedRating = (int)Math.Round(rating);
+        var stars = "";
+        for (int i = 1; i <= 5; i++)
+        {
+            stars += (i <= roundedRating) ? "★" : "☆";
+        }
+        // Added styling to make stars Gold
+        return new MarkupString($"<span style='color:#ffd700; font-size: 1.2rem;'>{stars}</span>");
     }
 }

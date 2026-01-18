@@ -10,54 +10,57 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-
 <PageTitle>Write a Review</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-
-    <div class="review-header-card">
-        <div class="review-header-content">
-            <h1>Write a Review ✍️</h1>
-            <p>Share your experience for Booking #@BookingId</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Write a Review</h1>
+        <p>Share your experience for Booking #@BookingId</p>
     </div>
 
-    <div class="review-card">
+    <div class="booking-card" style="display: block; max-width: 600px; margin: 0 auto;">
         <EditForm method="post" Model="Review" OnValidSubmit="AddReview" FormName="create" Enhance>
             <DataAnnotationsValidator />
-            <ValidationSummary class="text-danger" role="alert" />
+            <ValidationSummary class="text-danger mb-3" role="alert" />
 
             <input type="hidden" name="Review.BookingId" value="@Review.BookingId" />
             <input type="hidden" name="Review.UserId" value="@Review.UserId" />
 
             <div class="mb-4 text-center">
-                <label class="form-label d-block fw-bold">How would you rate it?</label>
-                <div class="d-flex justify-content-center gap-2">
+                <label class="form-label d-block fw-bold" style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">How would you rate it?</label>
+
+                <div style="display: flex; justify-content: center; gap: 10px; font-size: 2.5rem; cursor: pointer;">
                     @for (int i = 1; i <= 5; i++)
                     {
                         var starValue = i;
-                        <span class="star-rating-input @(Review.Rating >= starValue ? "filled" : "")"
-                              @onclick="() => SetRating(starValue)">
+                        // Gold if active, transparent white if inactive
+                        var colorStyle = Review.Rating >= starValue ? "color: #ffd700;" : "color: rgba(255,255,255,0.3);";
+
+                        <span @onclick="() => SetRating(starValue)"
+                              style="@colorStyle transition: color 0.2s; text-shadow: 0 2px 5px rgba(0,0,0,0.2);">
                             ★
                         </span>
                     }
                 </div>
+
                 <InputNumber @bind-Value="Review.Rating" class="d-none" />
-                <ValidationMessage For="() => Review.Rating" class="text-danger text-center" />
+                <ValidationMessage For="() => Review.Rating" class="text-danger" style="margin-top: 5px; display: block;" />
             </div>
 
             <div class="mb-4">
-                <label for="feedback" class="form-label fw-bold">Your Feedback</label>
-                <InputTextArea id="feedback" @bind-Value="Review.Feedback" class="form-control" rows="4" placeholder="Tell us what you liked or what could be improved..." />
+                <label for="feedback" class="form-label fw-bold" style="color: white;">Your Feedback</label>
+                <InputTextArea id="feedback" @bind-Value="Review.Feedback" class="form-control" rows="5"
+                               placeholder="Tell us what you liked or what could be improved..."
+                               style="background: rgba(255,255,255,0.9); border: none; padding: 15px;" />
                 <ValidationMessage For="() => Review.Feedback" class="text-danger" />
             </div>
 
-            <div class="d-flex justify-content-between">
-                <a href="@($"/reviews/{BookingId}")" class="btn btn-outline-secondary">Cancel</a>
-                <button type="submit" class="btn btn-success px-4">Submit Review</button>
+            <div class="card-actions" style="justify-content: center; gap: 15px; margin-top: 20px;">
+                <a href="@($"/reviews/{BookingId}")" class="btn-action btn-reschedule" style="text-align: center;">Cancel</a>
+                <button type="submit" class="btn-action btn-details" style="border: none;">Submit Review</button>
             </div>
+
         </EditForm>
     </div>
 </div>
@@ -71,19 +74,16 @@
 
     protected override async Task OnInitializedAsync()
     {
-        // 1. Set Booking ID from URL Query
         if (Review.BookingId == 0)
         {
             Review.BookingId = BookingId;
         }
 
-        // 2. Get Current Logged In User ID
         var authState = await AuthStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (user.Identity is not null && user.Identity.IsAuthenticated)
         {
-            // Assuming the ID is stored in the NameIdentifier claim
             var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
             if (!string.IsNullOrEmpty(userId))
             {

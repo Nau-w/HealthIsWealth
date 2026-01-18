@@ -3,7 +3,6 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
-@using System.Security.Claims
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -101,8 +100,12 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+        var userIdClaim = user.FindFirst("userId");
 
+        if (userIdClaim != null)
+        {
+            userId = userIdClaim.Value;
+        }
         inputModel = new();
         await FindTimeslots(date, hours);
     }
@@ -117,8 +120,8 @@
 
         using var context = DbFactory.CreateDbContext();
         if (await context.Timeslot.Where(t => t.FacilityId == facilityId &&
-            t.StartDT >= inputModel.startDT && t.StartDT < endDT || 
-            t.EndDT > inputModel.startDT && t.EndDT <= endDT).AnyAsync())
+            (t.StartDT >= inputModel.startDT && t.StartDT < endDT || 
+            t.EndDT > inputModel.startDT && t.EndDT <= endDT)).AnyAsync())
         {
             errors.Add("timeslot", ["Timeslot is occupied."]);
         }

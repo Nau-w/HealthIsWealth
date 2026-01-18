@@ -27,36 +27,80 @@
         @if (dateInputModel is not null)
         {
             <div class="row">
-                <div class="col-md-4">
-                    <EditForm Model="@dateInputModel" method="post" 
-                    OnValidSubmit="()=>FindTimeslots(dateInputModel.timeslotDate, dateInputModel.hours)" FormName="search" Enhance>
-                        <ValidationSummary class="text-danger" role="alert"/>
-                        <div class="mb-3">
-                            <label for="timeslotDate" class="form-label">Booking Date:</label> 
-                            <InputDate id="timeslotDate" @bind-Value="dateInputModel.timeslotDate" class="form-control"
-                            min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
+                <div class="col-md-6">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Search for available timeslots</h5>
+
+                            <EditForm Model="@dateInputModel" OnValidSubmit="() => FindTimeslots(dateInputModel.timeslotDate, dateInputModel.hours)">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary class="text-danger" />
+
+                                <div class="mb-3">
+                                    <label for="timeslotDate" class="form-label">Booking Date</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text" id="date-addon">📅</span>
+                                        <InputDate TValue="DateOnly"
+                                                   id="timeslotDate"
+                                                   class="form-control"
+                                                   aria-describedby="date-addon"
+                                                   @bind-Value="dateInputModel.timeslotDate"
+                                                   min="@minDate.ToString("yyyy-MM-dd")"
+                                                   max="@maxDate.ToString("yyyy-MM-dd")" />
+                                    </div>
+                                    <div class="form-text">Choose a date between @minDate.ToString("MMM d") and @maxDate.ToString("MMM d").</div>
+                                    <ValidationMessage For="()=> dateInputModel.timeslotDate" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="hours" class="form-label">Number of hours</label>
+                                    <div class="input-group w-50">
+                                        <span class="input-group-text">⏱</span>
+                                        <InputNumber TValue="int"
+                                                     id="hours"
+                                                     class="form-control"
+                                                     @bind-Value="dateInputModel.hours"
+                                                     min="1"
+                                                     max="4" />
+                                    </div>
+                                    <div class="form-text">Minimum 1 hour — maximum 4 hours.</div>
+                                    <ValidationMessage For="()=> dateInputModel.hours" />
+                                </div>
+
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-danger">Find Timeslots</button>
+                                    <button type="button" class="btn btn-outline-secondary" @onclick="@(()=> NavigateToVenue())">Back to venue</button>
+                                </div>
+                            </EditForm>
                         </div>
-                        <div class="mb-3">
-                            <label for="hours" class="form-label">Number of hours:</label>
-                            <InputNumber id="hours" @bind-Value="dateInputModel.hours" class="form-control"
-                            min="1" max="4" />
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card border-0">
+                        <div class="card-body">
+                            @if (!timeslotsFound)
+                            {
+                                <div class="alert alert-warning" role="alert">
+                                    No timeslots found for the selected date and duration. Try another date or shorter duration.
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-muted">Availability is shown after a search. Hours are available from <strong>7:00 AM</strong> to <strong>10:00 PM</strong>.</p>
+                            }
                         </div>
-                        <button type="submit" class="btn btn-primary">Find Timeslots</button>
-                    </EditForm>
+                    </div>
                 </div>
             </div>
-        } else
+        }
+        else
         {
             <p><em>loading...</em></p>
         }
-        <div>
-            @if (!timeslotsFound)
-            {
-                <p style="color: crimson">No timeslots found.</p>
-            }
-        </div>
     </div>
 </div>
+
 
 @code {
     [Parameter]
@@ -96,11 +140,16 @@
         public DateOnly timeslotDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
         public int hours = 1;
     }
+    private void NavigateToVenue()
+    {
+        NavigationManager.NavigateTo($"/venues/details?venueid={facility.VenueId}");
+    }
 
     private async Task FindTimeslots(DateOnly date, int hours)
     {
         using var context = DbFactory.CreateDbContext();
-        IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
+        IList
+    <Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
             DateOnly.FromDateTime(t.StartDT).Equals(date)).ToList();
         int count = 0;
         // 7AM TO 10PM

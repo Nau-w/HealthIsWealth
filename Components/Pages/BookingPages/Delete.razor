@@ -3,43 +3,52 @@
 @using HealthIsWealth.Domain
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <PageTitle>Cancel Booking</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-
-    <div class="review-header-card" style="background: linear-gradient(135deg, #ff416c, #ff4b2b);">
-        <div class="review-header-content">
-            <h1>Cancel Booking 🗑️</h1>
-            <p>Are you sure you want to cancel?</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Cancel Booking 🗑️</h1>
+        <p>Are you sure you want to cancel?</p>
     </div>
 
     @if (booking is null)
     {
-        <p class="text-center text-white"><em>Loading...</em></p>
+        <div style="text-align: center; color: white; margin-top: 50px;">
+            <p>Loading...</p>
+        </div>
     }
     else
     {
-        <div class="review-card border-danger">
-            <div class="alert alert-warning text-center">
-                This action cannot be undone. You will lose your slot.
+        <div class="booking-card" style="display: block; text-align: center;">
+
+            <div style="background: rgba(255, 0, 0, 0.1); border: 1px solid rgba(255,0,0,0.3); color: maroon; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <strong>Warning:</strong> This action cannot be undone. You will lose your slot.
             </div>
 
-            <div class="text-center my-4">
-                <h3 class="text-dark">@booking.Timeslot?.Facility?.Name</h3>
-                <p class="fs-5">
+            <div class="my-4">
+                <h3 style="margin-bottom: 5px; color: #333;">@booking.Timeslot?.Facility?.Name</h3>
+                <p style="font-size: 1.1rem; color: #555;">
                     @booking.Timeslot?.StartDT.ToString("dd MMM yyyy") <br />
-                    <span class="text-muted">@booking.Timeslot?.StartDT.ToString("h:mm tt") - @booking.Timeslot?.EndDT.ToString("h:mm tt")</span>
+                    <span style="font-weight: bold; color: #333;">
+                        @booking.Timeslot?.StartDT.ToString("h:mm tt") - @booking.Timeslot?.EndDT.ToString("h:mm tt")
+                    </span>
                 </p>
             </div>
 
             <EditForm method="post" Model="booking" OnValidSubmit="DeleteBooking" FormName="delete" Enhance>
-                <div class="d-flex justify-content-center gap-3">
-                    <a href="/bookings" class="btn btn-outline-secondary">Keep Booking</a>
-                    <button type="submit" class="btn btn-danger px-4" disabled="@(booking is null)">Confirm Cancellation</button>
+                <div class="card-actions" style="justify-content: center; gap: 15px;">
+
+                    <a href="@($"/bookings/details?bookingid={BookingId}")" class="btn-action btn-details" style="max-width: 200px;">
+                        Keep Booking
+                    </a>
+
+                    <button type="submit" class="btn-action btn-cancel" disabled="@(booking is null)" style="max-width: 200px; cursor: pointer;">
+                        Confirm Cancellation
+                    </button>
+
                 </div>
             </EditForm>
         </div>
@@ -71,6 +80,8 @@
         using var context = DbFactory.CreateDbContext();
         context.Booking.Remove(booking!);
         await context.SaveChangesAsync();
+
+        // After deletion, go back to the main list
         NavigationManager.NavigateTo("/bookings");
     }
 }

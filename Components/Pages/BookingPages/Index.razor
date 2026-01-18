@@ -8,86 +8,82 @@
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @attribute [Authorize]
+@rendermode InteractiveServer
 
-<PageTitle>My Bookings</PageTitle>
 
-<div class="full-screen-bg"></div>
+<PageTitle>HealthIsWealth | My Bookings</PageTitle>
 
-<div class="review-container">
 
-    <div class="review-header-card">
-        <div class="review-header-content">
-            <h1>My Bookings</h1>
-            <p>Manage your upcoming sessions</p>
-            @if (upcomingBookings.Any())
-            {
-                <p class="badge bg-light text-primary mt-2">@upcomingBookings.Count Upcoming</p>
-            }
-        </div>
+
+<div class="bookings-container">
+    <div class="bookings-header">
+        <h1>My Bookings</h1>
+        <p>Manage your sessions</p>
+        @if (upcomingBookings.Any())
+        {
+            <span class="booking-count">@upcomingBookings.Count Upcoming</span>
+        }
+        else
+        {
+            <span class="booking-count">Currently no bookings</span>
+        }
     </div>
+
 
     @if (isLoading)
     {
-        <div class="text-center mt-5">
-            <div class="spinner-border text-primary" role="status"></div>
-            <p class="mt-2 text-muted">Loading your schedule...</p>
+        <div class="status-message">
+            <p>Loading your schedule...</p>
         </div>
     }
     else if (!upcomingBookings.Any())
     {
-        <div class="empty-state">
+        <div class="status-message">
             <h3>No upcoming bookings</h3>
             <p>Ready to get moving? Find a facility and book a slot!</p>
-            <a href="/Venues" class="btn btn-primary mt-3">Browse Venues</a>
+            <a href="/Venues" class="btn-cta">Browse For Sports</a>
         </div>
     }
     else
     {
-        <div class="row">
             @foreach (var booking in upcomingBookings)
             {
-                <div class="col-12 mb-4">
-                    <div class="review-card p-0 overflow-hidden d-flex flex-column flex-md-row">
+                <div class="booking-card">
 
-                        <div class="bg-light p-4 d-flex flex-column justify-content-center align-items-center text-center" style="min-width: 150px; border-right: 1px solid #eee;">
-                            <span class="fs-1 fw-bold text-primary">@booking.Timeslot.StartDT.ToString("dd")</span>
-                            <span class="text-uppercase fw-bold text-muted">@booking.Timeslot.StartDT.ToString("MMM")</span>
-                            <span class="badge bg-primary mt-2">@booking.Timeslot.StartDT.ToString("HH:mm")</span>
-                        </div>
-
-                        <div class="p-4 flex-grow-1">
-                            <div class="d-flex justify-content-between align-items-start">
-                                <div>
-                                    <h4 class="mb-1">@booking.Timeslot.Facility.Name</h4>
-                                    <p class="text-muted mb-2">@booking.Timeslot.Facility.Location</p>
-                                    <small class="text-muted">
-                                        📍 @booking.Timeslot.Facility.Venue.Address, @booking.Timeslot.Facility.Venue.PostalCode
-                                    </small>
-                                </div>
-                                <div class="text-end">
-                                    <span class="badge bg-success">Confirmed</span>
-                                    <div class="mt-1 small text-muted">#@booking.BookingId</div>
-                                </div>
-                            </div>
-
-                            <hr class="my-3" />
-
-                            <div class="d-flex justify-content-between align-items-center">
-                                <span class="text-muted small">
-                                    Duration: @((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours) Hours
-                                </span>
-
-                                <div class="btn-group">
-                                    <a href="@($"/bookings/details?bookingid={booking.BookingId}")" class="btn btn-sm btn-outline-primary">Details</a>
-                                    <a href="@($"/bookings/edit?bookingid={booking.BookingId}")" class="btn btn-sm btn-outline-secondary">Reschedule</a>
-                                    <a href="@($"/bookings/delete?bookingid={booking.BookingId}")" class="btn btn-sm btn-outline-danger">Cancel</a>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="card-details">
+                        <h4>Venue Name: @booking.Timeslot.Facility.Venue.Name</h4>
+                        <p class="location-text">Facility Name: @booking.Timeslot.Facility.Name</p>
+                        <p class="location-text">@booking.Timeslot.Facility.Location</p>
+                        <small class="address-text">
+                            @booking.Timeslot.Facility.Venue.Address
+                            @booking.Timeslot.Facility.Venue.PostalCode
+                        </small>
                     </div>
+
+                    <div class="card-status">
+                        <span class="status-badge">Confirmed</span>
+                        <span class="booking-id">#@booking.BookingId</span>
+                    </div>
+
+                    <div class="card-time">
+                        <div class="date-box">
+                            <span class="day">@booking.Timeslot.StartDT.ToString("dd")</span>
+                            <span class="month">@booking.Timeslot.StartDT.ToString("MMM")</span>
+                        </div>
+                        <span class="time-range">
+                            @booking.Timeslot.StartDT.ToString("HH:mm") - @booking.Timeslot.EndDT.ToString("HH:mm")
+                        </span>
+                        <span class="duration">
+                            @((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours)h
+                        </span>
+                    </div>
+
+                    <div class="card-actions">
+                        <a href="@($"/bookings/details?bookingid={booking.BookingId}")" class="btn-action btn-details">More Details</a> 
+                    </div>
+
                 </div>
             }
-        </div>
     }
 </div>
 

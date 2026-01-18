@@ -1,174 +1,249 @@
-﻿/* --- Review Page Specific Styles --- */
-
-/* Reusing the background logic */
-.full-screen-bg {
+﻿.bookings-container {
     position: fixed;
-    top: 0;
-    left: 0;
     width: 100vw;
     height: 100vh;
-    z-index: -1;
-    background-image: linear-gradient(rgb(255, 255, 255, 0.6)), url(/images/backgrounds/SportsHubBackground.jpg);
+    overflow-y: auto;
+    background-image: linear-gradient(rgb(255, 255, 255, 0.4)), url(/images/backgrounds/SportsHubBackground.jpg);
     background-size: cover;
+    background-repeat: no-repeat;
     background-position: center;
+    padding-bottom: 100px;
 }
 
-.review-container {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 0 15px;
-}
-
-/* Header Card */
-.review-header-card {
-    background: linear-gradient(135deg, #652bd4, #8e24aa);
-    border-radius: 15px;
-    padding: 30px;
+/* --- Header Container --- */
+.bookings-header {
+    text-align: center;
+    max-width: 70%;
+    margin: 30px auto;
+    padding: 30px 20px;
+    border-radius: 20px;
+    background-image: linear-gradient(rgb(255, 255, 255, 0.3)), url(/images/placeholder/sports_banner.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
     color: white;
-    box-shadow: 0 10px 20px rgba(101, 43, 212, 0.3);
-    margin-bottom: 30px;
-    position: relative;
-    overflow: hidden;
 }
 
-.review-header-content h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
+    .bookings-header h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
 
-.review-header-content p {
-    opacity: 0.9;
-    font-size: 1.1rem;
-}
+    .bookings-header p {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
 
-/* Action Button in Header */
-.header-action-btn {
-    background: white;
-    color: #652bd4;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 25px;
-    font-weight: 700;
-    text-decoration: none;
+.booking-count {
     display: inline-block;
-    margin-top: 15px;
-    transition: transform 0.2s ease;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(4px);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    transition: 0.2s;
 }
 
-    .header-action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        color: #652bd4; /* Keep text purple */
+    .booking-count:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.3);
+        cursor: default;
     }
 
-/* Review Cards */
-.review-card {
-    background: white;
-    border-radius: 12px;
+.booking-card {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 10px;
+    max-width: 70%;
+    margin: 10px auto;
+    border-radius: 20px;
+    backdrop-filter: blur(80px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 5px 5px 5px 5px rgba(0, 0, 0, 0.1);
+    color: black;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 15px;
+    align-items: start;
+    text-align: left;
     padding: 25px;
-    margin-bottom: 20px;
-    border: 1px solid #eee;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
 }
 
-    .review-card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+.card-details {
+    grid-column: 1 / -1;
+}
+
+    .card-details h4 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: black;
+        text-shadow: 0 1px 1px rgba(255,255,255,0.5);
     }
 
-.review-top-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
+.location-text {
+    margin: 4px 0 2px 0;
+    font-weight: 600;
+    color: #333;
 }
+
+.address-text {
+    display: block;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+/* --- 3. Status Badge --- */
+.card-status {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.status-badge {
+    background: rgba(255, 255, 255, 0.5);
+    color: forestgreen;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.booking-id {
+    font-size: 0.75rem;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* --- 4. Time Section (The Calendar Look) --- */
+.card-time {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 10px;
+    border-radius: 12px;
+    margin-top: 10px;
+}
+
+.date-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    padding: 5px 12px;
+    border-radius: 10px;
+    margin-right: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    min-width: 60px;
+}
+
+    .date-box .day {
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #333;
+        line-height: 1;
+    }
+
+    .date-box .month {
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        color: #d63384;
+        font-weight: 700;
+    }
+
+.time-range {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+}
+
+.duration {
+    margin-left: auto;
+    font-size: 0.9rem;
+    background: rgba(0,0,0,0.1);
+    color: #333;
+    padding: 2px 8px;
+    border-radius: 6px;
+}
+
+/* --- 5. Action Buttons --- */
+.card-actions {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+    flex-wrap: wrap;
+}
+
+.btn-action {
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255,255,255,0.4);
+    text-align: center;
+    flex: 1;
+}
+
+.btn-details {
+    background: rgba(255, 255, 255, 0.4);
+    color: #333;
+}
+
+    .btn-details:hover {
+        background: rgba(255, 255, 255, 0.6);
+        background: #fff;
+        transition: 1s;
+    }
+
+.btn-reschedule {
+    background: rgba(0, 0, 0, 0.4);
+    color: rgb(255, 255, 255, 0.4);
+}
+
+    .btn-reschedule:hover {
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        transition: 1s;
+    }
+
+.btn-cancel {
+    background: rgba(255, 0, 0, 0.4);
+    color: maroon;
+    border-color: rgba(255,0,0,0.2);
+}
+
+    .btn-cancel:hover {
+        background: rgba(255, 0, 0, 0.6);
+        color: darkred;
+        transition: 1s;
+    }
 
 .star-rating {
-    color: #ffc107; /* Gold color */
-    font-size: 1.2rem;
+    color: #ffd700; /* Gold color */
+    font-size: 1.5rem;
     letter-spacing: 2px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
 }
 
 .reviewer-name {
     font-weight: 700;
-    color: #333;
-    font-size: 0.9rem;
-}
-
-.review-text {
-    color: #555;
-    line-height: 1.6;
-    font-size: 1rem;
-    margin-bottom: 20px;
-}
-
-/* Action Buttons Footer */
-.card-actions {
-    border-top: 1px solid #f0f0f0;
-    padding-top: 15px;
-    display: flex;
-    gap: 10px;
-    justify-content: flex-end;
-}
-
-.btn-action {
-    font-size: 0.85rem;
-    padding: 5px 15px;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.btn-edit {
-    background-color: #f3e5f5;
-    color: #652bd4;
-}
-
-    .btn-edit:hover {
-        background-color: #e1bee7;
-    }
-
-.btn-details {
-    background-color: #e3f2fd;
-    color: #1976d2;
-}
-
-    .btn-details:hover {
-        background-color: #bbdefb;
-    }
-
-.btn-delete {
-    background-color: #ffebee;
-    color: #c62828;
-}
-
-    .btn-delete:hover {
-        background-color: #ffcdd2;
-    }
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 50px;
-    background: rgba(255,255,255,0.8);
+    color: white;
+    font-size: 0.95rem;
+    background: rgba(255,255,255,0.2);
+    padding: 4px 10px;
     border-radius: 15px;
-    color: #666;
 }
-
-/* Interactive Star Rating */
-.star-rating-input {
-    font-size: 2rem;
-    color: #ddd; /* Gray by default */
-    cursor: pointer;
-    transition: color 0.2s;
-}
-
-    .star-rating-input.filled {
-        color: #ffc107; /* Gold for selected */
-    }
-
-    .star-rating-input:hover {
-        color: #ffeb3b; /* Lighter gold on hover */
-    }

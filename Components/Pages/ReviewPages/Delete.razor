@@ -9,44 +9,48 @@
 
 <PageTitle>Delete Review</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-
-    <div class="review-header-card" style="background: linear-gradient(135deg, #d32f2f, #ef5350);">
-        <div class="review-header-content">
-            <h1>Delete Review 🗑️</h1>
-            <p>Are you sure you want to delete this?</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Delete Review</h1>
+        <p>Are you sure you want to delete this?</p>
     </div>
 
     @if (review is null)
     {
-        <p class="text-center text-white"><em>Loading...</em></p>
+        <div class="text-center mt-5" style="color: white;">
+            <p>Loading...</p>
+        </div>
     }
     else
     {
-        <div class="review-card border-danger">
-            <div class="alert alert-warning text-center">
-                This action cannot be undone.
+        <div class="booking-card" style="display: block; text-align: center; max-width: 600px; margin: 0 auto;">
+
+            <div style="background: rgba(255, 0, 0, 0.15); border: 1px solid rgba(255, 0, 0, 0.3); color: #ffcccc; padding: 15px; border-radius: 10px; margin-bottom: 25px;">
+                <strong>Warning:</strong> This action cannot be undone.
             </div>
 
-            <h5 class="text-center mb-3">Review for Booking #@review.BookingId</h5>
+            <h5 style="color: white; margin-bottom: 15px;">Review for Booking #@review.BookingId</h5>
 
-            <div class="text-center mb-4">
-                <span class="fs-2" style="color:#ffc107">
-                    @RenderStars(review.Rating)
-                </span>
+            <div style="margin-bottom: 20px; font-size: 2rem; color: #ffd700;">
+                @RenderStars(review.Rating)
             </div>
 
-            <blockquote class="blockquote text-center bg-light p-3 rounded">
-                <p class="mb-0">"@review.Feedback"</p>
-            </blockquote>
+            <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; font-style: italic; color: rgba(255,255,255,0.9);">
+                "@review.Feedback"
+            </div>
 
             <EditForm method="post" Model="review" OnValidSubmit="DeleteReview" FormName="delete" Enhance>
-                <div class="d-flex justify-content-center gap-3 mt-4">
-                    <a href="@($"/reviews/{review.BookingId}")" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-danger px-4" disabled="@(review is null)">Confirm Delete</button>
+                <div class="card-actions" style="justify-content: center; margin-top: 30px; gap: 15px;">
+
+                    <a href="@($"/reviews/{review.BookingId}")" class="btn-action btn-reschedule" style="text-align: center; max-width: 150px;">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn-action btn-cancel" disabled="@(review is null)" style="border:none; max-width: 200px;">
+                        Confirm Delete
+                    </button>
+
                 </div>
             </EditForm>
         </div>

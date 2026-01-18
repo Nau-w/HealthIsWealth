@@ -226,6 +226,14 @@ namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
             .Where(u => u.Id != currentUser.Id && u.FirstName == newFirstName && u.LastName == newLastName)
             .FirstOrDefaultAsync();
 
+            if (string.IsNullOrWhiteSpace(newFirstName) || string.IsNullOrWhiteSpace(newLastName))
+            {
+                nameErrorMessage = "First name and last name cannot be empty.";
+                return;
+            }
+
+            nameErrorMessage = string.Empty;
+
             if (existingUser != null)
             {
                 nameErrorMessage = "This name is already taken. Please choose a different one.";
@@ -284,22 +292,22 @@ namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
         {
             phoneErrorMessage = null;
 
-            if (!string.IsNullOrWhiteSpace(newPhoneNumber))
+            // 1. Run validation FIRST. 
+            // This checks for empty strings inside HasPhoneErrors() now.
+            if (HasPhoneErrors()) return;
+
+            // 2. Check for duplicates
+            var existingUser = await dbContext.Users
+                .Where(u => u.Id != currentUser.Id && u.PhoneNumber == newPhoneNumber)
+                .FirstOrDefaultAsync();
+
+            if (existingUser != null)
             {
-
-                if (HasPhoneErrors()) return;
-
-                var existingUser = await dbContext.Users
-                    .Where(u => u.Id != currentUser.Id && u.PhoneNumber == newPhoneNumber)
-                    .FirstOrDefaultAsync();
-
-                if (existingUser != null)
-                {
-                    phoneErrorMessage = "This phone number is already registered to another user.";
-                    return;
-                }
+                phoneErrorMessage = "This phone number is already registered to another user.";
+                return;
             }
 
+            // 3. Save
             currentUser.PhoneNumber = newPhoneNumber;
             await UserManager.UpdateAsync(currentUser);
 
@@ -346,22 +354,21 @@ namespace HealthIsWealth.Components.Account.Pages.ProfilePages {
         {
             emailErrorMessage = null;
 
-            if (!string.IsNullOrWhiteSpace(newEmail))
+            // 1. Run validation FIRST
+            if (HasEmailErrors()) return;
+
+            // 2. Check for duplicates
+            var existingUser = await dbContext.Users
+                .Where(u => u.Id != currentUser.Id && u.Email == newEmail)
+                .FirstOrDefaultAsync();
+
+            if (existingUser != null)
             {
-
-                if (HasEmailErrors()) return;
-
-                var existingUser = await dbContext.Users
-                    .Where(u => u.Id != currentUser.Id && u.Email == newEmail)
-                    .FirstOrDefaultAsync();
-
-                if (existingUser != null)
-                {
-                    emailErrorMessage = "This email address is already registered to another user.";
-                    return;
-                }
+                emailErrorMessage = "This email address is already registered to another user.";
+                return;
             }
 
+            // 3. Save
             currentUser.Email = newEmail;
             await UserManager.UpdateAsync(currentUser);
 

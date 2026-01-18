@@ -6,6 +6,7 @@
 <PageTitle>HealthIsWealth | Profile</PageTitle>
 
 <div class="profile-layout">
+
     <div class="profile-card header-card">
 
         <div class="card-banner"></div>
@@ -15,7 +16,7 @@
                 @if (!string.IsNullOrEmpty(previewImage))
                 {
                     <img src="@previewImage" class="profile-avatar" />
-                    <span class="preview-badge">Preview</span>
+                    <span class="preview-badge" style="position: absolute; bottom: 0; left: 0; background: orange; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.7rem;">Preview</span>
                 }
                 else if (!string.IsNullOrEmpty(image))
                 {
@@ -26,7 +27,7 @@
                     <div class="profile-avatar placeholder-avatar"></div>
                 }
 
-                <button class="camera-btn" @onclick="EditPhoto">
+                <button class="camera-btn" @onclick="EditPhoto" title="Change Profile Photo">
                     📷
                 </button>
             </div>
@@ -34,14 +35,16 @@
 
         @if (isEditingPhoto)
         {
-            <div class="photo-edit-controls">
-                <InputFile OnChange="HandleFileSelected" class="form-control-sm" accept=".jpg,.jpeg,.png" />
+            <div class="photo-edit-controls" style="padding: 15px; margin-bottom: 15px;">
+                <InputFile OnChange="HandleFileSelected" class="form-control form-control-sm" accept=".jpg,.jpeg,.png" style="max-width: 250px; margin: 0 auto;" />
+
                 @if (!string.IsNullOrEmpty(photoErrorMessage))
                 {
-                    <p class="text-danger small">@photoErrorMessage</p>
+                    <p class="text-danger small mt-2">@photoErrorMessage</p>
                 }
-                <div class="mt-2">
-                    <button class="btn btn-sm btn-success" @onclick="SavePhoto" disabled="@(selectedFile == null)">Save</button>
+
+                <div class="btn-row" style="justify-content: center; margin-top: 10px;">
+                    <button class="btn btn-sm btn-success" @onclick="SavePhoto" disabled="@(selectedFile == null)">Save Photo</button>
                     <button class="btn btn-sm btn-secondary" @onclick="CancelEditPhoto">Cancel</button>
                 </div>
             </div>
@@ -60,7 +63,7 @@
     <div class="profile-card details-card">
         <div class="card-header-row">
             <h3>Personal Information</h3>
-            <h4 class="privacy-link">Edit</h4>
+            <h4 class="privacy-link" style="cursor: default; opacity: 0.7;">Details</h4>
         </div>
 
         <div class="info-row">
@@ -68,13 +71,16 @@
             {
                 <div class="edit-mode-inline">
                     <label>First Name</label>
-                    <input @bind="newFirstName" class="form-control" />
-                    <label>Last Name</label>
-                    <input @bind="newLastName" class="form-control" />
+                    <input @bind="newFirstName" class="form-control" placeholder="First Name" />
+
+                    <label style="margin-top: 10px;">Last Name</label>
+                    <input @bind="newLastName" class="form-control" placeholder="Last Name" />
+
                     @if (!string.IsNullOrEmpty(nameErrorMessage))
                     {
-                        <p class="text-danger">@nameErrorMessage</p>
+                        <p class="text-danger small mt-1">@nameErrorMessage</p>
                     }
+
                     <div class="btn-row">
                         <button class="btn btn-sm btn-success" @onclick="SaveName">Save</button>
                         <button class="btn btn-sm btn-secondary" @onclick="CancelEditName">Cancel</button>
@@ -93,12 +99,11 @@
                             }
                             else
                             {
-
                                 @currentUser.FirstName@currentUser.LastName
                             }
                         </div>
                     </div>
-                    <button class="edit-icon" @onclick="EditName">✎</button>
+                    <button class="edit-icon" @onclick="EditName" title="Edit Name">✎</button>
                 </div>
             }
         </div>
@@ -107,12 +112,14 @@
             @if (isEditingPhone)
             {
                 <div class="edit-mode-inline">
-                    <label>Phone</label>
-                    <input @bind="newPhoneNumber" class="form-control" />
+                    <label>Phone Number</label>
+                    <input @bind="newPhoneNumber" class="form-control" placeholder="8-digit number" />
+
                     @if (!string.IsNullOrEmpty(phoneErrorMessage))
                     {
-                        <p class="text-danger">@phoneErrorMessage</p>
+                        <p class="text-danger small mt-1">@phoneErrorMessage</p>
                     }
+
                     <div class="btn-row">
                         <button class="btn btn-sm btn-success" @onclick="SavePhone">Save</button>
                         <button class="btn btn-sm btn-secondary" @onclick="CancelEditPhone">Cancel</button>
@@ -131,26 +138,27 @@
                             }
                             else
                             {
-
                                 @currentUser.PhoneNumber
                             }
                         </div>
                     </div>
-                    <button class="edit-icon" @onclick="EditPhone">✎</button>
+                    <button class="edit-icon" @onclick="EditPhone" title="Edit Phone">✎</button>
                 </div>
             }
         </div>
 
-        <div class="info-row">
+        <div class="info-row" style="border-bottom: none;">
             @if (isEditingEmail)
             {
                 <div class="edit-mode-inline">
-                    <label>Email</label>
-                    <input @bind="newEmail" class="form-control" />
+                    <label>Email Address</label>
+                    <input @bind="newEmail" class="form-control" placeholder="example@gmail.com" />
+
                     @if (!string.IsNullOrEmpty(emailErrorMessage))
                     {
-                        <p class="text-danger">@emailErrorMessage</p>
+                        <p class="text-danger small mt-1">@emailErrorMessage</p>
                     }
+
                     <div class="btn-row">
                         <button class="btn btn-sm btn-success" @onclick="SaveEmail">Save</button>
                         <button class="btn btn-sm btn-secondary" @onclick="CancelEditEmail">Cancel</button>
@@ -169,22 +177,24 @@
                             }
                             else
                             {
-
                                 @currentUser.Email
                             }
                         </div>
                     </div>
-                    <button class="edit-icon" @onclick="EditEmail">✎</button>
+                    <button class="edit-icon" @onclick="EditEmail" title="Edit Email">✎</button>
                 </div>
             }
         </div>
-
     </div>
 
-    <h4 class="history-header">Past History</h4>
+    <h4 class="history-header" >Past History</h4>
+
     @if (!pastBookings.Any())
     {
-        <p class="text-muted">No booking history found.</p>
+        <div class="booking-card empty-state">
+            <h4>No booking history found</h4>
+            <p class="location-text">You haven't completed any sessions yet.</p>
+        </div>
     }
     else
     {
@@ -192,14 +202,40 @@
             @foreach (var booking in pastBookings)
             {
                 <div class="booking-card">
-                    <div>
-                        <strong>@booking.Timeslot.Facility.Name</strong>
-                        <div class="small text-muted">@booking.Timeslot.Facility.Location</div>
+
+                    <div class="card-details">
+                        <h4>@booking.Timeslot.Facility.Name</h4>
+                        <p class="location-text">@booking.Timeslot.Facility.Location</p>
+                        <small class="address-text">
+                            @booking.Timeslot.Facility.Venue.Address
+                            @booking.Timeslot.Facility.Venue.PostalCode
+                        </small>
                     </div>
-                    <div class="text-end">
-                        <div class="booking-date">@booking.Timeslot.StartDT.ToString("dd MMM yyyy")</div>
-                        <a href="/reviews/@booking.BookingId" class="btn btn-link btn-sm p-0">View Review</a>
+
+                    <div class="card-status">
+                        <span class="status-badge" style="background: rgba(200,200,200,0.8); color: #333;">Completed</span>
+                        <span class="booking-id">#@booking.BookingId</span>
                     </div>
+
+                    <div class="card-time">
+                        <div class="date-box">
+                            <span class="day">@booking.Timeslot.StartDT.ToString("dd")</span>
+                            <span class="month">@booking.Timeslot.StartDT.ToString("MMM")</span>
+                        </div>
+                        <span class="time-range">
+                            @booking.Timeslot.StartDT.ToString("HH:mm") - @booking.Timeslot.EndDT.ToString("HH:mm")
+                        </span>
+                        <span class="duration">
+                            @((booking.Timeslot.EndDT - booking.Timeslot.StartDT).TotalHours)h
+                        </span>
+                    </div>
+
+                    <div class="card-actions">
+                        <a href="@($"/reviews/{booking.BookingId}")" class="btn-action btn-details">
+                            Write / View Review
+                        </a>
+                    </div>
+
                 </div>
             }
         </div>

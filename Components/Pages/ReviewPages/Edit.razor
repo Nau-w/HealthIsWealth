@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
+@using HealthIsWealth.Data
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject NavigationManager NavigationManager
 @attribute [Authorize]
@@ -9,58 +10,65 @@
 
 <PageTitle>Edit Review</PageTitle>
 
-<div class="full-screen-bg"></div>
+<div class="bookings-container">
 
-<div class="review-container">
-
-    <div class="review-header-card">
-        <div class="review-header-content">
-            <h1>Edit Review ✏️</h1>
-            <p>Update your feedback</p>
-        </div>
+    <div class="bookings-header">
+        <h1>Edit Review</h1>
+        <p>Update your feedback</p>
     </div>
 
     @if (Review is null)
     {
-        <p class="text-center text-white"><em>Loading...</em></p>
+        <div class="text-center mt-5" style="color: white;">
+            <p>Loading...</p>
+        </div>
     }
     else
     {
-        <div class="review-card">
+        <div class="booking-card" style="display: block; max-width: 600px; margin: 0 auto;">
+
             <EditForm method="post" Model="Review" OnValidSubmit="UpdateReview" FormName="edit" Enhance>
                 <DataAnnotationsValidator />
-                <ValidationSummary role="alert" />
+                <ValidationSummary role="alert" class="text-danger mb-3" />
 
                 <input type="hidden" name="Review.ReviewId" value="@Review.ReviewId" />
                 <input type="hidden" name="Review.BookingId" value="@Review.BookingId" />
                 <input type="hidden" name="Review.UserId" value="@Review.UserId" />
 
                 <div class="mb-4 text-center">
-                    <label class="form-label d-block fw-bold">Update Rating</label>
-                    <div class="d-flex justify-content-center gap-2">
+                    <label class="form-label d-block fw-bold" style="color: white; text-shadow: 0 1px 2px rgba(0,0,0,0.2);">Update Rating</label>
+
+                    <div class="d-flex justify-content-center gap-2" style="font-size: 2rem; cursor: pointer;">
                         @for (int i = 1; i <= 5; i++)
                         {
                             var starValue = i;
-                            <span class="star-rating-input @(Review.Rating >= starValue ? "filled" : "")"
-                                  @onclick="() => SetRating(starValue)">
+                            // Check if star should be filled (Gold) or empty (Semi-transparent white)
+                            var colorStyle = Review.Rating >= starValue ? "color: #ffd700;" : "color: rgba(255,255,255,0.3);";
+
+                            <span @onclick="() => SetRating(starValue)"
+                                  style="@colorStyle transition: color 0.2s; text-shadow: 0 2px 5px rgba(0,0,0,0.2);">
                                 ★
                             </span>
                         }
                     </div>
+
                     <InputNumber @bind-Value="Review.Rating" class="d-none" />
                     <ValidationMessage For="() => Review.Rating" class="text-danger" />
                 </div>
 
                 <div class="mb-4">
-                    <label for="feedback" class="form-label fw-bold">Feedback</label>
-                    <InputTextArea id="feedback" @bind-Value="Review.Feedback" class="form-control" rows="4" />
+                    <label for="feedback" class="form-label fw-bold" style="color: white;">Feedback</label>
+                    <InputTextArea id="feedback" @bind-Value="Review.Feedback" class="form-control" rows="5"
+                                   style="background: rgba(255,255,255,0.9); border: none;" placeholder="Share your experience..." />
                     <ValidationMessage For="() => Review.Feedback" class="text-danger" />
                 </div>
 
-                <div class="d-flex justify-content-between">
-                    <a href="@($"/reviews/{Review.BookingId}")" class="btn btn-outline-secondary">Cancel</a>
-                    <button type="submit" class="btn btn-primary px-4">Save Changes</button>
+                <div class="card-actions" style="justify-content: center; gap: 15px;">
+                    <a href="@($"/reviews/{Review.BookingId}")" class="btn-action btn-reschedule" style="text-align: center;">Cancel</a>
+
+                    <button type="submit" class="btn-action btn-details" style="border: none;">Save Changes</button>
                 </div>
+
             </EditForm>
         </div>
     }

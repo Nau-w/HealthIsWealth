@@ -4,13 +4,14 @@
     position: fixed;
     top: 0;
     left: 0;
-    width: 100vw; 
+    width: 100vw;
     height: 100vh;
     z-index: -1;
-    background-image: linear-gradient(rgb(255, 255, 255, 0.4)), url(/images/backgrounds/SportsHubBackground.jpg);
+    /* Purple/White Gradient + Image */
+    background-image: linear-gradient(rgb(255, 255, 255, 0.6)), url('/images/backgrounds/SportsHubBackground.jpg');
     background-size: cover;
-    background-repeat: no-repeat;
     background-position: center;
+    background-repeat: no-repeat;
 }
 
 /* --- 2. Updated Profile Layout (The White Card) --- */

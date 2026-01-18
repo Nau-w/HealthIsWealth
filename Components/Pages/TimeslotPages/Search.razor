@@ -3,6 +3,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
+@using System.Security.Claims
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
@@ -16,7 +17,7 @@
         @if (facility is not null)
         {
             <h1 class="title-large" style="color: crimson">@facility.Venue.Name</h1>
-            <h2 class="title-medium" style="color:crimson">@facility.Name</h2>
+            <h2 class="title-medium" style="color: crimson">@facility.Name</h2>
         }
         else
         {
@@ -66,9 +67,6 @@
 
     private bool timeslotsFound = true;
 
-    private IList<DateTime> AvailableStartTimes = new List<DateTime>();
-    private IList<DateTime> AvailableEndTimes = new List<DateTime>();
-
     private DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
     private DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
 
@@ -88,12 +86,8 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
-        var userIdClaim = user.FindFirst("userId");
+        var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
 
-        if (userIdClaim != null)
-        {
-            userId = userIdClaim.Value;
-        }
         dateInputModel = new();
     }
 
@@ -108,7 +102,6 @@
         using var context = DbFactory.CreateDbContext();
         IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
             DateOnly.FromDateTime(t.StartDT).Equals(date)).ToList();
-        AvailableStartTimes = new List<DateTime>();
         int count = 0;
         // 7AM TO 10PM
         for (int i=7; i<22; i++)

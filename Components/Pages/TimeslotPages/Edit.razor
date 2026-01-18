@@ -1,99 +1,205 @@
 ﻿@page "/timeslots/edit"
+@using HealthIsWealth.Data
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using HealthIsWealth.Domain
+@using System.Security.Claims
 @inject IDbContextFactory<HealthIsWealth.Data.HealthIsWealthContext> DbFactory
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
+@attribute [Authorize]
+@rendermode InteractiveServer
 
 <PageTitle>Edit</PageTitle>
 
-<h1>Edit</h1>
-
-<h2>Timeslot</h2>
-<hr />
-@if (Timeslot is null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <div class="row">
-        <div class="col-md-4">
-            <EditForm method="post" Model="Timeslot" OnValidSubmit="UpdateTimeslot" FormName="edit" Enhance>
-                <DataAnnotationsValidator />
-                <ValidationSummary role="alert"/>
-                <input type="hidden" name="Timeslot.TimeslotId" value="@Timeslot.TimeslotId" />
+<div class="container-centered">
+    <div style="width: 80%">
+        @if (facility is not null)
+        {
+            <h1 class="title-large" style="color: crimson">@facility.Venue.Name</h1>
+            <h2 class="title-medium" style="color: crimson">@facility.Name</h2>
+        }
+        else
+        {
+            <p><em>loading...</em></p>
+        }
+        <hr />
+        <a class="btn-red" href="/bookings">&lt; Back</a>
+        <div class="row">
+            <div class="col-md-4">
                 <div class="mb-3">
-                    <label for="startdt" class="form-label">StartDT:</label>
-                    <InputDate id="startdt" @bind-Value="Timeslot.StartDT" class="form-control" />
-                    <ValidationMessage For="() => Timeslot.StartDT" class="text-danger" />
+                    <label for="timeslotDate" class="form-label">Booking Date:</label>
+                    <input type="date" id="timeslotDate" value="@timeslotDate" @onchange="DateChange" class="form-control"
+                            min="@minDate.ToString("yyyy-MM-dd")" max="@maxDate.ToString("yyyy-MM-dd")" />
                 </div>
-                <div class="mb-3">
-                    <label for="enddt" class="form-label">EndDT:</label>
-                    <InputDate id="enddt" @bind-Value="Timeslot.EndDT" class="form-control" />
-                    <ValidationMessage For="() => Timeslot.EndDT" class="text-danger" />
-                </div>
-                <div class="mb-3">
-                    <label for="facilityid" class="form-label">FacilityId:</label>
-                    <InputNumber id="facilityid" @bind-Value="Timeslot.FacilityId" class="form-control" />
-                    <ValidationMessage For="() => Timeslot.FacilityId" class="text-danger" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save</button>
-            </EditForm>
+            </div>
         </div>
+        @if (inputModel is not null && facility is not null)
+        {
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="mb-3">
+                        <EditForm Model="@inputModel" method="post"
+                                  OnValidSubmit="@(()=>Submit())" FormName="search" Enhance>
+                            <CustomValidation @ref="timeslotValidation" />
+                            <ValidationSummary class="text-danger" role="alert" />
+                            <div class="mb-3">
+                                <label for="timeslot" class="form-label">Booking Timeslot:</label>
+                                <InputSelect TValue="DateTime" id="timeslot" @bind-Value="inputModel.startDT">
+                                    @foreach (DateTime startDT in AvailableStartTimes)
+                                    {
+                                        <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
+                                    }
+                                </InputSelect>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Book Timeslot</button>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p><em>loading...</em></p>
+        }
     </div>
-}
-
-<div>
-    <a href="/timeslots">Back to List</a>
 </div>
 
 @code {
     [SupplyParameterFromQuery]
-    private int TimeslotId { get; set; }
+    public int bookingId { get; set; }
 
-    [SupplyParameterFromForm]
-    private Timeslot? Timeslot { get; set; }
+    private int facilityId;
+
+    private int hours;
+    private InputModel inputModel;
+
+    private DateOnly timeslotDate;
+    private DateTime endDT;
+
+    private DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+    private DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
+
+    private IList<DateTime> AvailableStartTimes = new List<DateTime>();
+
+    private CustomValidation? timeslotValidation;
+
+    private Timeslot? timeslot;
+    private Facility? facility;
+
+    private string? userId;
+
+    private sealed class InputModel
+    {
+        public DateTime startDT;
+    }
 
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-        Timeslot ??= await context.Timeslot.FirstOrDefaultAsync(m => m.TimeslotId == TimeslotId);
+        facility = await context.Facility.Include(f => f.Venue).FirstOrDefaultAsync(f => f.FacilityId == facilityId);
+        DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
+        DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
 
-        if (Timeslot is null)
+        if (facility is null || minDate > timeslotDate || maxDate < timeslotDate)
         {
             NavigationManager.NavigateTo("notfound");
         }
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        var userId = user.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+
+        timeslot = (await context.Booking.Include(b => b.Timeslot).ThenInclude(t => t.Facility).Where(b => b.UserId == userId)
+            .FirstAsync(b => b.BookingId == bookingId)).Timeslot;
+
+        if (timeslot is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+            return;
+        }
+        facility = timeslot.Facility;
+        facilityId = facility.FacilityId;
+        hours = (timeslot.EndDT - timeslot.StartDT).Hours;
+        inputModel = new();
+        await FindTimeslots(timeslotDate, hours);
     }
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
-    private async Task UpdateTimeslot()
+    private async void Submit()
     {
+        timeslotValidation?.ClearErrors();
+
+        var errors = new Dictionary<string, List<string>>();
+
+        endDT = inputModel.startDT.AddHours(hours);
+
         using var context = DbFactory.CreateDbContext();
-        context.Attach(Timeslot!).State = EntityState.Modified;
-
-        try
+        if (await context.Timeslot.Where(t => t.FacilityId == facilityId &&
+            (t.StartDT >= inputModel.startDT && t.StartDT < endDT ||
+            t.EndDT > inputModel.startDT && t.EndDT <= endDT)).AnyAsync())
         {
-            await context.SaveChangesAsync();
+            errors.Add("timeslot", ["Timeslot is occupied."]);
         }
-        catch (DbUpdateConcurrencyException)
+        if (errors.Any())
         {
-            if (!TimeslotExists(Timeslot!.TimeslotId))
-            {
-                NavigationManager.NavigateTo("notfound");
-            }
-            else
-            {
-                throw;
-            }
+            timeslotValidation?.DisplayErrors(errors);
+            await FindTimeslots(timeslotDate, hours);
+            StateHasChanged();
+        }
+        else
+        {
+            await AddTimeslot();
         }
 
-        NavigationManager.NavigateTo("/timeslots");
     }
 
-    private bool TimeslotExists(int timeslotid)
+    private async Task DateChange(ChangeEventArgs e){
+        timeslotDate = (DateOnly) e.Value;
+        await FindTimeslots(timeslotDate, hours);
+    }
+
+    private async Task AddTimeslot()
     {
         using var context = DbFactory.CreateDbContext();
-        return context.Timeslot.Any(e => e.TimeslotId == timeslotid);
+        Timeslot timeslot = new Timeslot
+        {
+            EndDT = endDT,
+            StartDT = inputModel.startDT,
+            FacilityId = facilityId,
+        };
+        await context.Timeslot.AddAsync(timeslot);
+        await context.Booking.AddAsync(new Booking
+        {
+            TimeslotId = await context.Timeslot.MaxAsync(t => t.TimeslotId),
+            UserId = userId
+        });
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/bookings");
+    }
+
+    private async Task FindTimeslots(DateOnly date, int hours)
+    {
+        using var context = DbFactory.CreateDbContext();
+        IList<Timeslot> FilteredTimeslots = context.Timeslot.Where(t => t.FacilityId == facilityId &&
+            DateOnly.FromDateTime(t.StartDT).Equals(date)).ToList();
+
+        AvailableStartTimes = new List<DateTime>();
+        int count = 0;
+
+        // 7AM TO 10PM
+        for (int i = 7; i < 22; i++)
+        {
+            count += count != hours ? 1 : 0;
+            if (FilteredTimeslots.Any(t => t.StartDT.Hour <= i && i < t.EndDT.Hour))
+            {
+                count = 0;
+            }
+            if (count == hours)
+            {
+                AvailableStartTimes.Add(new DateTime(date, new TimeOnly(i - hours + 1, 0, 0)));
+            }
+        }
+        await Task.CompletedTask;
     }
 }

@@ -19,14 +19,22 @@
     <div class="col-md-4">
         <div class="mb-3">
             <label for="timeslot" class="form-label">Booking Timeslot:</label>
-            <select id="timeslot" class="form-control">
-                @foreach (DateTime startDT in AvailableStartTimes)
-                {
-                    <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
-                }
-            </select>
+            <EditForm Model="@inputModel" method="post"
+                      OnValidSubmit="@(()=>Submit())" FormName="search" Enhance>
+                <CustomValidation @ref="timeslotValidation" />
+                <ValidationSummary class="text-danger" role="alert" />
+                <div class="mb-3">
+                    <label for="timeslot" class="form-label">Booking Timeslot:</label>
+                    <InputSelect TValue="DateTime" id="timeslot">
+                        @foreach (DateTime startDT in AvailableStartTimes)
+                        {
+                            <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
+                        }
+                    </InputSelect>
+                </div>
+                <button type="submit" class="btn btn-primary">Find Timeslots</button>
+            </EditForm>
         </div>
-        <button type="submit" class="btn btn-primary">Find Timeslots</button>
     </div>
 </div>
 
@@ -44,20 +52,26 @@
     [SupplyParameterFromQuery (Name="hours")]
     public int hours { get; set; }
 
+    private InputModel inputModel;
+
     private DateOnly date;
+    private DateTime endDT;
 
     private IList<DateTime> AvailableStartTimes = new List<DateTime>();
 
-    private CustomValidation? customValidation;
+    private CustomValidation? timeslotValidation;
 
     private Facility? facility;
 
     private string? userId;
 
+    private sealed class InputModel{
+        public DateTime startDT;
+    }
+
     protected override async Task OnInitializedAsync()
     {
         using var context = DbFactory.CreateDbContext();
-
         facility = await context.Facility.FirstOrDefaultAsync(f => f.FacilityId == facilityId);
         DateOnly minDate = DateOnly.FromDateTime(DateTime.Today.AddDays(1));
         DateOnly maxDate = DateOnly.FromDateTime(DateTime.Today.AddDays(14));
@@ -77,7 +91,39 @@
         {
             userId = userIdClaim.Value;
         }
+        inputModel = new();
         await FindTimeslots(date, hours);
+    }
+
+    private async void Submit()
+    {
+        timeslotValidation?.ClearErrors();
+
+        var errors = new Dictionary<string, List<string>>();
+
+        endDT = inputModel.startDT.AddHours(hours);
+
+        using var context = DbFactory.CreateDbContext();
+        if (await context.Timeslot.Where(t => t.FacilityId == facilityId &&
+            t.StartDT >= inputModel.startDT && t.StartDT < endDT || 
+            t.EndDT > inputModel.startDT && t.EndDT <= endDT).AnyAsync())
+        {
+            errors.Add("timeslot", ["Timeslot is occupied."]);
+        }
+        if (errors.Any())
+        {
+            timeslotValidation?.DisplayErrors(errors);
+            await FindTimeslots(date, hours);
+        } else
+        {
+            await AddTimeslot();
+        }
+
+    }
+
+    private async Task AddTimeslot()
+    {
+        
     }
 
     private async Task FindTimeslots(DateOnly date, int hours)

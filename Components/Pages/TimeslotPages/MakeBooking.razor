@@ -15,28 +15,32 @@
 
 <h2>Timeslot</h2>
 <hr />
+@if (inputModel is not null){
 <div class="row">
     <div class="col-md-4">
         <div class="mb-3">
-            <label for="timeslot" class="form-label">Booking Timeslot:</label>
             <EditForm Model="@inputModel" method="post"
                       OnValidSubmit="@(()=>Submit())" FormName="search" Enhance>
                 <CustomValidation @ref="timeslotValidation" />
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="mb-3">
                     <label for="timeslot" class="form-label">Booking Timeslot:</label>
-                    <InputSelect TValue="DateTime" id="timeslot">
+                    <InputSelect TValue="DateTime" id="timeslot" @bind-Value="inputModel.startDT">
                         @foreach (DateTime startDT in AvailableStartTimes)
                         {
                             <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
                         }
                     </InputSelect>
                 </div>
-                <button type="submit" class="btn btn-primary">Find Timeslots</button>
+                <button type="submit" class="btn btn-primary">Book Timeslot</button>
             </EditForm>
         </div>
     </div>
-</div>
+    </div>
+} else
+{
+    <p><em>loading...</em></p>
+}
 
 <div>
     <a href="/timeslots">Back to List</a>
@@ -114,6 +118,7 @@
         {
             timeslotValidation?.DisplayErrors(errors);
             await FindTimeslots(date, hours);
+            StateHasChanged();
         } else
         {
             await AddTimeslot();
@@ -123,7 +128,21 @@
 
     private async Task AddTimeslot()
     {
-        
+        using var context = DbFactory.CreateDbContext();
+        Timeslot timeslot = new Timeslot
+        {
+            EndDT = endDT,
+            StartDT = inputModel.startDT,
+            FacilityId = facilityId,
+        };
+        await context.Timeslot.AddAsync(timeslot);
+        await context.Booking.AddAsync(new Booking
+        {
+            TimeslotId = await context.Timeslot.MaxAsync(t=>t.TimeslotId),
+            UserId = userId
+        });
+        await context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/bookings");
     }
 
     private async Task FindTimeslots(DateOnly date, int hours)

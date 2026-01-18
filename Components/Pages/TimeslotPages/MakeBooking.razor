@@ -12,49 +12,128 @@
 
 <PageTitle>Book Timeslots</PageTitle>
 
-<div class="container-centered">
-    <div style="width: 80%">
-        @if (facility is not null)
+<div class="container my-4">
+    <div class="mx-auto" style="max-width: 960px;">
+        @if (facility is null)
         {
-            <h1 class="title-large" style="color: crimson">@facility.Venue.Name</h1>
-            <h2 class="title-medium" style="color: crimson">@facility.Name</h2>
-        } else
-        {
-            <p><em>loading...</em></p>
-        }
-        <hr />
-        <a class="btn-red" href="/venues/facility-booking/new-booking/@facilityId">&lt; Back</a>
-        @if (inputModel is not null && facility is not null){
-            
-            <div class="row">
-                <div class="col-md-4">
-                    <div class="mb-3">
-                        <EditForm Model="@inputModel" method="post"
-                              OnValidSubmit="@(()=>Submit())" FormName="search" Enhance>
-                        <CustomValidation @ref="timeslotValidation" />
-                        <ValidationSummary class="text-danger" role="alert" />
-                        <div class="mb-3">
-                            <label for="timeslot" class="form-label">Booking Timeslot:</label>
-                            <InputSelect TValue="DateTime" id="timeslot" @bind-Value="inputModel.startDT">
-                                @foreach (DateTime startDT in AvailableStartTimes)
-                                {
-                                    <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
-                                }
-                            </InputSelect>
-                        </div>
-                            <div class="mb-3">
-                                <label for="price" class="form-label">Total Price:</label>
-                                <p>$@(facility.Price*hours)</p>
-                            </div>
-                        <button type="submit" class="btn btn-primary">Book Timeslot</button>
-                    </EditForm>
-                 </div>
+            <div class="d-flex align-items-center justify-content-center py-5">
+                <div class="spinner-border text-danger me-3" role="status" aria-hidden="true"></div>
+                <div>
+                    <h5 class="mb-1">Loading facility...</h5>
+                    <div class="text-muted">Please wait</div>
+                </div>
             </div>
-        </div>
-} else
-{
-    <p><em>loading...</em></p>
-}
+        }
+        else
+        {
+            <div class="card shadow-sm mb-3">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <img src="@(!string.IsNullOrWhiteSpace(facility.ThumbnailImageUrl) ? facility.ThumbnailImageUrl : facility.Venue?.ThumbnailImageUrl)"
+                             onerror="this.onerror=null;this.src='/images/placeholder.png';"
+                             class="img-fluid h-100 w-100 object-fit-cover rounded-start" alt="Facility image" />
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <h2 class="h5 text-danger mb-1">@facility.Venue?.Name</h2>
+                                    <h3 class="h6 text-muted mb-2">@facility.Name</h3>
+                                    <p class="mb-1"><strong>Location:</strong> @facility.Location</p>
+                                    <p class="mb-0"><strong>Price (per hour):</strong> @facility.Price.ToString("C")</p>
+                                </div>
+                                <div class="text-end">
+                                    <a class="btn btn-outline-secondary btn-sm" href="/venues/facility-booking/new-booking/@facilityId">&lt; Back</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if (inputModel is not null)
+            {
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">Confirm booking</h5>
+
+                                <EditForm Model="@inputModel" OnValidSubmit="Submit">
+                                    <CustomValidation @ref="timeslotValidation" />
+                                    <ValidationSummary class="text-danger" />
+
+                                    <div class="mb-3">
+                                        <label for="timeslot" class="form-label">Booking timeslot</label>
+                                        <InputSelect TValue="DateTime" id="timeslot" class="form-select"
+                                                     @bind-Value="inputModel.startDT" aria-label="Select start time">
+                                            @if (!AvailableStartTimes.Any())
+                                            {
+                                                <option disabled selected>— No available times —</option>
+                                            }
+                                            else
+                                            {
+                                                @foreach (var startDT in AvailableStartTimes)
+                                                {
+                                                    <option value="@startDT">@startDT.ToShortTimeString() — @startDT.AddHours(hours).ToShortTimeString()</option>
+                                                }
+                                            }
+                                        </InputSelect>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Duration</label>
+                                        <p class="mb-0"><strong>@hours</strong> hour(s)</p>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label">Total price</label>
+                                        <p class="fs-5 fw-bold mb-0">@((facility.Price * hours).ToString("C"))</p>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-danger" disabled="@(AvailableStartTimes.Count == 0)">Book Timeslot</button>
+                                    </div>
+                                </EditForm>
+                            </div>
+                        </div>
+
+                        @if (!AvailableStartTimes.Any())
+                        {
+                            <div class="alert alert-warning">
+                                No contiguous timeslots are available for the selected date and duration. Try a different date or shorter duration.
+                            </div>
+                        }
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h6 class="card-subtitle mb-2 text-muted">Booking summary</h6>
+                                <dl class="row">
+                                    <dt class="col-5">Venue</dt>
+                                    <dd class="col-7">@facility.Venue?.Name</dd>
+
+                                    <dt class="col-5">Facility</dt>
+                                    <dd class="col-7">@facility.Name</dd>
+
+                                    <dt class="col-5">Date</dt>
+                                    <dd class="col-7">@date.ToString("MMM d, yyyy")</dd>
+
+                                    <dt class="col-5">Hours</dt>
+                                    <dd class="col-7">@hours</dd>
+
+                                    <dt class="col-5">Price</dt>
+                                    <dd class="col-7">@((facility.Price * hours).ToString("C"))</dd>
+                                </dl>
+                                <hr />
+                                <p class="small text-muted mb-0">Bookings are subject to venue rules and availability. You will be redirected to your bookings page after confirmation.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
     </div>
 </div>
 
@@ -143,20 +222,13 @@
             StartDT = inputModel.startDT,
             FacilityId = facilityId,
         };
-        // 1. Add Timeslot
         context.Timeslot.Add(timeslot);
-
-        // 2. SAVE FIRST. This forces the DB to generate the ID and populate 'timeslot.TimeslotId'
         await context.SaveChangesAsync();
-
-        // 3. Now use the actual generated ID
         context.Booking.Add(new Booking
         {
-            TimeslotId = timeslot.TimeslotId, // EF has now updated this with the real ID
+            TimeslotId = timeslot.TimeslotId, 
             UserId = userId
         });
-
-        // 4. Save the Booking
         await context.SaveChangesAsync();
         NavigationManager.NavigateTo("/bookings");
     }

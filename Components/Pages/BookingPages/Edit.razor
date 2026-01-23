@@ -48,16 +48,24 @@
                     <label class="form-label fw-bold text-muted">Date: (Read Only)</label>
                     <InputDate @bind-Value="inputModel.bookingDate" class="form-control bg-light" readonly />
                 </div>
-                <div class="mb-4">
-                    <label for="timeslotid" class="form-label fw-bold">Timeslot: (@hours hrs)</label>
-                    <InputSelect id="timeslotid" @bind-Value="inputModel.startDT" class="form-control">
-                        @foreach (DateTime startDT in AvailableStartTimes)
-                        {
-                            <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
-                        }
-                    </InputSelect>
-                </div>
-
+                @if (inputModel.bookingDate.Equals(DateOnly.FromDateTime(DateTime.Today)))
+                {
+                    <div class="mb-4">
+                        <label for="timeslotid" class="form-label fw-bold text-muted">Timeslot: (@hours hrs) (uneditable on the same day)</label>
+                        <InputText id="timeslotid" @bind-Value="inputModel.constantDT" class="form-control" readonly />
+                    </div>
+                } else
+                {
+                    <div class="mb-4">
+                        <label for="timeslotid" class="form-label fw-bold">Timeslot: (@hours hrs)</label>
+                        <InputSelect id="timeslotid" @bind-Value="inputModel.startDT" class="form-control">
+                            @foreach (DateTime startDT in AvailableStartTimes)
+                            {
+                                <option value="@startDT">@startDT.ToShortTimeString() - @startDT.AddHours(hours).ToShortTimeString()</option>
+                            }
+                        </InputSelect>
+                    </div>
+                }
                 <div class="d-flex justify-content-between">
                     <a href="/bookings" class="btn btn-outline-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary px-4">Save Changes</button>
@@ -89,6 +97,7 @@
         public string? facilityName;
         public string? venueLocation;
         public DateOnly bookingDate;
+        public string? constantDT;
         public DateTime startDT;
     }
 
@@ -115,8 +124,35 @@
         inputModel.facilityName = timeslot.Facility.Name;
         inputModel.venueLocation = timeslot.Facility.Venue.Address;
         inputModel.bookingDate = DateOnly.FromDateTime(timeslot.StartDT);
+        inputModel.constantDT = $"{timeslot.StartDT.ToShortTimeString()} - {timeslot.EndDT.ToShortTimeString()}";
         await FindTimeslots(timeslot);
         inputModel.startDT = timeslot.StartDT;
+    }
+
+    private async void Submit()
+    {
+        timeslotValidation?.ClearErrors();
+
+        var errors = new Dictionary<string, List<string>>();
+
+       DateTime endDT = inputModel.startDT.AddHours(hours);
+
+        using var context = DbFactory.CreateDbContext();
+        if (await context.Timeslot.Where(t => t.FacilityId == timeslot.FacilityId &&
+            (t.StartDT >= inputModel.startDT && t.StartDT < endDT ||
+            t.EndDT > inputModel.startDT && t.EndDT <= endDT)).AnyAsync())
+        {
+            errors.Add("timeslot", ["Timeslot is occupied."]);
+        }
+        if (errors.Any())
+        {
+            timeslotValidation?.DisplayErrors(errors);
+        }
+        else
+        {
+            await UpdateBooking();
+        }
+
     }
 
     private async Task UpdateBooking()

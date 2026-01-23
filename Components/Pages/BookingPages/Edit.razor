@@ -138,7 +138,8 @@
        DateTime endDT = inputModel.startDT.AddHours(hours);
 
         using var context = DbFactory.CreateDbContext();
-        if (await context.Timeslot.Where(t => t.FacilityId == timeslot.FacilityId &&
+        if (await context.Timeslot.Where(t => t.TimeslotId != timeslot.TimeslotId &&  
+            t.FacilityId == timeslot.FacilityId &&
             (t.StartDT >= inputModel.startDT && t.StartDT < endDT ||
             t.EndDT > inputModel.startDT && t.EndDT <= endDT)).AnyAsync())
         {
